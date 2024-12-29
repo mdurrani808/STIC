@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Networking - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="networking"><a class="header" href="#networking">Networking</a></h1>
+<p>Networking forms the foundation for a large variety of systems and applications in modern software development. Understanding the core principles and tools in networking is essential for software developers who work with everything from web applications to distributed systems, cloud services, and APIs. This knowledge will enable more efficient debugging, optimization, and implementation of software.</p>
+<p>This section contains an examination of networking fundamentals and tools, bridging the gap between the theoretical concepts and application. We begin with core principles and protocols like HTTP and DNS and conclude with hands-on tools essential for development and troubleshooting. These concepts and instruments will equip developers to design, implement, and maintain networked systems. These networks form the infrastructure that enables everything from cloud computing to mobile applications, making them fundamental to contemporary software development.</p>
+<h2 id="networking-fundamentals"><a class="header" href="#networking-fundamentals">Networking Fundamentals</a></h2>
+<p>A computer network is a collection of interconnected computing devices that can share resources and information. These networks vary in size, ranging from local area networks (LANs), a collection of devices connected together in one physical location, to the global internet, representing the interconnected network of computers and devices worldwide.</p>
+<p>Network architecture significantly impacts software development decisions and outcomes. Developers must consider network topology when designing distributed systems, factor in latency when building real-time applications, and account for network security at every level of their applications. Understanding networking principles helps developers anticipate and mitigate common challenges, such as service discovery in microservices architectures or managing state across distributed systems. Moreover, this knowledge enables better architectural decisions, from choosing appropriate protocols for specific use cases to designing robust error handling mechanisms for network failures.</p>
+<h3 id="basics-of-networking"><a class="header" href="#basics-of-networking">Basics of Networking</a></h3>
+<p>A network enables communication between computing devices through standardized rules and protocols that govern how data is transmitted and received. The fundamental unit of network communication is the packet - a formatted unit of data that contains both the information being sent and the metadata required for successful delivery. This metadata typically includes source and destination addresses, sequence numbers, error checking information, and protocol-specific control data.</p>
+<p>Modern networks operate using packet-switched communication, where messages are divided into these smaller packets before transmission. Each packet is routed independently through the network, potentially taking different paths to reach the same destination. Upon arrival, packets are reassembled into the original message. This approach provides reliability and efficiency, as network resources can be shared among multiple communications, and failures in one path don't necessarily prevent successful delivery.</p>
+<p>The process of network communication involves several key components. Network interface cards (NICs) translate data into electrical signals, optical pulses, or radio waves for transmission across physical media such as copper cables, fiber optic lines, or wireless channels. Network switches and routers examine packet headers to determine appropriate paths through the network, using routing tables and protocols to make forwarding decisions. Error detection and correction mechanisms ensure data integrity, while flow control mechanisms prevent network congestion by regulating transmission rates.</p>
+<p>Addressing schemes enable precise delivery of packets. Each device on a network has at least one unique address - typically an IP address in modern networks. These addresses are hierarchical, allowing for efficient routing across complex network topologies. Ports further refine communication by identifying specific services or applications on a device, enabling multiple simultaneous connections to coexist.</p>
+<h3 id="practical-applications-of-the-osi-model"><a class="header" href="#practical-applications-of-the-osi-model">Practical Applications of the OSI Model</a></h3>
+<p>The Open Systems Interconnection (OSI) model divides network communication into seven distinct layers, each handling specific aspects of data transmission. This layered approach enables complex networking tasks to be broken down into manageable components, with each layer providing services to the layer above while utilizing services from the layer below.</p>
+<p>Starting from the lowest level, the Physical Layer (Layer 1) manages the transmission of raw bits across physical media, defining specifications for cables, connectors, and electrical signals. The Data Link Layer (Layer 2) handles reliable point-to-point communication and physical addressing through protocols like Ethernet, ensuring data frames are delivered correctly between directly connected nodes. The Network Layer (Layer 3) enables routing and logical addressing through IP, allowing data to traverse multiple networks to reach its destination. The Transport Layer (Layer 4) provides end-to-end communication services through TCP and UDP, managing aspects like connection establishment, flow control, and reliable delivery.</p>
+<p>The upper layers focus on application-specific functions. The Session Layer (Layer 5) manages communication sessions between applications, handling session establishment, maintenance, and termination. The Presentation Layer (Layer 6) handles data formatting and encryption, ensuring data is presented in a format that applications can understand. Finally, the Application Layer (Layer 7) provides network services directly to end-user applications through protocols like HTTP, FTP, and SMTP.</p>
+<p>In modern networking, the most frequently encountered layers are the Network, Transport, and Application layers. The Transport Layer's TCP/UDP protocols form the backbone of reliable network communication, while the Network Layer's IP protocol enables global routing. The Application Layer hosts the protocols and services that developers interact with most directly, such as HTTP for web services and APIs. Understanding these layers and their interactions enables effective network programming and troubleshooting, as each layer provides specific tools and error messages that help diagnose and resolve networking issues.</p>
+<h3 id="ip-fundamentals"><a class="header" href="#ip-fundamentals">IP Fundamentals</a></h3>
+<p>The Internet Protocol (IP) provides the foundation for data delivery across interconnected networks. IP implements a connectionless, best-effort delivery service that enables communication between hosts regardless of their physical location or the networks connecting them. Each device on an IP network has at least one unique IP address that serves as its network identifier, allowing other devices to send data to it from anywhere on the network.</p>
+<p>IP operates primarily through packet switching, where data is divided into discrete packets for transmission. Each IP packet contains both a header and payload. The header includes crucial routing information such as source and destination IP addresses, while the payload carries the actual data being transmitted. IP's design allows each packet to be routed independently, potentially taking different paths through the network to reach the same destination.</p>
+<p>One of IP's key features is its hierarchical addressing scheme. IP addresses are structured to enable efficient routing across large networks, with different portions of the address identifying the network and the specific host within that network. This hierarchical structure allows routers to make forwarding decisions based on network prefixes rather than individual host addresses, significantly improving routing efficiency and scalability.</p>
+<p>While IP provides global addressing and routing, it intentionally offers minimal guarantees about delivery. Packets may be lost, duplicated, delayed, or delivered out of order. This simplicity at the IP level enables flexibility in how higher-layer protocols implement more sophisticated services. For example, TCP builds on IP to provide reliable, ordered delivery, while UDP maintains IP's basic best-effort service for applications that prioritize speed over reliability.</p>
+<h3 id="network-routing-basics"><a class="header" href="#network-routing-basics">Network Routing Basics</a></h3>
+<p>Network routing is the process of directing data packets from a source to a destination across interconnected networks. This process operates through routing tables maintained by routers, which map destination addresses to next-hop locations. When a packet arrives at a router, the router examines the destination IP address in the packet header and consults its routing table to determine the optimal next hop in the packet's journey.</p>
+<p>Modern networks implement dynamic routing protocols that automatically adapt to network changes and failures. These protocols enable routers to share information about network conditions and update their routing tables accordingly. Through this continuous exchange of routing information, networks can maintain connectivity even when specific paths become unavailable or congested. The two primary categories of routing protocols are interior gateway protocols (IGPs), which handle routing within a single administrative domain, and exterior gateway protocols (EGPs), which manage routing between different domains.</p>
+<p>Routing decisions incorporate multiple metrics to determine optimal paths. The hop count represents the number of routers a packet must traverse to reach its destination, directly affecting latency. Available bandwidth on different paths influences the volume of data that can be transmitted. Link reliability and current congestion levels factor into path selection, as routing protocols work to balance load across the network while maintaining efficient delivery.</p>
+<h3 id="transport-layer"><a class="header" href="#transport-layer">Transport Layer</a></h3>
+<h4 id="tcp"><a class="header" href="#tcp">TCP</a></h4>
+<p>The Transmission Control Protocol (TCP) provides reliable, ordered, and error-checked delivery of data between applications running on hosts communicating via an IP network. TCP establishes a full-duplex communication channel between two endpoints, ensuring that all data arrives correctly and in the same order it was sent.</p>
+<p>TCP achieves reliability through several key mechanisms. Before data transmission begins, TCP performs a three-way handshake to establish a connection. The sender and receiver exchange synchronization (SYN) and acknowledgment (ACK) messages to coordinate sequence numbers and confirm both parties are ready to communicate. This connection-oriented approach ensures that both endpoints are prepared for data transfer and enables TCP to maintain state information throughout the session.</p>
+<p>TCP handles network congestion through its congestion control mechanisms. When packet loss is detected, TCP interprets this as network congestion and reduces its transmission rate. It then gradually increases the rate as packets are successfully delivered, implementing a "slow start" algorithm followed by congestion avoidance. This approach helps prevent network collapse while maximizing throughput under varying network conditions.</p>
+<p>Error detection and recovery are fundamental to TCP's reliable delivery guarantee. Each TCP segment includes a checksum for error detection, and TCP requires acknowledgment of received data. If a segment is lost or corrupted, TCP automatically retransmits it. The protocol maintains a retransmission timer and will continue retransmission attempts until either the data is successfully delivered or the connection is terminated.</p>
+<h4 id="udp"><a class="header" href="#udp">UDP</a></h4>
+<p>The User Datagram Protocol (UDP) provides a simple, lightweight transport layer protocol that offers minimal transmission service. Unlike TCP, UDP is connectionless and does not guarantee reliable delivery, ordering, or data integrity. This simplicity makes UDP ideal for applications where speed is more critical than guaranteed delivery.</p>
+<p>UDP communication is stateless, meaning each datagram is handled independently. There is no handshaking before transmission and no built-in ordering of messages. Applications using UDP must either accept that messages might arrive out of order, be duplicated, or not arrive at all, or implement their own mechanisms for handling these cases if required.</p>
+<p>The protocol's header consists of just four fields: source port, destination port, length, and checksum. This minimal overhead results in lower latency compared to TCP, as there is no connection establishment delay and no need to wait for acknowledgments. While UDP includes a checksum field for basic error detection, it does not attempt to recover from errors—corrupted packets are simply discarded.</p>
+<p>UDP's characteristics make it particularly suitable for real-time applications such as voice over IP, online gaming, and live video streaming, where timely delivery is more important than perfect reliability. These applications can often tolerate some packet loss but cannot afford the delays introduced by TCP's reliability mechanisms. Additionally, UDP's connectionless nature makes it efficient for query-response patterns where the overhead of establishing a TCP connection would be excessive relative to the amount of data transferred.</p>
+<h3 id="http-and-apis"><a class="header" href="#http-and-apis">HTTP and APIs</a></h3>
+<h4 id="http-protocol"><a class="header" href="#http-protocol">HTTP Protocol</a></h4>
+<p>The Hypertext Transfer Protocol (HTTP) is an application layer protocol that powers data communication on the World Wide Web. Operating on a request-response model, HTTP facilitates the exchange of resources between clients and servers, with resources identified by Uniform Resource Locators (URLs).</p>
+<p>HTTP requests contain several key components that define the desired interaction with the server. The request line specifies the HTTP method (such as GET, POST, PUT, or DELETE) that indicates the intended operation, the resource path that identifies the target of the operation, and the protocol version. Request headers provide additional information about the request, including metadata such as content type, authentication credentials, and caching directives. For methods like POST and PUT, the request may also include a body containing data to be processed by the server.</p>
+<p>Responses from the server include a status line containing a numeric status code and a text description that indicates the outcome of the request. Common status codes include 200 (OK) for successful requests, 404 (Not Found) for unavailable resources, and 500 (Internal Server Error) for server-side failures. Response headers provide metadata about the response, such as content type, caching instructions, and server information. The response body contains the requested resource or relevant data.</p>
+<p>HTTP supports stateless communication, meaning each request-response cycle is independent and the server maintains no information about previous requests. This design choice promotes scalability but requires additional mechanisms like cookies or session tokens when state management is necessary. These mechanisms allow applications to maintain user sessions and preserve context across multiple requests.</p>
+<p>Security considerations are addressed through HTTPS, which encrypts HTTP traffic using Transport Layer Security (TLS). This encryption ensures data confidentiality and integrity while providing authentication of the server and, optionally, the client. Modern web applications typically enforce HTTPS to protect sensitive information and maintain user privacy.</p>
+<h4 id="http-in-api-context--restful-principles"><a class="header" href="#http-in-api-context--restful-principles">HTTP in API Context / RESTful Principles</a></h4>
+<p>HTTP serves as the foundation for modern web APIs, providing a standardized protocol for client-server communication. When used in APIs, HTTP's methods, status codes, and header mechanisms create a robust framework for structured data exchange between applications. This framework is most commonly implemented through REST (Representational State Transfer) architectural principles, which leverage HTTP's features to create scalable and maintainable APIs.</p>
+<p>RESTful APIs treat server resources as distinct entities that can be manipulated through standard HTTP methods. The GET method retrieves resource representations, POST creates new resources, PUT updates existing resources in their entirety, PATCH performs partial updates, and DELETE removes resources. This alignment between HTTP methods and resource operations creates a predictable and intuitive interface for API consumers.</p>
+<p>Resource identification in RESTful APIs occurs through carefully structured URLs that reflect the hierarchical nature of the data. For example, a URL pattern like /users/{id}/orders represents a collection of orders belonging to a specific user. This hierarchical structure creates clear relationships between resources and enables intuitive navigation of the API. Query parameters extend this pattern by enabling filtering, sorting, and pagination of resource collections.</p>
+<p>Response status codes in API contexts carry specific meanings that guide client behavior. Success codes (2xx) indicate successful operations, with 200 typically representing successful retrieval, 201 indicating successful resource creation, and 204 signaling successful deletion. Client error codes (4xx) identify issues with the request, such as invalid authentication (401) or insufficient permissions (403). Server error codes (5xx) indicate problems with API operation that require server-side investigation.</p>
+<p>Content negotiation through HTTP headers enables flexible data exchange formats. The Accept header allows clients to specify preferred response formats such as JSON or XML, while Content-Type indicates the format of request bodies. Modern APIs typically default to JSON for its simplicity and widespread support, though they may support multiple formats through content negotiation.</p>
+<p>State management in RESTful APIs adheres to HTTP's stateless nature. Each request must contain all information necessary for its processing, with no reliance on server-side session state. Authentication tokens, typically transmitted through the Authorization header, provide a stateless mechanism for maintaining user identity across requests. This stateless approach enhances scalability by allowing requests to be handled by any available server instance.</p>
+<p>Rate limiting and caching mechanisms protect API resources while improving performance. Rate limits, typically implemented through response headers, prevent abuse by restricting request frequency. Caching headers enable clients and intermediaries to store responses appropriately, reducing server load and improving response times for frequently accessed resources.</p>
+<h3 id="dns"><a class="header" href="#dns">DNS</a></h3>
+<p>The Domain Name System (DNS) functions as the internet's directory service, translating human-readable domain names into IP addresses that computers use for communication. This critical infrastructure enables users to access resources using memorable names while allowing the underlying network to operate using numerical addresses.</p>
+<p>DNS operates through a hierarchical, distributed database system. At the top of this hierarchy are root servers, which direct queries to the appropriate top-level domain (TLD) servers. These TLD servers, in turn, maintain information about their respective domains (such as .com, .org, or country-specific domains like .uk) and direct queries to authoritative name servers for specific domains. This hierarchical structure ensures both scalability and reliability of the global DNS infrastructure.</p>
+<p>The resolution process begins when a client needs to access a resource using a domain name. The client first queries its configured DNS resolver, typically provided by an internet service provider or a public DNS service. If the resolver doesn't have the requested information cached, it initiates a recursive query through the DNS hierarchy. This process starts at the root servers and traverses the hierarchy until it reaches the authoritative name server for the requested domain, which provides the final IP address.</p>
+<p>DNS also plays a crucial role in global traffic management and load balancing. Through techniques like geographic DNS routing, requests can be directed to the nearest available server, improving application performance. Round-robin DNS distributes traffic across multiple servers by rotating through different IP addresses in response to queries for the same domain name.</p>
+<h2 id="networking-tools"><a class="header" href="#networking-tools">Networking Tools</a></h2>
+<h3 id="command-line-essentials"><a class="header" href="#command-line-essentials">Command Line Essentials</a></h3>
+<h3 id="command-line-essentials-1"><a class="header" href="#command-line-essentials-1">Command Line Essentials</a></h3>
+<p>Network administrators and developers rely on command-line tools for network configuration, monitoring, and troubleshooting. These tools provide detailed information about network interfaces, connections, routing, and performance. Understanding their proper usage and output interpretation is essential for effective network management.</p>
+<h4 id="network-interface-and-routing-tools"><a class="header" href="#network-interface-and-routing-tools">Network Interface and Routing Tools</a></h4>
+<p>The <code>ip</code> command provides comprehensive network interface management and routing information. To view network interface details:</p>
+<pre><code class="language-bash">ip addr show
+</code></pre>
+<p>This command displays all network interfaces, their IP addresses, and state. The output shows interface names (like eth0 or wlan0), MAC addresses, IP addresses with subnet masks, and interface states (UP/DOWN). Interface flags indicate properties like BROADCAST or MULTICAST capability.</p>
+<p>For routing information:</p>
+<pre><code class="language-bash">ip route show
+</code></pre>
+<p>The output presents the routing table, showing destination networks, gateway addresses, and associated network interfaces. Default routes appear as "default via" entries, while direct connections show "dev" specifications.</p>
+<p>The <code>ethtool</code> command provides detailed Ethernet interface information:</p>
+<pre><code class="language-bash">ethtool eth0
+</code></pre>
+<p>This shows interface speed, duplex settings, link status, and supported features. The output includes physical layer statistics and driver information useful for diagnosing connectivity issues.</p>
+<h4 id="connection-monitoring"><a class="header" href="#connection-monitoring">Connection Monitoring</a></h4>
+<p>The <code>ss</code> command offers modern connection monitoring:</p>
+<pre><code class="language-bash">ss -tuln
+</code></pre>
+<p>This shows TCP (-t) and UDP (-u) listening (-l) numeric (-n) ports. The output displays local and remote addresses, connection states, and process information. Each line represents a socket, with columns showing protocol, receive/send queues, and local/remote endpoints.</p>
+<p>While <code>netstat</code> is being deprecated, it remains common:</p>
+<pre><code class="language-bash">netstat -tuln
+</code></pre>
+<p>The output format resembles <code>ss</code>, showing listening ports and established connections. Additional options like <code>-p</code> show process ownership of connections.</p>
+<h4 id="network-testing"><a class="header" href="#network-testing">Network Testing</a></h4>
+<p>The <code>ping</code> command tests basic connectivity:</p>
+<pre><code class="language-bash">ping -c 4 example.com
+</code></pre>
+<p>Output shows round-trip times and packet loss statistics. Each line displays sequence numbers and response times, with a summary showing minimum, average, and maximum latencies.</p>
+<p>For detailed path analysis, <code>traceroute</code> reveals network hops:</p>
+<pre><code class="language-bash">traceroute example.com
+</code></pre>
+<p>The output displays each router hop between source and destination, showing response times and router hostnames or IP addresses. Each line represents one hop, with three time measurements per hop.</p>
+<p>The <code>mtr</code> command combines ping and traceroute functionality:</p>
+<pre><code class="language-bash">mtr --report example.com
+</code></pre>
+<p>This generates a statistical report showing packet loss and latency for each hop, updated continuously. The output includes average, best, and worst response times per hop.</p>
+<h4 id="security-and-port-scanning"><a class="header" href="#security-and-port-scanning">Security and Port Scanning</a></h4>
+<p>The <code>nmap</code> tool performs comprehensive port scanning:</p>
+<pre><code class="language-bash">nmap -sS -p 80,443 example.com
+</code></pre>
+<p>Output shows open, closed, and filtered ports, along with service identification. The scan results indicate potential vulnerabilities and exposed services.</p>
+<p>For firewall management, <code>iptables</code> controls network traffic:</p>
+<pre><code class="language-bash">iptables -L -n -v
+</code></pre>
+<p>This displays current firewall rules, showing packet counts, byte counts, and rule specifications. Each chain (INPUT, OUTPUT, FORWARD) lists its rules with match conditions and actions.</p>
+<h4 id="network-debugging"><a class="header" href="#network-debugging">Network Debugging</a></h4>
+<p><code>netcat</code> (nc) provides network connection testing:</p>
+<pre><code class="language-bash">nc -zv example.com 80
+</code></pre>
+<p>The output indicates success or failure in connecting to specified ports, useful for testing service availability and debugging connection issues.</p>
+<h4 id="traffic-control-and-monitoring"><a class="header" href="#traffic-control-and-monitoring">Traffic Control and Monitoring</a></h4>
+<p>The <code>iftop</code> utility monitors bandwidth usage:</p>
+<pre><code class="language-bash">iftop -i eth0
+</code></pre>
+<p>The display shows real-time bandwidth consumption per connection, with source and destination addresses and transfer rates. The bottom section provides cumulative transfer statistics.</p>
+<p>Traffic control with <code>tc</code> manages bandwidth and latency:</p>
+<pre><code class="language-bash">tc qdisc add dev eth0 root tbf rate 1mbit burst 32kbit latency 400ms
+</code></pre>
+<p>This command sets up traffic shaping rules. Verification of the configuration shows active queuing disciplines and their parameters:</p>
+<pre><code class="language-bash">tc qdisc show dev eth0
+</code></pre>
+<h3 id="browser-developer-tools"><a class="header" href="#browser-developer-tools">Browser Developer Tools</a></h3>
+<p>Modern web browsers include powerful developer tools that provide detailed insights into network communications between web clients and servers. These tools expose the full lifecycle of HTTP requests, including request and response headers, timing information, cookies, websocket connections, and request payload details. The network panel displays a waterfall view of resource loading, enabling developers to analyze load times, identify bottlenecks, and optimize application performance through detailed metrics like DNS lookup time, TCP connection establishment, Time to First Byte (TTFB), and content download duration.</p>
+<p>Advanced features of browser developer tools include request filtering, resource caching analysis, and network condition simulation. Developers can filter requests by type (such as XHR, WebSocket, or media), inspect raw request and response data, and examine how different resources affect page load performance. Network throttling capabilities allow testing application behavior under various bandwidth and latency conditions, while request blocking enables testing application resilience when specific resources are unavailable. These tools also support exporting network logs for detailed analysis and documentation of network-related issues.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Git.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Git.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

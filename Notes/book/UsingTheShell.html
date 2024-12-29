@@ -1,0 +1,337 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Using The Shell - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="what-is-the-shell"><a class="header" href="#what-is-the-shell">What is the shell?</a></h2>
+<p>Computers these days have a variety of interfaces for giving them commands; fanciful graphical user interfaces, voice interfaces, and even AR/VR are everywhere. These are great for 80% of use-cases, but they are often fundamentally restricted in what they allow you to do — you cannot press a button that isn’t there or give a voice command that hasn’t been programmed. To take full advantage of the tools your computer provides, we have to go old-school and drop down to a textual interface: The Shell.</p>
+<p><a href="https://www.gnu.org/software/bash/manual/html_node/What-is-a-shell_003f.html">Shell</a>: A shell is simply a macro processor that executes commands. The term macro processor means functionality where text and symbols are expanded to create larger expressions. This is the program that is prompting you for commands and processing them.</p>
+<p>Nearly all platforms you can get your hands on have a shell in one form or another, and many of them have several shells for you to choose from. While they may vary in the details, at their core they are all roughly the same: they allow you to run programs, give them input, and inspect their output in a semi-structured way.</p>
+<p>In this lecture, we will focus on the Bourne Again SHell, or “bash” for short. This is one of the most widely used shells, and its syntax is similar to what you will see in many other shells. To open a shell prompt (where you can type commands), you first need a terminal. Your device probably shipped with one installed, or you can install one fairly easily.</p>
+<h2 id="using-the-shell"><a class="header" href="#using-the-shell">Using the shell</a></h2>
+<p>A terminal (or these days, more aptly, a terminal emulator) is a wrapper program which runs a shell. When you launch the terminal, you will see a prompt that will look like this:</p>
+<pre><code class="language-console">username@domain directory$
+</code></pre>
+<p>This is the main text based interface to the shell, and the prompt tells us some important information.</p>
+<p>It displays the user that is currently logged in as (username), the machine you are logged into (domain), and the current directory you are in. The following symbol, in our case $, indicates a user level shell, while a root shell will be indicated by a hash sign (#).</p>
+<p>Inside of this prompt, you can type a command, which will then be interpreted / executed by the shell. The most basic command is to execute a program:</p>
+<pre><code class="language-bash">cmsc398w:~$ date
+Sat Nov 30 23:24:14 EST 2024
+cmsc398w:~$
+</code></pre>
+<p>Here, we executed the <code>date</code> program, which (perhaps unsurprisingly) prints the current date and time. The shell then asks us for another command to execute. We can also execute a command with <em>arguments</em>:</p>
+<pre><code class="language-bash">cmsc398w:~$ echo hi
+hi
+</code></pre>
+<p>In this case, we told the shell to execute the program <code>echo</code> with the argument <code>hello</code>. The <code>echo</code> program simply prints out its arguments. The shell parses the command by splitting it by whitespace, and then runs the program indicated by the first word, supplying each subsequent word as an argument that the program can access. If you want to provide an argument that contains spaces or other special characters (e.g., a directory named “My Photos”), you can either quote the argument with <code>'</code> or <code>"</code> (<code>"My Photos"</code>), or escape just the relevant characters with <code>\</code> (<code>My\ Photos</code>).</p>
+<p>But how does the shell know how to find the <code>date</code> or <code>echo</code> programs? Well, the shell is a programming environment, just like Python or Ruby, and so it has variables, conditionals, loops, and functions (next lecture!). When you run commands in your shell, you are really writing a small bit of code that your shell interprets. If the shell is asked to execute a command that doesn’t match one of its programming keywords, it consults an <em>environment variable</em> called <code>$PATH</code> that lists which directories the shell should search for programs when it is given a command:</p>
+<pre><code class="language-bash">cmsc398w:~$ echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+cmsc398w:~$ which echo
+/usr/bin/echo
+cmsc398w:~$ /bin/echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+</code></pre>
+<p>When we run the <code>echo</code> command, the shell sees that it should execute the program <code>echo</code>, and then searches through the <code>:</code>-separated list of directories in <code>$PATH</code> for a file by that name. When it finds it, it runs it (assuming the file is <em>executable</em>; more on that later). We can find out which file is executed for a given program name using the <code>which</code> program. We can also bypass <code>$PATH</code> entirely by giving the <em>path</em> to the file we want to execute.</p>
+<h2 id="navigating-in-the-shell"><a class="header" href="#navigating-in-the-shell">Navigating in the shell</a></h2>
+<p>A path (in the context of the shell) is a list of directories; separated by <code>/</code> on Linux and macOS and <code>\</code> on Windows. On Linux and macOS, the path <code>/</code> is the "root" of the file system, under which all directories and files lie, whereas on Windows there is one root for each disk partition (e.g., <code>C:\</code>). We will generally assume that you are using a Linux filesystem in this class. A path that starts with <code>/</code> is called an <em>absolute</em> path. Any other path is a <em>relative</em> path. Relative paths are relative to the current working directory, which we can see with the <code>pwd</code> command and change with the <code>cd</code> command. In a path, <code>.</code> refers to the current directory, and <code>..</code> to its parent directory.</p>
+<div id="admonition-info" class="admonition admonish-info" role="note" aria-labelledby="admonition-info-title">
+<div class="admonition-title">
+<div id="admonition-info-title">
+<p>Info</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-info"></a>
+</div>
+<div>
+<p><code>cd [directory]</code>: Changes current working directory</p>
+<p><code>pwd</code>: Prints the current working directory</p>
+</div>
+</div>
+<pre><code class="language-bash">cmsc398w:~/stic$ pwd
+/home/mdurrani/stic
+cmsc398w:~/stic$ cd /home
+cmsc398w:/home$ pwd
+/home
+cmsc398w:/home$ cd ..
+cmsc398w:/$ pwd
+/
+cmsc398w:/$ cd ./home
+cmsc398w:/home$ pwd
+/home
+cmsc398w:/home$ cd mdurrani/stic
+cmsc398w:~/stic$ pwd
+/home/mdurrani/stic
+cmsc398w:~$ ../../bin/echo hello
+hello
+</code></pre>
+<p>Notice that our shell prompt kept us informed about what our current working directory was. You can configure your prompt to show you all sorts of useful information, which we will cover in a later lecture.</p>
+<p>In general, when we run a program, it will operate in the current directory unless we tell it otherwise. For example, it will usually search for files there, and create new files there if it needs to.</p>
+<p>To see what lives in a given directory, we use the <code>ls</code> command:</p>
+<div id="admonition-info-1" class="admonition admonish-info" role="note" aria-labelledby="admonition-info-1-title">
+<div class="admonition-title">
+<div id="admonition-info-1-title">
+<p>Info</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-info-1"></a>
+</div>
+<div>
+<p><code>ls [OPTION]... [FILE]...</code>: list directory contents</p>
+</div>
+</div>
+```bash
+cmsc398w:~/stic$ ls
+README.md  SystemMonitoringSolution
+cmsc398w:~/stic$ cd /
+cmsc398w:/$ ls
+bin
+boot
+dev
+etc
+home
+...
+```
+Unless a directory is given as its first argument, `ls` will print the contents of the current directory. Most commands accept flags and options (flags with values) that start with `-` to modify their behavior. Usually, running a program with the `-h` or `--help` flag will print some help text that tells you what flags and options are available. For example, `ls --help` tells us:
+<pre><code>  -l                         use a long listing format
+</code></pre>
+<pre><code class="language-console">cmsc398w:/$ ls -l /home
+total 4
+drwxr-x--- 67 cmsc398w cmsc398w 4096 Dec  2 19:22 cmsc398w
+</code></pre>
+<p>This gives us a bunch more information about each file or directory present. First, the <code>d</code> at the beginning of the line tells us that <code>cmsc398w</code> is a directory. Then follow three groups of three characters (<code>rwx</code>). These indicate what permissions the owner of the file (<code>cmsc398w</code>), the owning group (<code>users</code>), and everyone else respectively have on the relevant item. A <code>-</code> indicates that the given principal does not have the given permission. Above, only the owner is allowed to
+modify (<code>w</code>) the <code>cmsc398w</code> directory (i.e., add/remove files in it). To enter a directory, a user must have "search" (represented by "execute": <code>x</code>) permissions on that directory (and its parents). To list its contents, a user must have read (<code>r</code>) permissions on that directory. For files, the permissions are as you would expect. Notice that nearly all the files in <code>/bin</code> have the <code>x</code> permission set for the last group, "everyone else", so that anyone can execute those programs.</p>
+<div id="admonition-info-2" class="admonition admonish-info" role="note" aria-labelledby="admonition-info-2-title">
+<div class="admonition-title">
+<div id="admonition-info-2-title">
+<p>Info</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-info-2"></a>
+</div>
+<div>
+<p><code>mv [OPTION]... SOURCE... DIRECTORY</code>: Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.</p>
+<p><code>cp [OPTION]... SOURCE... DIRECTORY</code>: Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.</p>
+</div>
+</div>
+<p>If you ever want <em>more</em> information about a program's arguments, inputs, outputs, or how it works in general, give the <code>man</code> program a try. It takes as an argument the name of a program, and shows you its <em>manual page</em>. Press <code>q</code> to exit.</p>
+<pre><code class="language-console">cmsc398w:~$ man ls
+</code></pre>
+<h4 id="searching-man-pages"><a class="header" href="#searching-man-pages">Searching man pages</a></h4>
+<p>Often times, you will want to search for a specific flag or action within the man pages for a command. To do this, you can type <code>/[regex]</code> where <code>[regex]</code> is a valid regular expression and then hit enter. For example, if I wanted to search for the flag <code>-B</code>, I would type <code>/-B</code>.</p>
+<p>Other times, it may be more convenient to use the online versions of these man pages, which can be found here: https://man7.org/linux/man-pages/. Alternatively, you could use <code>curl cheat.sh/[yourcommand]</code>, which uses cheat.sh to give you nice examples for the command you want to run.</p>
+<p><a href="https://tldr.sh/">TLDR pages</a> are a nifty complementary solution that focuses on giving example use cases of a command so you can quickly figure out which options to use.</p>
+<h2 id="connecting-programs"><a class="header" href="#connecting-programs">Connecting Programs</a></h2>
+<p>In the shell, programs have two primary "streams" associated with them: their input stream and their output stream. When the program tries to read input, it reads from the input stream, and when it prints something, it prints to its output stream. Normally, a program's input and output are both your terminal. That is, your keyboard as input and your screen as output. However, we can also rewire those streams!</p>
+<p>The simplest form of redirection is <code>&lt; file</code> and <code>&gt; file</code>. These let you rewire the input and output streams of a program to a file respectively:</p>
+<pre><code class="language-console">mdurrani@MDXPS139380:~/stic$ echo hello &gt; hello.txt
+mdurrani@MDXPS139380:~/stic$ cat hello.txt
+hello
+mdurrani@MDXPS139380:~/stic$ cat &lt; hello.txt
+hello
+mdurrani@MDXPS139380:~/stic$ cat &lt; hello.txt &gt; hello2.txt
+mdurrani@MDXPS139380:~/stic$ cat hello2.txt
+hello
+mdurrani@MDXPS139380:~/stic$
+</code></pre>
+<p>Demonstrated in the example above, <code>cat</code> is a program that con<code>cat</code>enates files. When given file names as arguments, it prints the contents of each of the files in sequence to its output stream. But when <code>cat</code> is not given any arguments, it prints contents from its input stream to its output stream (like in the third example above).</p>
+<p>You can also use <code>&gt;&gt;</code> to append to a file. Where this kind of input/output redirection really shines is in the use of <em>pipes</em>. The <code>|</code> operator lets you "chain" programs such that the output of one is the
+input of another:</p>
+<pre><code class="language-console">missing:~$ ls -l / | tail -n1
+drwxr-xr-x 1 root  root  4096 Jun 20  2019 var
+missing:~$ curl --head --silent google.com | grep --ignore-case content-length | cut --delimiter=' ' -f2
+219
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="ShellToolsAndScripting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="ShellToolsAndScripting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

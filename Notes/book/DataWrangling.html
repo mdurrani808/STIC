@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Data Wrangling - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>Have you ever wanted to take data in one format and turn it into a different format? Of course you have! That, in very general terms, is what this lecture is all about. Specifically, massaging data, whether in text or binary format, until you end up with exactly what you wanted.</p>
+<p>We've already seen some basic data wrangling in past lectures. Pretty much any time you use the <code>|</code> operator, you are performing some kind of data wrangling. Consider a command like <code>journalctl | grep -i intel</code>. It finds all system log entries that mention Intel (case insensitive). You may not think of it as wrangling data, but it is going from one format (your entire system log) to a format that is more useful to you (just the intel log entries). Most data wrangling is about knowing what tools you have at your disposal, and how to combine them.</p>
+<h2 id="regular-expression-refresher"><a class="header" href="#regular-expression-refresher">Regular Expression Refresher</a></h2>
+<h3 id="basic-characters"><a class="header" href="#basic-characters">Basic Characters</a></h3>
+<p>Most letters and numbers in a regex pattern match themselves exactly. For example, the pattern <code>cat</code> matches the word "cat".</p>
+<h3 id="special-characters"><a class="header" href="#special-characters">Special Characters</a></h3>
+<p><code>.</code> - Matches any single character except newline
+<code>^</code> - Matches the start of a line
+<code>$</code> - Matches the end of a line
+<code>*</code> - Matches zero or more occurrences of the previous character
+<code>+</code> - Matches one or more occurrences of the previous character
+<code>?</code> - Makes the previous character optional
+<code>\</code> - Escapes special characters (use <code>\.</code> to match an actual period)</p>
+<h3 id="character-classes"><a class="header" href="#character-classes">Character Classes</a></h3>
+<p>Square brackets let us define sets of characters to match:
+<code>[abc]</code> - Matches any single character from the set (a, b, or c)
+<code>[^abc]</code> - Matches any character except those in the set
+<code>[a-z]</code> - Matches any lowercase letter
+<code>[A-Z]</code> - Matches any uppercase letter
+<code>[0-9]</code> - Matches any digit</p>
+<h3 id="common-shortcuts"><a class="header" href="#common-shortcuts">Common Shortcuts</a></h3>
+<p>Some frequently-used patterns have their own shortcuts:
+<code>\d</code> - Matches any digit (equivalent to [0-9])
+<code>\w</code> - Matches any word character (letters, digits, underscore)
+<code>\s</code> - Matches any whitespace (space, tab, newline)
+<code>\D</code>, <code>\W</code>, <code>\S</code> - Match anything except digits, word chars, and whitespace respectively</p>
+<h2 id="common-quantifiers"><a class="header" href="#common-quantifiers">Common Quantifiers</a></h2>
+<p>When you need to specify how many times something should match:</p>
+<p><code>{n}</code> - Exactly n times
+<code>{n,}</code> - At least n times
+<code>{n,m}</code> - Between n and m times
+<code>*</code> - Zero or more times (equivalent to {0,})
+<code>+</code> - One or more times (equivalent to {1,})
+<code>?</code> - Zero or one time (equivalent to {0,1})</p>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<h3 id="validating-an-email-address"><a class="header" href="#validating-an-email-address">Validating an Email Address</a></h3>
+<pre><code class="language-regex">^[\w\.-]+@[\w\.-]+\.\w+$
+</code></pre>
+<p>This pattern breaks down into:</p>
+<ul>
+<li>Start of line (<code>^</code>)</li>
+<li>One or more word characters, dots, or hyphens (<code>[\w\.-]+</code>)</li>
+<li>An @ symbol (<code>@</code>)</li>
+<li>More word characters, dots, or hyphens (<code>[\w\.-]+</code>)</li>
+<li>A dot (<code>\.</code>)</li>
+<li>One or more word characters (<code>\w+</code>)</li>
+<li>End of line (<code>$</code>)</li>
+</ul>
+<h3 id="matching-a-phone-number"><a class="header" href="#matching-a-phone-number">Matching a Phone Number</a></h3>
+<pre><code class="language-regex">^\(\d{3}\)\s?\d{3}-\d{4}$
+</code></pre>
+<p>This matches phone numbers like (123) 456-7890:</p>
+<ul>
+<li>Start with parentheses and three digits (<code>^\(\d{3}\)</code>)</li>
+<li>Optional space (<code>\s?</code>)</li>
+<li>Three digits (<code>\d{3}</code>)</li>
+<li>Hyphen (<code>-</code>)</li>
+<li>Four digits (<code>\d{4}</code>)</li>
+</ul>
+<h2 id="data-wrangling-and-sed"><a class="header" href="#data-wrangling-and-sed">Data Wrangling and sed</a></h2>
+<p>The stream editor, commonly known as sed, is one of the most powerful text processing tools available in Unix-like operating systems. Created by Lee E. McMahon at Bell Labs in 1974, sed was designed as a successor to the revolutionary ed editor, bringing automation to text editing tasks. Think of sed as a text transformation pipeline - it reads input line by line, applies specified operations, and outputs the result.</p>
+<p>Sed processes input line by line, applying commands to each line sequentially. It has two buffers, called the pattern space and the hold space. The pattern buffer is a temporary buffer, the scratchpad where the current information is stored. The hold buffer is for long term storage. There is also an address range, that specifies which lines the command should operate on.</p>
+<h3 id="basic-command-structure"><a class="header" href="#basic-command-structure">Basic Command structure</a></h3>
+<p>The syntax of a sed command is:</p>
+<pre><code class="language-bash">sed [options] 'command' filename
+</code></pre>
+<p>Common options include:</p>
+<ul>
+<li><code>-e</code>: Allows multiple commands</li>
+<li><code>-i</code>: Edit files in-place</li>
+<li><code>-n</code>: Suppress automatic printing of pattern space</li>
+<li><code>-f</code>: Read commands from a file</li>
+</ul>
+<h3 id="essential-commands"><a class="header" href="#essential-commands">Essential Commands</a></h3>
+<h4 id="substitution-command-s"><a class="header" href="#substitution-command-s">Substitution Command (s)</a></h4>
+<p>The substitution command is the most frequently used sed command. Its basic syntax is:</p>
+<pre><code class="language-bash">sed 's/pattern/replacement/flags'
+</code></pre>
+<p>Flags:</p>
+<ul>
+<li><code>g</code>: Global replacement (replace all occurrences)</li>
+<li><code>p</code>: Print the modified line</li>
+<li><code>I</code>: Case-insensitive matching</li>
+<li><code>w file</code>: Write the result to a file
+Example:</li>
+</ul>
+<pre><code class="language-bash"># Replace first occurrence of 'dog' with 'cat'
+sed 's/dog/cat/' file.txt
+
+# Replace all occurrences of 'dog' with 'cat'
+sed 's/dog/cat/g' file.txt
+</code></pre>
+<h3 id="delete-command-d"><a class="header" href="#delete-command-d">Delete Command (d)</a></h3>
+<p>Removes lines matching a pattern:</p>
+<pre><code class="language-bash"># Delete lines containing 'pattern'
+sed '/pattern/d' file.txt
+
+# Delete lines 3 through 5
+sed '3,5d' file.txt
+</code></pre>
+<h3 id="print-command-p"><a class="header" href="#print-command-p">Print Command (p)</a></h3>
+<p>Prints specific lines:</p>
+<pre><code class="language-bash"># Print lines containing 'pattern'
+sed -n '/pattern/p' file.txt
+</code></pre>
+<h3 id="append-a-and-insert-i-commands"><a class="header" href="#append-a-and-insert-i-commands">Append (a) and Insert (i) Commands</a></h3>
+<p>Add text after or before matching lines:</p>
+<pre><code class="language-bash"># Append 'New Line' after each line containing 'pattern'
+sed '/pattern/a\New Line' file.txt
+
+# Insert 'New Line' before each line containing 'pattern'
+sed '/pattern/i\New Line' file.txt
+</code></pre>
+<h2 id="practical-examples"><a class="header" href="#practical-examples">Practical Examples</a></h2>
+<h3 id="example-1-converting-file-formats"><a class="header" href="#example-1-converting-file-formats">Example 1: Converting File Formats</a></h3>
+<p>Convert Windows line endings to Unix:</p>
+<pre><code class="language-bash">sed 's/\r$//' file.txt
+</code></pre>
+<h3 id="example-2-numbering-lines"><a class="header" href="#example-2-numbering-lines">Example 2: Numbering Lines</a></h3>
+<p>Add line numbers to a file:</p>
+<pre><code class="language-bash">sed = file.txt | sed 'N;s/\n/. /'
+</code></pre>
+<h3 id="example-3-xmlhtml-processing"><a class="header" href="#example-3-xmlhtml-processing">Example 3: XML/HTML Processing</a></h3>
+<p>Remove HTML tags:</p>
+<pre><code class="language-bash">sed 's/&lt;[^&gt;]*&gt;//g' file.html
+</code></pre>
+<h2 id="awk-text-processing-made-simple"><a class="header" href="#awk-text-processing-made-simple">AWK: Text Processing Made Simple</a></h2>
+<p>AWK is a specialized programming language designed for processing text data. Created by Aho, Weinberger, and Kernighan (whose initials form its name), AWK shines when working with data organized in rows and columns, such as CSV files, log files, or any structured text data.</p>
+<h3 id="awk-sytnax"><a class="header" href="#awk-sytnax">AWK Sytnax</a></h3>
+<p>At its core, AWK processes text line by line using pattern-action pairs:</p>
+<pre><code class="language-awk">pattern { action }
+</code></pre>
+<p>Think of this as telling AWK "when you see this pattern, perform this action." If you omit the pattern, the action applies to every line. If you omit the action, AWK prints the matching lines.</p>
+<p>AWK automatically splits each line into fields, which you can reference using dollar signs:</p>
+<ul>
+<li><code>$0</code> refers to the entire line</li>
+<li><code>$1</code> refers to the first field</li>
+<li><code>$2</code> refers to the second field
+And so on. By default, fields are separated by whitespace, but you can change this using the -F option.</li>
+</ul>
+<h3 id="essential-variables-youll-use-often"><a class="header" href="#essential-variables-youll-use-often">Essential Variables You'll Use Often</a></h3>
+<p>AWK provides several built-in variables that make text processing easier:</p>
+<pre><code class="language-awk">NR    # Keeps track of the current line number
+NF    # Tells you how many fields are in the current line
+FS    # The field separator (default is whitespace)
+OFS   # The output field separator (what to put between fields when printing)
+</code></pre>
+<h3 id="real-world-examples-explained"><a class="header" href="#real-world-examples-explained">Real-World Examples Explained</a></h3>
+<p>Let's look at some common text processing tasks and how AWK handles them:</p>
+<ol>
+<li>Calculating Column Sums:</li>
+</ol>
+<pre><code class="language-awk"># Sum all values in the third column
+awk '{ sum += $3 } END { print sum }' data.txt
+</code></pre>
+<p>This script does something simple but powerful. For each line, it adds the value from the third column (<code>$3</code>) to a running total (<code>sum</code>). The <code>END</code> block runs after all lines are processed, printing the final total. This is perfect for tasks like summing a column of numbers in a spreadsheet or calculating total bytes in a log file.</p>
+<ol start="2">
+<li>Processing CSV Data:</li>
+</ol>
+<pre><code class="language-awk"># Print records where the amount exceeds 1000
+awk -F',' '$3 &gt; 1000 { print $1, $3 }' sales.csv
+</code></pre>
+<p>Here we're doing several things at once:</p>
+<ul>
+<li><code>-F','</code> tells AWK to use commas as field separators instead of spaces</li>
+<li><code>$3 &gt; 1000</code> is our pattern, matching lines where the third field exceeds 1000</li>
+<li><code>print $1, $3</code> prints the first and third fields of matching lines
+This is useful for tasks like finding high-value transactions in sales data or filtering large CSV files.</li>
+</ul>
+<ol start="3">
+<li>Log File Analysis:</li>
+</ol>
+<pre><code class="language-awk"># Count occurrences of HTTP status codes
+awk '{ codes[$9]++ } 
+     END { for(code in codes) print code, codes[code] }' access.log
+</code></pre>
+<p>This script demonstrates AWK's ability to handle associative arrays:</p>
+<ul>
+<li><code>codes[$9]++</code> uses the ninth field (typically the HTTP status code in access logs) as an array index and counts occurrences</li>
+<li>The END block loops through all unique codes and prints their counts
+This is invaluable for analyzing web server logs or any data where you need to count occurrences of values.</li>
+</ul>
+<ol start="4">
+<li>Data Transformation:</li>
+</ol>
+<pre><code class="language-awk"># Convert space-separated data to CSV format
+awk '{ name=$1; salary=$2; print name "," salary }' employees.txt
+</code></pre>
+<p>This script shows how AWK can transform data formats:</p>
+<ul>
+<li>It takes the first two fields from each line</li>
+<li>Stores them in variables for clarity</li>
+<li>Prints them with a comma between them
+This is useful when you need to convert data between different formats or extract specific fields from a larger dataset.</li>
+</ul>
+<h3 id="control-structures-for-complex-processing"><a class="header" href="#control-structures-for-complex-processing">Control Structures for Complex Processing</a></h3>
+<p>AWK supports familiar programming constructs for more complex tasks:</p>
+<pre><code class="language-awk"># Example of control structures
+if ($3 &gt; 1000) { 
+    total += $3 
+}
+
+for (i=1; i&lt;=NF; i++) { 
+    sum += $i 
+}
+
+while (getline &gt; 0) { 
+    count++ 
+}
+</code></pre>
+<h2 id="xargs-making-command-lines-more-powerful"><a class="header" href="#xargs-making-command-lines-more-powerful">xargs: Making Command Lines More Powerful</a></h2>
+<p>xargs is a utility that bridges the gap between commands that produce output and commands that expect arguments. It's particularly useful when you need to process many files or handle command line limitations.</p>
+<h3 id="syntax"><a class="header" href="#syntax">syntax</a></h3>
+<p>The basic xargs syntax is:</p>
+<pre><code class="language-bash">xargs [OPTIONS] [COMMAND]
+</code></pre>
+<h3 id="basic-usage-explained"><a class="header" href="#basic-usage-explained">Basic Usage Explained</a></h3>
+<p>Here's how xargs can help with common tasks:</p>
+<ol>
+<li>Finding and Processing Files:</li>
+</ol>
+<pre><code class="language-bash"># Find and remove all temporary files
+find . -name "*.tmp" | xargs rm
+</code></pre>
+<p>This command pipeline:</p>
+<ul>
+<li><code>find</code> locates all files ending in .tmp</li>
+<li><code>xargs</code> takes those filenames and passes them as arguments to <code>rm</code>
+This is more efficient than using rm directly with find's -exec option.</li>
+</ul>
+<ol start="2">
+<li>Parallel Processing:</li>
+</ol>
+<pre><code class="language-bash"># Compress files in parallel
+find . -type f | xargs -P 4 gzip
+</code></pre>
+<p>The <code>-P 4</code> option tells xargs to run up to 4 gzip processes simultaneously, significantly speeding up processing on multi-core systems.</p>
+<ol start="3">
+<li>Handling Special Characters:</li>
+</ol>
+<pre><code class="language-bash"># Safely handle filenames with spaces
+find . -type f -print0 | xargs -0 file
+</code></pre>
+<p>The <code>-print0</code> and <code>-0</code> options work together to handle filenames containing spaces, newlines, or other special characters safely.</p>
+<h3 id="practical-applications"><a class="header" href="#practical-applications">Practical Applications</a></h3>
+<p>Let's look at some real-world uses:</p>
+<ol>
+<li>Batch Processing:</li>
+</ol>
+<pre><code class="language-bash"># Convert images in groups of three
+ls *.jpg | xargs -n 3 convert -resize 800x600
+</code></pre>
+<p>This processes files in batches of three, which can be useful when dealing with memory-intensive operations.</p>
+<ol start="2">
+<li>Custom Commands:</li>
+</ol>
+<pre><code class="language-bash"># Rename log files with .old extension
+find . -name "*.log" | xargs -I {} mv {} {}.old
+</code></pre>
+<p>The <code>-I {}</code> option lets you specify where in the command to place each input item, giving you more flexibility in how you use the input.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="CommandLineEnvironment.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="Vim.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="CommandLineEnvironment.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="Vim.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

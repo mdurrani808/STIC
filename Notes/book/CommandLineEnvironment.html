@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Command Line Environment - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>In this lecture we will go through several ways in which you can improve your workflow when using the shell. We have been working with the shell for a while now, but we have mainly focused on executing different commands. We will now see how to run several processes at the same time while keeping track of them, how to stop or pause a specific process and how to make a process run in the background.</p>
+<p>We will also learn about different ways to improve your shell and other tools, by defining aliases and configuring them using dotfiles. Both of these can help you save time, e.g. by using the same configurations in all your machines without having to type long commands. We will look at how to work with remote machines using SSH.</p>
+<h2 id="managing-processes"><a class="header" href="#managing-processes">Managing Processes</a></h2>
+<p>In some cases you will need to interrupt a job while it is executing, for instance if a command is taking too long to complete (such as a <code>find</code> with a very large directory structure to search through). Most of the time, you can do <code>Ctrl-C</code> and the command will stop. But how does this actually work and why does it sometimes fail to stop the process?</p>
+<h3 id="killing-a-process"><a class="header" href="#killing-a-process">Killing a Process</a></h3>
+<p>Your shell is using a UNIX communication mechanism called a <em>signal</em> to communicate information to the process. When a process receives a signal it stops its execution, deals with the signal and potentially changes the flow of execution based on the information that the signal delivered. For this reason, signals are <em>software interrupts</em>.</p>
+<p>In our case, when typing <code>Ctrl-C</code> this prompts the shell to deliver a <code>SIGINT</code> signal to the process.</p>
+<p>Here's a minimal example of a Python program that captures <code>SIGINT</code> and ignores it, no longer stopping. To kill this program we can now use the <code>SIGQUIT</code> signal instead, by typing <code>Ctrl-\</code>. The difference between <code>SIGINT</code> and <code>SIGQUIT</code> is that <code>SIGQUIT</code> will produce a core dump once the process is terminated.</p>
+<pre><code class="language-python">#!/usr/bin/env python
+import signal, time
+
+def handler(signum, time):
+    print("\nI got a SIGINT, but I am not stopping")
+
+signal.signal(signal.SIGINT, handler)
+i = 0
+while True:
+    time.sleep(.1)
+    print("\r{}".format(i), end="")
+    i += 1
+</code></pre>
+<p>While <code>SIGINT</code> and <code>SIGQUIT</code> are both usually associated with terminal related requests, a more generic signal for asking a process to exit gracefully is the <code>SIGTERM</code> signal. To send this signal we can use the <a href="https://www.man7.org/linux/man-pages/man1/kill.1.html"><code>kill</code></a> command, with the syntax <code>kill -TERM &lt;PID&gt;</code>.</p>
+<h3 id="pausing-and-backgrounding-processes"><a class="header" href="#pausing-and-backgrounding-processes">Pausing and Backgrounding Processes</a></h3>
+<p>Signals can do other things beyond killing a process. For instance, <code>SIGSTOP</code> pauses a process. In the terminal, typing <code>Ctrl-Z</code> will prompt the shell to send a <code>SIGTSTP</code> signal, short for Terminal Stop (i.e. the terminal's version of <code>SIGSTOP</code>).</p>
+<p>We can then continue the paused job in the foreground or in the background using <a href="https://www.man7.org/linux/man-pages/man1/fg.1p.html"><code>fg</code></a> or <a href="http://man7.org/linux/man-pages/man1/bg.1p.html"><code>bg</code></a>, respectively. The <a href="https://www.man7.org/linux/man-pages/man1/jobs.1p.html"><code>jobs</code></a> command lists the unfinished jobs associated with the current terminal session.
+You can refer to those jobs using their pid (you can use <a href="https://www.man7.org/linux/man-pages/man1/pgrep.1.html"><code>pgrep</code></a> to find that out). More intuitively, you can also refer to a process using the percent symbol followed by its job number (displayed by <code>jobs</code>). To refer to the last backgrounded job you can use the <code>$!</code> special parameter.</p>
+<p>One more thing to know is that the <code>&amp;</code> suffix in a command will run the command in the background, giving you the prompt back, although it will still use the shell's STDOUT which can be annoying (use shell redirections in that case).</p>
+<p>To background an already running program you can do <code>Ctrl-Z</code> followed by <code>bg</code>. Note that backgrounded processes are still children processes of your terminal and will die if you close the terminal (this will send yet another signal, <code>SIGHUP</code>).
+To prevent that from happening you can run the program with <a href="https://www.man7.org/linux/man-pages/man1/nohup.1.html"><code>nohup</code></a> (a wrapper to ignore <code>SIGHUP</code>), or use <code>disown</code> if the process has already been started.</p>
+<p>Below is a sample session to showcase some of these concepts.</p>
+<pre><code class="language-console">$ sleep 1000
+^Z
+[1]  + 18653 suspended  sleep 1000
+
+$ nohup sleep 2000 &amp;
+[2] 18745
+appending output to nohup.out
+
+$ jobs
+[1]  + suspended  sleep 1000
+[2]  - running    nohup sleep 2000
+
+$ bg %1
+[1]  - 18653 continued  sleep 1000
+
+$ jobs
+[1]  - running    sleep 1000
+[2]  + running    nohup sleep 2000
+
+$ kill -STOP %1
+[1]  + 18653 suspended (signal)  sleep 1000
+
+$ jobs
+[1]  + suspended (signal)  sleep 1000
+[2]  - running    nohup sleep 2000
+
+$ kill -SIGHUP %1
+[1]  + 18653 hangup     sleep 1000
+
+$ jobs
+[2]  + running    nohup sleep 2000
+
+$ kill -SIGHUP %2
+
+$ jobs
+[2]  + running    nohup sleep 2000
+
+$ kill %2
+[2]  + 18745 terminated  nohup sleep 2000
+
+$ jobs
+
+</code></pre>
+<p>A special signal is <code>SIGKILL</code> since it cannot be captured by the process and it will always terminate it immediately. However, it can have bad side effects such as leaving orphaned children processes.</p>
+<p>You can learn more about these and other signals <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">here</a> or typing <a href="https://www.man7.org/linux/man-pages/man7/signal.7.html"><code>man signal</code></a> or <code>kill -l</code>.</p>
+<h2 id="terminal-multiplexing"><a class="header" href="#terminal-multiplexing">Terminal Multiplexing</a></h2>
+<h3 id="why"><a class="header" href="#why">Why?</a></h3>
+<p>When using the command line interface you will often want to run more than one thing at once. For instance, you might want to run your editor and your program side by side. Although this can be achieved by opening new terminal windows, using a terminal multiplexer is a more versatile solution.</p>
+<p>Terminal multiplexers like <a href="https://www.man7.org/linux/man-pages/man1/tmux.1.html"><code>tmux</code></a> allow you to multiplex terminal windows using panes and tabs so you can interact with multiple shell sessions. Moreover, terminal multiplexers let you detach a current terminal session and reattach at some point later in time. This can make your workflow much better when working with remote machines since it avoids the need to use <code>nohup</code> and similar tricks.</p>
+<h3 id="tmux-usage"><a class="header" href="#tmux-usage">Tmux usage</a></h3>
+<p><code>tmux</code> expects you to know its keybindings, and they all have the form <code>&lt;C-b&gt; x</code> where that means (1) press <code>Ctrl+b</code>, (2) release <code>Ctrl+b</code>, and then (3) press <code>x</code>. <code>tmux</code> has the following hierarchy of objects:</p>
+<ul>
+<li><strong>Sessions</strong> - a session is an independent workspace with one or more windows
+<ul>
+<li><code>tmux</code> starts a new session.</li>
+<li><code>tmux new -s NAME</code> starts it with that name.</li>
+<li><code>tmux ls</code> lists the current sessions</li>
+<li>Within <code>tmux</code> typing <code>&lt;C-b&gt; d</code> detaches the current session</li>
+<li><code>tmux a</code> attaches the last session. You can use <code>-t</code> flag to specify which</li>
+</ul>
+</li>
+<li><strong>Windows</strong> - Equivalent to tabs in editors or browsers, they are visually separate parts of the same session
+<ul>
+<li><code>&lt;C-b&gt; c</code> Creates a new window. To close it you can just terminate the shells doing <code>&lt;C-d&gt;</code></li>
+<li><code>&lt;C-b&gt; N</code> Go to the <em>N</em> th window. Note they are numbered</li>
+<li><code>&lt;C-b&gt; p</code> Goes to the previous window</li>
+<li><code>&lt;C-b&gt; n</code> Goes to the next window</li>
+<li><code>&lt;C-b&gt; ,</code> Rename the current window</li>
+<li><code>&lt;C-b&gt; w</code> List current windows</li>
+</ul>
+</li>
+<li><strong>Panes</strong> - Like vim splits, panes let you have multiple shells in the same visual display.
+<ul>
+<li><code>&lt;C-b&gt; "</code> Split the current pane horizontally</li>
+<li><code>&lt;C-b&gt; %</code> Split the current pane vertically</li>
+<li><code>&lt;C-b&gt; &lt;direction&gt;</code> Move to the pane in the specified <em>direction</em>. Direction here means arrow keys.</li>
+<li><code>&lt;C-b&gt; z</code> Toggle zoom for the current pane</li>
+<li><code>&lt;C-b&gt; [</code> Start scrollback. You can then press <code>&lt;space&gt;</code> to start a selection and <code>&lt;enter&gt;</code> to copy that selection.</li>
+<li><code>&lt;C-b&gt; &lt;space&gt;</code> Cycle through pane arrangements.
+For further reading, <a href="https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/">here</a> is a quick tutorial on <code>tmux</code> and <a href="http://linuxcommand.org/lc3_adv_termmux.php">this</a> has a more detailed explanation that covers the original <code>screen</code> command. You might also want to familiarize yourself with <a href="https://www.man7.org/linux/man-pages/man1/screen.1.html"><code>screen</code></a>, since it comes installed in most UNIX systems.</li>
+</ul>
+</li>
+</ul>
+<h2 id="shell-environment-customization"><a class="header" href="#shell-environment-customization">Shell Environment Customization</a></h2>
+<h3 id="aliases"><a class="header" href="#aliases">Aliases</a></h3>
+<p>It can become tiresome typing long commands that involve many flags or verbose options. For this reason, most shells support <em>aliasing</em>. A shell alias is a short form for another command that your shell will replace automatically for you. For instance, an alias in bash has the following structure:</p>
+<pre><code class="language-bash">alias alias_name="command_to_alias arg1 arg2"
+</code></pre>
+<p>Note that there is no space around the equal sign <code>=</code>, because <a href="https://www.man7.org/linux/man-pages/man1/alias.1p.html"><code>alias</code></a> is a shell command that takes a single argument.</p>
+<p>Aliases have many convenient features:</p>
+<pre><code class="language-bash"># Make shorthands for common flags
+alias ll="ls -lh"
+
+# Save a lot of typing for common commands
+alias gs="git status"
+alias gc="git commit"
+alias v="vim"
+
+# Save you from mistyping
+alias sl=ls
+
+# Overwrite existing commands for better defaults
+alias mv="mv -i"           # -i prompts before overwrite
+alias mkdir="mkdir -p"     # -p make parent dirs as needed
+alias df="df -h"           # -h prints human readable format
+
+# Alias can be composed
+alias la="ls -A"
+alias lla="la -l"
+
+# To ignore an alias run it prepended with \
+\ls
+# Or disable an alias altogether with unalias
+unalias la
+
+# To get an alias definition just call it with alias
+alias ll
+# Will print ll='ls -lh'
+</code></pre>
+<p>Note that aliases do not persist shell sessions by default. To make an alias persistent you need to include it in shell startup files, like <code>.bashrc</code> or <code>.zshrc</code>, which we are going to introduce in the next section.</p>
+<h3 id="dotfiles"><a class="header" href="#dotfiles">Dotfiles</a></h3>
+<p>Many programs are configured using plain-text files known as <em>dotfiles</em>
+(because the file names begin with a <code>.</code>, e.g. <code>~/.vimrc</code>, so that they are
+hidden in the directory listing <code>ls</code> by default).</p>
+<p>Shells are one example of programs configured with such files. On startup, your shell will read many files to load its configuration. Depending on the shell, whether you are starting a login and/or interactive the entire process can be quite complex.
+<a href="https://blog.flowblok.id.au/2013-02/shell-startup-scripts.html">Here</a> is an excellent resource on the topic.</p>
+<p>How should you organize your dotfiles? They should be in their own folder, under version control, and <strong>symlinked</strong> into place using a script. This has the benefits of:</p>
+<ul>
+<li><strong>Easy installation</strong>: if you log in to a new machine, applying your customizations will only take a minute.</li>
+<li><strong>Portability</strong>: your tools will work the same way everywhere.</li>
+<li><strong>Synchronization</strong>: you can update your dotfiles anywhere and keep them all in sync.</li>
+<li><strong>Change tracking</strong>: you're probably going to be maintaining your dotfiles for your entire programming career, and version history is nice to have for long-lived projects.</li>
+</ul>
+<p>What should you put in your dotfiles?
+You can learn about your tool's settings by reading online documentation or <a href="https://en.wikipedia.org/wiki/Man_page">man pages</a>. Another great way is to search the internet for blog posts about specific programs, where authors will tell you about their preferred customizations. Yet another way to learn about customizations is to look through other people's dotfiles: you can find tons of <a href="https://github.com/search?o=desc&amp;q=dotfiles&amp;s=stars&amp;type=Repositories">dotfiles repositories</a> on GitHub --- see the most popular one
+<a href="https://github.com/mathiasbynens/dotfiles">here</a> (we advise you not to blindly copy configurations though). <a href="https://dotfiles.github.io/">Here</a> is another good resource on the topic.</p>
+<h2 id="remote-development"><a class="header" href="#remote-development">Remote Development</a></h2>
+<p>It has become more and more common for programmers to use remote servers in their everyday work. If you need to use remote servers in order to deploy backend software or you need a server with higher computational capabilities, you will end up using a Secure Shell (SSH). As with most tools covered, SSH is highly configurable so it is worth learning about it.</p>
+<p>To <code>ssh</code> into a server you execute a command as follows</p>
+<pre><code>ssh foo@bar.mit.edu
+</code></pre>
+<p>Here we are trying to ssh as user <code>foo</code> in server <code>bar.mit.edu</code>. The server can be specified with a URL (like <code>bar.mit.edu</code>) or an IP (something like <code>foobar@192.168.1.42</code>). Later we will see that if we modify ssh config file you can access just using something like <code>ssh bar</code>.</p>
+<h3 id="executing-commands"><a class="header" href="#executing-commands">Executing commands</a></h3>
+<p>An often overlooked feature of <code>ssh</code> is the ability to run commands directly. <code>ssh foobar@server ls</code> will execute <code>ls</code> in the home folder of foobar. It works with pipes, so <code>ssh foobar@server ls | grep PATTERN</code> will grep locally the remote output of <code>ls</code> and <code>ls | ssh foobar@server grep PATTERN</code> will grep remotely the local output of <code>ls</code>.</p>
+<h3 id="ssh-keys"><a class="header" href="#ssh-keys">SSH keys</a></h3>
+<p>SSH keys provide a more secure and convenient way to log into an SSH server compared to using passwords. SSH keys come in pairs - a public key that gets shared with services you want to connect to, and a private key that you keep secret on your computer.</p>
+<h4 id="key-generation"><a class="header" href="#key-generation">Key Generation</a></h4>
+<p>You can generate an SSH key pair using the following command:</p>
+<pre><code class="language-console">ssh-keygen -t ed25519 -a 100
+</code></pre>
+<p>Here, we're using the Ed25519 algorithm which is currently recommended for most users. The <code>-a 100</code> increases the number of KDF (Key Derivation Function) rounds, making the key more resistant to brute-force attacks.</p>
+<p>When you run ssh-keygen, you'll be prompted for a location to save the key pair. By default, this is <code>~/.ssh/id_ed25519</code> (or <code>id_rsa</code> for RSA keys). You'll also be asked for a passphrase. Using a passphrase is highly recommended as it encrypts your private key on disk.</p>
+<h4 id="key-based-authentication"><a class="header" href="#key-based-authentication">Key based authentication</a></h4>
+<p>To use SSH key-based authentication, you need to add your public key to the remote server. The easiest way to do this is to use:</p>
+<pre><code class="language-console">ssh-copy-id -i ~/.ssh/id_ed25519.pub username@remote_host
+</code></pre>
+<p>Alternatively, you can manually add the public key by appending it to <code>~/.ssh/authorized_keys</code> on the remote server:</p>
+<pre><code class="language-console">cat ~/.ssh/id_ed25519.pub | ssh username@remote_host "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"
+</code></pre>
+<p>After adding your key, you can log in without a password (though you'll need to enter your key's passphrase if you set one).</p>
+<p>You can simplify SSH connections even further by editing <code>~/.ssh/config</code>:</p>
+<pre><code>Host dev
+    HostName dev.example.com
+    User foobar
+    IdentityFile ~/.ssh/id_ed25519
+    Port 2222
+</code></pre>
+<p>Now you can simply type <code>ssh dev</code> instead of <code>ssh -p 2222 foobar@dev.example.com</code>.</p>
+<h5 id="copying-files-over-ssh"><a class="header" href="#copying-files-over-ssh">Copying Files Over SSH</a></h5>
+<p>There are several ways to copy files over SSH:</p>
+<ul>
+<li><code>scp</code> (secure copy) is the simplest for basic use:
+<pre><code class="language-console">scp path/to/local/file.txt remote:path/to/remote/file.txt
+</code></pre>
+</li>
+<li><code>rsync</code> is more sophisticated, supporting resume and incremental transfers:
+<pre><code class="language-console">rsync -avz path/to/local/file.txt remote:path/to/remote/file.txt
+</code></pre>
+</li>
+<li><code>sftp</code> provides an interactive file transfer session:
+<pre><code class="language-console">sftp remote
+&gt; get remotefile.txt
+&gt; put localfile.txt
+</code></pre>
+</li>
+</ul>
+<h4 id="port-forwarding"><a class="header" href="#port-forwarding">Port Forwarding</a></h4>
+<p>SSH can forward ports between machines, which is incredibly useful for accessing network services securely. There are several types of port forwarding:</p>
+<ul>
+<li>Local forwarding (<code>-L</code>): Forwards a port from your local machine to the remote server
+<pre><code class="language-console">ssh -L 9999:localhost:80 user@remote_host
+</code></pre>
+This forwards your local port 9999 to port 80 on the remote host. You can then access the remote service by connecting to <code>localhost:9999</code>.</li>
+<li>Remote forwarding (<code>-R</code>): Forwards a port from the remote machine to your local machine
+<pre><code class="language-console">ssh -R 9999:localhost:80 user@remote_host
+</code></pre>
+This forwards port 9999 on the remote host to port 80 on your local machine.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ShellToolsAndScripting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="DataWrangling.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ShellToolsAndScripting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="DataWrangling.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

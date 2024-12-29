@@ -1,0 +1,451 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Vim - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>Writing English words and writing code are very different activities. When programming, you spend more time switching files, reading, navigating, and editing code compared to writing a long stream. It makes sense that there are different types of programs for writing English words versus code (e.g. Microsoft Word versus Visual Studio Code).</p>
+<p>As programmers, we spend most of our time editing code, so it's worth investing time mastering an editor that fits your needs. Here's how you learn a new editor:</p>
+<ul>
+<li>Start with a tutorial (i.e. this lecture, plus resources that we point out)</li>
+<li>Stick with using the editor for all your text editing needs (even if it slows you down initially)</li>
+<li>Look things up as you go: if it seems like there should be a better way to do something, there probably is</li>
+</ul>
+<p>If you follow the above method, fully committing to using the new program for all text editing purposes, the timeline for learning a sophisticated text editor looks like this. In an hour or two, you'll learn basic editor functions such as opening and editing files, save/quit, and navigating buffers. Once you're 20 hours in, you should be as fast as you were with your old editor. After that, the benefits start: you will have enough knowledge and muscle memory that using the new editor saves you time. Modern text editors are fancy and powerful tools, so the learning never stops: you'll get even faster as you learn more.</p>
+<h1 id="which-editor-to-learn"><a class="header" href="#which-editor-to-learn">Which editor to learn?</a></h1>
+<p>Programmers have <a href="https://en.wikipedia.org/wiki/Editor_war">strong opinions</a> about their text editors.</p>
+<p>Which editors are popular today? See this <a href="https://insights.stackoverflow.com/survey/2019/#development-environments-and-tools">Stack Overflow survey</a> (there may be some bias because Stack Overflow users may not be representative of programmers as a whole). <a href="https://code.visualstudio.com/">Visual Studio Code</a> is the most popular editor. <a href="https://www.vim.org/">Vim</a> is the most popular command-line-based editor.</p>
+<h2 id="vim"><a class="header" href="#vim">Vim</a></h2>
+<p>All the instructors of this class use Vim as their editor. Vim has a rich history; it originated from the Vi editor (1976), and it's still being developed today. Vim has some really neat ideas behind it, and for this reason, lots of tools support a Vim emulation mode (for example, 1.4 million people
+have installed <a href="https://github.com/VSCodeVim/Vim">Vim emulation for VS code</a>). Vim is probably worth learning even if you finally end up switching to some other text editor.</p>
+<p>It's not possible to teach all of Vim's functionality in 50 minutes, so we're going to focus on explaining the philosophy of Vim, teaching you the basics, showing you some of the more advanced functionality, and giving you the resources to master the tool.</p>
+<h1 id="philosophy-of-vim"><a class="header" href="#philosophy-of-vim">Philosophy of Vim</a></h1>
+<p>When programming, you spend most of your time reading/editing, not writing. For this reason, Vim is a <em>modal</em> editor: it has different modes for inserting text vs manipulating text. Vim is programmable (with Vimscript and also other languages like Python), and Vim's interface itself is a programming language: keystrokes (with mnemonic names) are commands, and these commands are composable. Vim avoids the use of the mouse, because it's too slow; Vim even avoids using the arrow keys because it requires too much movement.</p>
+<p>The end result is an editor that can match the speed at which you think.</p>
+<h1 id="modal-editing"><a class="header" href="#modal-editing">Modal editing</a></h1>
+<p>Vim's design is based on the idea that a lot of programmer time is spent reading, navigating, and making small edits, as opposed to writing long streams of text. For this reason, Vim has multiple operating modes.</p>
+<ul>
+<li><strong>Normal</strong>: for moving around a file and making edits</li>
+<li><strong>Insert</strong>: for inserting text</li>
+<li><strong>Replace</strong>: for replacing text</li>
+<li><strong>Visual</strong> (plain, line, or block): for selecting blocks of text</li>
+<li><strong>Command-line</strong>: for running a command</li>
+</ul>
+<p>Keystrokes have different meanings in different operating modes. For example, the letter <code>x</code> in Insert mode will just insert a literal character 'x', but in Normal mode, it will delete the character under the cursor, and in Visual mode, it will delete the selection.</p>
+<p>In its default configuration, Vim shows the current mode in the bottom left. The initial/default mode is Normal mode. You'll generally spend most of your time between Normal mode and Insert mode.</p>
+<p>You change modes by pressing <code>&lt;ESC&gt;</code> (the escape key) to switch from any mode back to Normal mode. From Normal mode, enter Insert mode with <code>i</code>, Replace mode with <code>R</code>, Visual mode with <code>v</code>, Visual Line mode with <code>V</code>, Visual Block mode with <code>&lt;C-v&gt;</code> (Ctrl-V, sometimes also written <code>^V</code>), and Command-line mode with <code>:</code>.</p>
+<p>You use the <code>&lt;ESC&gt;</code> key a lot when using Vim: consider remapping Caps Lock to Escape (<a href="https://vim.fandom.com/wiki/Map_caps_lock_to_escape_in_macOS">macOS instructions</a>).</p>
+<h1 id="basics"><a class="header" href="#basics">Basics</a></h1>
+<h2 id="inserting-text"><a class="header" href="#inserting-text">Inserting text</a></h2>
+<p>From Normal mode, press <code>i</code> to enter Insert mode. Now, Vim behaves like any other text editor, until you press <code>&lt;ESC&gt;</code> to return to Normal mode. This, along with the basics explained above, are all you need to start editing files using Vim (though not particularly efficiently, if you're spending all your time editing from Insert mode).</p>
+<h2 id="buffers-tabs-and-windows"><a class="header" href="#buffers-tabs-and-windows">Buffers, tabs, and windows</a></h2>
+<p>Vim maintains a set of open files, called "buffers". A Vim session has a number of tabs, each of which has a number of windows (split panes). Each window shows a single buffer. Unlike other programs you are familiar with, like web browsers, there is not a 1-to-1 correspondence between buffers and windows; windows are merely views. A given buffer may be open in <em>multiple</em> windows, even within the same tab. This can be quite handy, for example, to view two different parts of a file at the same time.</p>
+<p>By default, Vim opens with a single tab, which contains a single window.</p>
+<h2 id="command-line"><a class="header" href="#command-line">Command-line</a></h2>
+<p>Command mode can be entered by typing <code>:</code> in Normal mode. Your cursor will jump to the command line at the bottom of the screen upon pressing <code>:</code>. This mode has many functionalities, including opening, saving, and closing files, and <a href="https://twitter.com/iamdevloper/status/435555976687923200">quitting Vim</a>.</p>
+<ul>
+<li><code>:q</code> quit (close window)</li>
+<li><code>:w</code> save ("write")</li>
+<li><code>:wq</code> save and quit</li>
+<li><code>:e {name of file}</code> open file for editing</li>
+<li><code>:ls</code> show open buffers</li>
+<li><code>:help {topic}</code> open help
+<ul>
+<li><code>:help :w</code> opens help for the <code>:w</code> command</li>
+<li><code>:help w</code> opens help for the <code>w</code> movement</li>
+</ul>
+</li>
+</ul>
+<h1 id="vims-interface-is-a-programming-language"><a class="header" href="#vims-interface-is-a-programming-language">Vim's interface is a programming language</a></h1>
+<p>The most important idea in Vim is that Vim's interface itself is a programming language. Keystrokes (with mnemonic names) are commands, and these commands <em>compose</em>. This enables efficient movement and edits, especially once the commands become muscle memory.</p>
+<h2 id="movement"><a class="header" href="#movement">Movement</a></h2>
+<p>You should spend most of your time in Normal mode, using movement commands to navigate the buffer. Movements in Vim are also called "nouns", because they refer to chunks of text.</p>
+<ul>
+<li>Basic movement: <code>hjkl</code> (left, down, up, right)</li>
+<li>Words: <code>w</code> (next word), <code>b</code> (beginning of word), <code>e</code> (end of word)</li>
+<li>Lines: <code>0</code> (beginning of line), <code>^</code> (first non-blank character), <code>$</code> (end of line)</li>
+<li>Screen: <code>H</code> (top of screen), <code>M</code> (middle of screen), <code>L</code> (bottom of screen)</li>
+<li>Scroll: <code>Ctrl-u</code> (up), <code>Ctrl-d</code> (down)</li>
+<li>File: <code>gg</code> (beginning of file), <code>G</code> (end of file)</li>
+<li>Line numbers: <code>:{number}&lt;CR&gt;</code> or <code>{number}G</code> (line {number})</li>
+<li>Misc: <code>%</code> (corresponding item)</li>
+<li>Find: <code>f{character}</code>, <code>t{character}</code>, <code>F{character}</code>, <code>T{character}</code>
+<ul>
+<li>find/to forward/backward {character} on the current line</li>
+<li><code>,</code> / <code>;</code> for navigating matches</li>
+</ul>
+</li>
+<li>Search: <code>/{regex}</code>, <code>n</code> / <code>N</code> for navigating matches</li>
+</ul>
+<h2 id="selection"><a class="header" href="#selection">Selection</a></h2>
+<p>Visual modes:</p>
+<ul>
+<li>Visual: <code>v</code></li>
+<li>Visual Line: <code>V</code></li>
+<li>Visual Block: <code>Ctrl-v</code>
+Can use movement keys to make selection.</li>
+</ul>
+<h2 id="edits"><a class="header" href="#edits">Edits</a></h2>
+<p>Everything that you used to do with the mouse, you now do with the keyboard using editing commands that compose with movement commands. Here's where Vim's interface starts to look like a programming language. Vim's editing commands are also called "verbs", because verbs act on nouns.</p>
+<ul>
+<li><code>i</code> enter Insert mode
+<ul>
+<li>but for manipulating/deleting text, want to use something more than
+backspace</li>
+</ul>
+</li>
+<li><code>o</code> / <code>O</code> insert line below / above</li>
+<li><code>d{motion}</code> delete {motion}
+<ul>
+<li>e.g. <code>dw</code> is delete word, <code>d$</code> is delete to end of line, <code>d0</code> is delete
+to beginning of line</li>
+</ul>
+</li>
+<li><code>c{motion}</code> change {motion}
+<ul>
+<li>e.g. <code>cw</code> is change word</li>
+<li>like <code>d{motion}</code> followed by <code>i</code></li>
+</ul>
+</li>
+<li><code>x</code> delete character (equal do <code>dl</code>)</li>
+<li><code>s</code> substitute character (equal to <code>cl</code>)</li>
+<li>Visual mode + manipulation
+<ul>
+<li>select text, <code>d</code> to delete it or <code>c</code> to change it</li>
+</ul>
+</li>
+<li><code>u</code> to undo, <code>&lt;C-r&gt;</code> to redo</li>
+<li><code>y</code> to copy / "yank" (some other commands like <code>d</code> also copy)</li>
+<li><code>p</code> to paste</li>
+<li>Lots more to learn: e.g. <code>~</code> flips the case of a character</li>
+</ul>
+<h2 id="counts"><a class="header" href="#counts">Counts</a></h2>
+<p>You can combine nouns and verbs with a count, which will perform a given action a number of times.</p>
+<ul>
+<li><code>3w</code> move 3 words forward</li>
+<li><code>5j</code> move 5 lines down</li>
+<li><code>7dw</code> delete 7 words</li>
+</ul>
+<h2 id="modifiers"><a class="header" href="#modifiers">Modifiers</a></h2>
+<p>You can use modifiers to change the meaning of a noun. Some modifiers are <code>i</code>, which means "inner" or "inside", and <code>a</code>, which means "around".</p>
+<ul>
+<li><code>ci(</code> change the contents inside the current pair of parentheses</li>
+<li><code>ci[</code> change the contents inside the current pair of square brackets</li>
+<li><code>da'</code> delete a single-quoted string, including the surrounding single quotes</li>
+</ul>
+<h1 id="customizing-vim"><a class="header" href="#customizing-vim">Customizing Vim</a></h1>
+<p>Vim is customized through a plain-text configuration file in <code>~/.vimrc</code> (containing Vimscript commands). There are probably lots of basic settings that you want to turn on.</p>
+<p>We are providing a well-documented basic config that you can use as a starting point. We recommend using this because it fixes some of Vim's quirky default behavior. <strong>Download our config <a href="/2020/files/vimrc">here</a> and save it to <code>~/.vimrc</code>.</strong></p>
+<h1 id="extending-vim"><a class="header" href="#extending-vim">Extending Vim</a></h1>
+<p>There are tons of plugins for extending Vim. Contrary to outdated advice that you might find on the internet, you do <em>not</em> need to use a plugin manager for Vim (since Vim 8.0). Instead, you can use the built-in package management system. Simply create the directory <code>~/.vim/pack/vendor/start/</code>, and put plugins in there (e.g. via <code>git clone</code>).</p>
+<p>Here are some of our favorite plugins:</p>
+<ul>
+<li><a href="https://github.com/ctrlpvim/ctrlp.vim">ctrlp.vim</a>: fuzzy file finder</li>
+<li><a href="https://github.com/mileszs/ack.vim">ack.vim</a>: code search</li>
+<li><a href="https://github.com/scrooloose/nerdtree">nerdtree</a>: file explorer</li>
+<li><a href="https://github.com/easymotion/vim-easymotion">vim-easymotion</a>: magic motions</li>
+</ul>
+<p>We're trying to avoid giving an overwhelmingly long list of plugins here.  Check out <a href="https://vimawesome.com/">Vim Awesome</a> for more awesome Vim plugins. There are also tons of blog posts on this topic: just search for "best Vim plugins".</p>
+<h1 id="vim-mode-in-other-programs"><a class="header" href="#vim-mode-in-other-programs">Vim-mode in other programs</a></h1>
+<p>Many tools support Vim emulation. The quality varies from good to great; depending on the tool, it may not support the fancier Vim features, but most cover the basics pretty well.</p>
+<h2 id="shell"><a class="header" href="#shell">Shell</a></h2>
+<p>If you're a Bash user, use <code>set -o vi</code>. If you use Zsh, <code>bindkey -v</code>. For Fish, <code>fish_vi_key_bindings</code>. Additionally, no matter what shell you use, you can <code>export EDITOR=vim</code>. This is the environment variable used to decide which editor is launched when a program wants to start an editor. For example, <code>git</code> will use this editor for commit messages.</p>
+<h2 id="readline"><a class="header" href="#readline">Readline</a></h2>
+<p>Many programs use the <a href="https://tiswww.case.edu/php/chet/readline/rltop.html">GNU Readline</a> library for their command-line interface. Readline supports (basic) Vim emulation too, which can be enabled by adding the following line to the <code>~/.inputrc</code> file:</p>
+<pre><code>set editing-mode vi
+</code></pre>
+<p>With this setting, for example, the Python REPL will support Vim bindings.</p>
+<h2 id="others"><a class="header" href="#others">Others</a></h2>
+<p>There are even vim keybinding extensions for web <a href="http://vim.wikia.com/wiki/Vim_key_bindings_for_web_browsers">browsers</a> - some popular ones are <a href="https://chrome.google.com/webstore/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb?hl=en">Vimium</a>
+for Google Chrome and <a href="https://github.com/tridactyl/tridactyl">Tridactyl</a> for Firefox. You can even get Vim bindings in <a href="https://github.com/jupyterlab-contrib/jupyterlab-vim">Jupyter notebooks</a>. Here is a <a href="https://reversed.top/2016-08-13/big-list-of-vim-like-software">long list</a> of software with vim-like keybindings.</p>
+<h1 id="advanced-vim"><a class="header" href="#advanced-vim">Advanced Vim</a></h1>
+<p>Here are a few examples to show you the power of the editor. We can't teach you all of these kinds of things, but you'll learn them as you go. A good heuristic: whenever you're using your editor and you think "there must be a better way of doing this", there probably is: look it up online.</p>
+<h2 id="search-and-replace"><a class="header" href="#search-and-replace">Search and replace</a></h2>
+<p><code>:s</code> (substitute) command (<a href="http://vim.wikia.com/wiki/Search_and_replace">documentation</a>).</p>
+<ul>
+<li><code>%s/foo/bar/g</code>
+<ul>
+<li>replace foo with bar globally in file</li>
+</ul>
+</li>
+<li><code>%s/\[.*\](\(.*\))/\1/g</code>
+<ul>
+<li>replace named Markdown links with plain URLs</li>
+</ul>
+</li>
+</ul>
+<h2 id="multiple-windows"><a class="header" href="#multiple-windows">Multiple windows</a></h2>
+<ul>
+<li><code>:sp</code> / <code>:vsp</code> to split windows</li>
+<li>Can have multiple views of the same buffer.</li>
+</ul>
+<h2 id="macros"><a class="header" href="#macros">Macros</a></h2>
+<ul>
+<li><code>q{character}</code> to start recording a macro in register <code>{character}</code></li>
+<li><code>q</code> to stop recording</li>
+<li><code>@{character}</code> replays the macro</li>
+<li>Macro execution stops on error</li>
+<li><code>{number}@{character}</code> executes a macro {number} times</li>
+<li>Macros can be recursive
+<ul>
+<li>first clear the macro with <code>q{character}q</code></li>
+<li>record the macro, with <code>@{character}</code> to invoke the macro recursively
+(will be a no-op until recording is complete)</li>
+</ul>
+</li>
+<li>Example: convert xml to json (<a href="/2020/files/example-data.xml">file</a>)
+<ul>
+<li>Array of objects with keys "name" / "email"</li>
+<li>Use a Python program?</li>
+<li>Use sed / regexes
+<ul>
+<li><code>g/people/d</code></li>
+<li><code>%s/&lt;person&gt;/{/g</code></li>
+<li><code>%s/&lt;name&gt;\(.*\)&lt;\/name&gt;/"name": "\1",/g</code></li>
+<li>...</li>
+</ul>
+</li>
+<li>Vim commands / macros
+<ul>
+<li><code>Gdd</code>, <code>ggdd</code> delete first and last lines</li>
+<li>Macro to format a single element (register <code>e</code>)
+<ul>
+<li>Go to line with <code>&lt;name&gt;</code></li>
+<li><code>qe^r"f&gt;s": "&lt;ESC&gt;f&lt;C"&lt;ESC&gt;q</code></li>
+</ul>
+</li>
+<li>Macro to format a person
+<ul>
+<li>Go to line with <code>&lt;person&gt;</code></li>
+<li><code>qpS{&lt;ESC&gt;j@eA,&lt;ESC&gt;j@ejS},&lt;ESC&gt;q</code></li>
+</ul>
+</li>
+<li>Macro to format a person and go to the next person
+<ul>
+<li>Go to line with <code>&lt;person&gt;</code></li>
+<li><code>qq@pjq</code></li>
+</ul>
+</li>
+<li>Execute macro until end of file
+<ul>
+<li><code>999@q</code></li>
+</ul>
+</li>
+<li>Manually remove last <code>,</code> and add <code>[</code> and <code>]</code> delimiters</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="resources"><a class="header" href="#resources">Resources</a></h1>
+<ul>
+<li><code>vimtutor</code> is a tutorial that comes installed with Vim - if Vim is installed, you should be able to run <code>vimtutor</code> from your shell</li>
+<li><a href="https://vim-adventures.com/">Vim Adventures</a> is a game to learn Vim</li>
+<li><a href="http://vim.wikia.com/wiki/Vim_Tips_Wiki">Vim Tips Wiki</a></li>
+<li><a href="https://vimways.org/2019/">Vim Advent Calendar</a> has various Vim tips</li>
+<li><a href="http://www.vimgolf.com/">Vim Golf</a> is <a href="https://en.wikipedia.org/wiki/Code_golf">code golf</a>, but where the programming language is Vim's UI</li>
+<li><a href="https://vi.stackexchange.com/">Vi/Vim Stack Exchange</a></li>
+<li><a href="http://vimcasts.org/">Vim Screencasts</a></li>
+<li><a href="https://pragprog.com/titles/dnvim2/">Practical Vim</a> (book)</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="DataWrangling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="DebuggingAndProfiling.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="DataWrangling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="DebuggingAndProfiling.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

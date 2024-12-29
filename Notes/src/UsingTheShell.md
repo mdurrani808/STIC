@@ -2,11 +2,9 @@
 
 Computers these days have a variety of interfaces for giving them commands; fanciful graphical user interfaces, voice interfaces, and even AR/VR are everywhere. These are great for 80% of use-cases, but they are often fundamentally restricted in what they allow you to do — you cannot press a button that isn’t there or give a voice command that hasn’t been programmed. To take full advantage of the tools your computer provides, we have to go old-school and drop down to a textual interface: The Shell.
 
-```ad-note
 
 [Shell](https://www.gnu.org/software/bash/manual/html_node/What-is-a-shell_003f.html): A shell is simply a macro processor that executes commands. The term macro processor means functionality where text and symbols are expanded to create larger expressions. This is the program that is prompting you for commands and processing them.
 
-```
 Nearly all platforms you can get your hands on have a shell in one form or another, and many of them have several shells for you to choose from. While they may vary in the details, at their core they are all roughly the same: they allow you to run programs, give them input, and inspect their output in a semi-structured way.
 
 In this lecture, we will focus on the Bourne Again SHell, or “bash” for short. This is one of the most widely used shells, and its syntax is similar to what you will see in many other shells. To open a shell prompt (where you can type commands), you first need a terminal. Your device probably shipped with one installed, or you can install one fairly easily.
@@ -54,9 +52,11 @@ When we run the `echo` command, the shell sees that it should execute the progra
 ## Navigating in the shell
 A path (in the context of the shell) is a list of directories; separated by `/` on Linux and macOS and `\` on Windows. On Linux and macOS, the path `/` is the "root" of the file system, under which all directories and files lie, whereas on Windows there is one root for each disk partition (e.g., `C:\`). We will generally assume that you are using a Linux filesystem in this class. A path that starts with `/` is called an _absolute_ path. Any other path is a _relative_ path. Relative paths are relative to the current working directory, which we can see with the `pwd` command and change with the `cd` command. In a path, `.` refers to the current directory, and `..` to its parent directory.
 
-```ad-info
+```admonish info
 ``cd [directory]``: Changes current working directory
+
 ``pwd``: Prints the current working directory
+
 ```
 
 ```bash
@@ -83,7 +83,7 @@ In general, when we run a program, it will operate in the current directory unle
 
 To see what lives in a given directory, we use the `ls` command:
 
-```ad-info
+```admonish info
 ``ls [OPTION]... [FILE]...``: list directory contents
 ```
 ```bash
@@ -112,8 +112,9 @@ drwxr-x--- 67 cmsc398w cmsc398w 4096 Dec  2 19:22 cmsc398w
 This gives us a bunch more information about each file or directory present. First, the `d` at the beginning of the line tells us that `cmsc398w` is a directory. Then follow three groups of three characters (`rwx`). These indicate what permissions the owner of the file (`cmsc398w`), the owning group (`users`), and everyone else respectively have on the relevant item. A `-` indicates that the given principal does not have the given permission. Above, only the owner is allowed to
 modify (`w`) the `cmsc398w` directory (i.e., add/remove files in it). To enter a directory, a user must have "search" (represented by "execute": `x`) permissions on that directory (and its parents). To list its contents, a user must have read (`r`) permissions on that directory. For files, the permissions are as you would expect. Notice that nearly all the files in `/bin` have the `x` permission set for the last group, "everyone else", so that anyone can execute those programs.
 
-```ad-info
+```admonish info
 ``mv [OPTION]... SOURCE... DIRECTORY``: Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.
+
 ``cp [OPTION]... SOURCE... DIRECTORY``: Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.
 ```
 

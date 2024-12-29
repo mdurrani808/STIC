@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Debugging and Profiling - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>Software will execute exactly as instructed, regardless of the programmer's intentions. Debugging bridges the gap between intended and actual behavior, and while this process can be time-intensive, there are effective techniques for identifying and resolving issues in buggy or resource-intensive code. Often times, debugging can be seen as a reactive process that slows down development, but implementing systematic debugging practices accelerates development cycles and reduces time spent tracking down issues.</p>
+<h2 id="debugging-fundamentals"><a class="header" href="#debugging-fundamentals">Debugging fundamentals</a></h2>
+<h3 id="print-debugging--logging"><a class="header" href="#print-debugging--logging">Print Debugging / Logging</a></h3>
+<p>As Brian Kernighan noted in "Unix for Beginners" (1979), "The most effective debugging tool is still careful thought, coupled with judiciously placed print statements." The simplest approach to debugging involves adding print statements near suspected problem areas and iterating until sufficient information is gathered to identify the root cause. This method's simplicity and ease of implementation make it a preferred choice for many software engineers.</p>
+<p>Print debugging can be enhanced by implementing proper logging instead of simple print statements. Logging systems offer several advantages over basic printing: they can output to multiple destinations including files, sockets, and remote servers, making log review more convenient than scanning terminal output. They also support severity levels (INFO, DEBUG, WARN, ERROR) for filtered output, and they establish a logging infrastructure that can serve both immediate debugging needs and long-term monitoring requirements.</p>
+<p>If used correctly, logging can significantly increase development velocity. Below, are a few tips to help make logs more useful:</p>
+<ul>
+<li>Use and setting log levels properly to allow you to filter out unnecessary messages (ex. diagnostic messages) to help you narrow down to the actual issue.</li>
+<li>Many libraries support structured logging, a method of organizing log data into a structured format, making it easier to analyze and interpret. Instead of recording raw text, structured logging uses key-value pairs which provide context and additional information about the logged event. The structured nature makes it easier to search, filter and analyze logs.</li>
+<li>You want to always be able to find the source code for any given log entry. This means using unique messages, prefixes, etc. which will help you trace a code path using log messages. This is more difficult if multiple places create the same log entry.</li>
+<li>Use a log viewer to make it easier to process and view logs</li>
+<li>It can be useful (especially in a web-development context) to use a correlation id to track a request throughout the entire transaction.</li>
+<li>Logging should not be competing with your software for resources. Use logging levels strategically as well as opting for accumulated metrics over textual logs as needed.</li>
+<li>Never log sensitive information.</li>
+<li>Only log what you need but finding out what you actually need is an iterative process.</li>
+</ul>
+<h4 id="external-logging"><a class="header" href="#external-logging">External Logging</a></h4>
+<p>As you start building larger software systems you will most probably run into dependencies that run as separate programs. Web servers, databases or message brokers are common examples of this kind of dependencies. When interacting with these systems it is often necessary to read their logs, since client side error messages might not suffice.</p>
+<p>Luckily, most programs write their own logs somewhere in your system. In UNIX systems, it is commonplace for programs to write their logs under <code>/var/log</code>. For instance, the <a href="https://www.nginx.com/">NGINX</a> webserver places its logs under <code>/var/log/nginx</code>. More recently, systems have started using a <strong>system log</strong>, which is increasingly where all of your log messages go. Most (but not all) Linux systems use <code>systemd</code>, a system daemon that controls many things in your system such as which services are enabled and running. <code>systemd</code> places the logs under <code>/var/log/journal</code> in a specialized format and you can use the <a href="https://www.man7.org/linux/man-pages/man1/journalctl.1.html"><code>journalctl</code></a> command to display the messages. Similarly, on macOS there is still <code>/var/log/system.log</code> but an increasing number of tools use the system log, that can be displayed with <a href="https://www.manpagez.com/man/1/log/"><code>log show</code></a>. On most UNIX systems you can also use the <a href="https://www.man7.org/linux/man-pages/man1/dmesg.1.html"><code>dmesg</code></a> command to access the kernel log.</p>
+<h3 id="debuggers"><a class="header" href="#debuggers">Debuggers</a></h3>
+<p>When print debugging is not enough you should use a debugger. Debuggers are programs that let you interact with the execution of a program, allowing the following:</p>
+<ul>
+<li>Halt execution of the program when it reaches a certain line.</li>
+<li>Step through the program one instruction at a time.</li>
+<li>Inspect values of variables after the program crashed.</li>
+<li>Conditionally halt the execution when a given condition is met.</li>
+<li>And many more advanced features</li>
+</ul>
+<p>Many programming languages come with some form of debugger.</p>
+<h4 id="debugger-concepts"><a class="header" href="#debugger-concepts">Debugger Concepts</a></h4>
+<p>The power of a debugger lies in its ability to give developers precise control over program execution and deep visibility into program state. At its core, a debugger allows developers to pause program execution at specific points called breakpoints. These breakpoints can be set on any line of code, and when the program reaches that line, execution halts, allowing developers to examine the current state of the program.</p>
+<p>One of the most fundamental concepts in debugging is stepping through code execution. Debuggers typically offer several stepping operations. "Step Over" advances the program by a single line of code, executing any function calls completely before stopping at the next line. "Step Into" is more granular – when encountering a function call, it enters that function and stops at its first line, allowing developers to debug the function's internal behavior. "Step Out" continues execution until the current function returns, which is particularly useful when you've stepped into a function but want to return to the calling context.</p>
+<p>The call stack is another crucial debugging concept that helps developers understand how their program reached its current state. The call stack shows the nested sequence of function calls that led to the current point of execution, with each entry (stack frame) containing information about the function's arguments, local variables, and the line number where the call originated. This hierarchical view is invaluable for understanding program flow and diagnosing issues related to function calls and recursion.</p>
+<p>Variable inspection and modification represent another powerful capability of debuggers. While execution is paused, developers can examine the values of all in-scope variables, including complex data structures and objects. Many debuggers allow developers to modify these values on the fly, enabling quick testing of different scenarios without modifying and recompiling the code. This feature is particularly useful when debugging complex state-dependent bugs or when testing edge cases.</p>
+<p>Conditional breakpoints extend the basic breakpoint concept by adding programmable conditions. Instead of stopping every time a particular line is reached, the debugger only halts execution when the specified condition is true. For example, a conditional breakpoint might only trigger when a variable reaches a certain value or when a specific error condition occurs. This capability is especially valuable when debugging issues that only manifest under specific circumstances or when dealing with code that executes frequently but only occasionally exhibits problematic behavior.</p>
+<p>Memory inspection capabilities allow developers to examine the raw contents of memory addresses, which is particularly important when debugging low-level programming issues or memory-related bugs. Advanced debuggers can track memory allocations and deallocations, helping identify memory leaks and buffer overflows. Some debuggers also provide visualization tools for memory usage patterns, making it easier to spot problematic memory usage trends.</p>
+<p>Watch expressions represent another powerful debugging feature that allows developers to monitor the values of specific expressions as the program executes. Unlike simple variable inspection, watch expressions can be complex computations that are automatically re-evaluated at each step, helping developers track derived values and complex state changes throughout program execution.</p>
+<p>Exception handling in debuggers helps developers catch and diagnose runtime errors. Most debuggers can be configured to break automatically when an exception occurs, whether it's handled or unhandled by the program. This capability is crucial for identifying the root cause of crashes and runtime errors, as it allows developers to examine the program state at the exact moment when things go wrong.</p>
+<p>Multi-threaded debugging support is essential for modern applications that utilize concurrent execution. Advanced debuggers provide tools for visualizing thread states, synchronization points, and potential deadlocks. They allow developers to switch between thread contexts and examine how different threads interact, which is crucial for identifying race conditions and other concurrency-related issues.</p>
+<p>Remote debugging capabilities extend these debugging features to programs running on different machines or devices. This is particularly important when debugging deployed applications or programs running on embedded systems where direct access to the execution environment might be limited.</p>
+<h4 id="specialized-tools"><a class="header" href="#specialized-tools">Specialized Tools</a></h4>
+<p>Even if what you are trying to debug is a black box binary there are tools that can help you with that. Whenever programs need to perform actions that only the kernel can, they use <a href="https://en.wikipedia.org/wiki/System_call">System Calls</a>. There are commands that let you trace the syscalls your program makes. In Linux there's <a href="https://www.man7.org/linux/man-pages/man1/strace.1.html"><code>strace</code></a> and macOS and BSD have <a href="http://dtrace.org/blogs/about/"><code>dtrace</code></a>. <code>dtrace</code> can be tricky to use because it uses its own <code>D</code> language, but there is a wrapper called <a href="https://www.manpagez.com/man/1/dtruss/"><code>dtruss</code></a> that provides an interface more similar to <code>strace</code> (more details <a href="https://8thlight.com/blog/colin-jones/2015/11/06/dtrace-even-better-than-strace-for-osx.html">here</a>).</p>
+<p>Below are some examples of using <code>strace</code> or <code>dtruss</code> to show <a href="https://www.man7.org/linux/man-pages/man2/stat.2.html"><code>stat</code></a> syscall traces for an execution of <code>ls</code>. For a deeper dive into <code>strace</code>, <a href="https://blogs.oracle.com/linux/strace-the-sysadmins-microscope-v2">this article</a> and <a href="https://jvns.ca/strace-zine-unfolded.pdf">this zine</a> are good reads.</p>
+<pre><code class="language-bash"># On Linux
+sudo strace -e lstat ls -l &gt; /dev/null
+# On macOS
+sudo dtruss -t lstat64_extended ls -l &gt; /dev/null
+</code></pre>
+<p>Under some circumstances, you may need to look at the network packets to figure out the issue in your program. Tools like <a href="https://www.man7.org/linux/man-pages/man1/tcpdump.1.html"><code>tcpdump</code></a> and <a href="https://www.wireshark.org/">Wireshark</a> are network packet analyzers that let you read the contents of network packets and filter them based on different criteria.</p>
+<p>For web development, the Chrome/Firefox developer tools are quite handy. They feature a large number of tools, including:</p>
+<ul>
+<li>Source code - Inspect the HTML/CSS/JS source code of any website.</li>
+<li>Live HTML, CSS, JS modification - Change the website content, styles and behavior to test (you can see for yourself that website screenshots are not valid proofs).</li>
+<li>Javascript shell - Execute commands in the JS REPL.</li>
+<li>Network - Analyze the requests timeline.</li>
+<li>Storage - Look into the Cookies and local application storage.</li>
+</ul>
+<h4 id="static-analysis"><a class="header" href="#static-analysis">Static Analysis</a></h4>
+<p>For some issues you do not need to run any code. For example, just by carefully looking at a piece of code you could realize that your loop variable is shadowing an already existing variable or function name; or that a program reads a variable before defining it. Here is where <a href="https://en.wikipedia.org/wiki/Static_program_analysis">static analysis</a> tools come into play. Static analysis programs take source code as input and analyze it using coding rules to reason about its correctness.</p>
+<p>In the following Python snippet there are several mistakes. First, our loop variable <code>foo</code> shadows the previous definition of the function <code>foo</code>. We also wrote <code>baz</code> instead of <code>bar</code> in the last line, so the program will crash after completing the <code>sleep</code> call (which will take one minute).</p>
+<pre><code class="language-python">import time
+
+def foo():
+    return 42
+
+for foo in range(5):
+    print(foo)
+bar = 1
+bar *= 0.2
+time.sleep(60)
+print(baz)
+</code></pre>
+<p>Static analysis tools can identify these kinds of issues. When we run <a href="https://pypi.org/project/pyflakes"><code>pyflakes</code></a> on the code we get the errors related to both bugs. <a href="http://mypy-lang.org/"><code>mypy</code></a> is another tool that can detect type checking issues. Here, <code>mypy</code> will warn us that <code>bar</code> is initially an <code>int</code> and is then casted to a <code>float</code>.
+Again, note that all these issues were detected without having to run the code.</p>
+<pre><code class="language-bash">$ pyflakes foobar.py
+foobar.py:6: redefinition of unused 'foo' from line 3
+foobar.py:11: undefined name 'baz'
+
+$ mypy foobar.py
+foobar.py:6: error: Incompatible types in assignment (expression has type "int", variable has type "Callable[[], Any]")
+foobar.py:9: error: Incompatible types in assignment (expression has type "float", variable has type "int")
+foobar.py:11: error: Name 'baz' is not defined
+Found 3 errors in 1 file (checked 1 source file)
+</code></pre>
+<p>In the shell tools lecture we covered <a href="https://www.shellcheck.net/"><code>shellcheck</code></a>, which is a similar tool for shell scripts.</p>
+<p>Most editors and IDEs support displaying the output of these tools within the editor itself, highlighting the locations of warnings and errors.
+This is often called <strong>code linting</strong> and it can also be used to display other types of issues such as stylistic violations or insecure constructs.</p>
+<p>A complementary tool to stylistic linting are code formatters such as <a href="https://github.com/psf/black"><code>black</code></a> for Python, <code>gofmt</code> for Go, <code>rustfmt</code> for Rust or <a href="https://prettier.io/"><code>prettier</code></a> for JavaScript, HTML and CSS.
+These tools autoformat your code so that it's consistent with common stylistic patterns for the given programming language.
+Although you might be unwilling to give stylistic control about your code, standardizing code format will help other people read your code and will make you better at reading other people's (stylistically standardized) code.</p>
+<h2 id="profiling"><a class="header" href="#profiling">Profiling</a></h2>
+<p>Even if your code functionally behaves as you would expect, that might not be good enough if it takes all your CPU or memory in the process. Algorithms classes often teach big <em>O</em> notation but not how to find hot spots in your programs. Since <a href="http://wiki.c2.com/?PrematureOptimization">premature optimization is the root of all evil</a>, you should learn about profilers and monitoring tools. They will help you understand which parts of your program are taking most of the time and/or resources so you can focus on optimizing those parts.</p>
+<h3 id="timing"><a class="header" href="#timing">Timing</a></h3>
+<p>Similarly to the debugging case, in many scenarios it can be enough to just print the wall clock time it took your code between two points. However, wall clock time can be misleading since your computer might be running other processes at the same time or waiting for events to happen. It is common for tools to make a distinction between <em>Real</em>, <em>User</em> and <em>Sys</em> time. In general, <em>User</em> + <em>Sys</em> tells you how much time your process actually spent in the CPU (more detailed explanation <a href="https://stackoverflow.com/questions/556405/what-do-real-user-and-sys-mean-in-the-output-of-time1">here</a>).</p>
+<ul>
+<li><em>Real</em> - Wall clock elapsed time from start to finish of the program, including the time taken by other processes and time taken while blocked (e.g. waiting for I/O or network)</li>
+<li><em>User</em> - Amount of time spent in the CPU running user code</li>
+<li><em>Sys</em> - Amount of time spent in the CPU running kernel code</li>
+</ul>
+<p>For example, try running a command that performs an HTTP request and prefixing it with <a href="https://www.man7.org/linux/man-pages/man1/time.1.html"><code>time</code></a>. Under a slow connection it can take over 2 seconds for the request to complete but the process itself will only take ~15ms of CPU user time and 12ms of kernel CPU time.</p>
+<h3 id="cpu-profiling"><a class="header" href="#cpu-profiling">CPU Profiling</a></h3>
+<p>Most of the time when people refer to <em>profilers</em> they actually mean <em>CPU profilers</em>,  which are the most common. There are two main types of CPU profilers: <em>tracing</em> and <em>sampling</em> profilers. Tracing profilers keep a record of every function call your program makes whereas sampling profilers probe your program periodically (commonly every millisecond) and record the program's stack. They use these records to present aggregate statistics of what your program spent the most time doing. <a href="https://jvns.ca/blog/2017/12/17/how-do-ruby---python-profilers-work-">Here</a> is a good intro article if you want more detail on this topic.</p>
+<p>In Python we can use the <code>cProfile</code> module to profile time per function call. Here is a simple example that implements a rudimentary grep in Python:</p>
+<pre><code class="language-python">#!/usr/bin/env python
+
+import sys, re
+
+def grep(pattern, file):
+    with open(file, 'r') as f:
+        print(file)
+        for i, line in enumerate(f.readlines()):
+            pattern = re.compile(pattern)
+            match = pattern.search(line)
+            if match is not None:
+                print("{}: {}".format(i, line), end="")
+
+if __name__ == '__main__':
+    times = int(sys.argv[1])
+    pattern = sys.argv[2]
+    for i in range(times):
+        for file in sys.argv[3:]:
+            grep(pattern, file)
+</code></pre>
+<p>We can profile this code using the following command. Analyzing the output we can see that IO is taking most of the time and that compiling the regex takes a fair amount of time as well. Since the regex only needs to be compiled once, we can factor it out of the for.</p>
+<pre><code>$ python -m cProfile -s tottime grep.py 1000 '^(import|\s*def)[^,]*$' *.py
+
+[omitted program output]
+
+ ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     8000    0.266    0.000    0.292    0.000 {built-in method io.open}
+     8000    0.153    0.000    0.894    0.000 grep.py:5(grep)
+    17000    0.101    0.000    0.101    0.000 {built-in method builtins.print}
+     8000    0.100    0.000    0.129    0.000 {method 'readlines' of '_io._IOBase' objects}
+    93000    0.097    0.000    0.111    0.000 re.py:286(_compile)
+    93000    0.069    0.000    0.069    0.000 {method 'search' of '_sre.SRE_Pattern' objects}
+    93000    0.030    0.000    0.141    0.000 re.py:231(compile)
+    17000    0.019    0.000    0.029    0.000 codecs.py:318(decode)
+        1    0.017    0.017    0.911    0.911 grep.py:3(&lt;module&gt;)
+
+[omitted lines]
+</code></pre>
+<p>A caveat of Python's <code>cProfile</code> profiler (and many profilers for that matter) is that they display time per function call. That can become unintuitive really fast, especially if you are using third party libraries in your code since internal function calls are also accounted for.
+A more intuitive way of displaying profiling information is to include the time taken per line of code, which is what <em>line profilers</em> do.</p>
+<p>For instance, the following piece of Python code performs a request to the class website and parses the response to get all URLs in the page:</p>
+<pre><code class="language-python">#!/usr/bin/env python
+import requests
+from bs4 import BeautifulSoup
+
+# This is a decorator that tells line_profiler
+# that we want to analyze this function
+@profile
+def get_urls():
+    response = requests.get('https://missing.csail.mit.edu')
+    s = BeautifulSoup(response.content, 'lxml')
+    urls = []
+    for url in s.find_all('a'):
+        urls.append(url['href'])
+
+if __name__ == '__main__':
+    get_urls()
+</code></pre>
+<p>If we used Python's <code>cProfile</code> profiler we'd get over 2500 lines of output, and even with sorting it'd be hard to understand where the time is being spent. A quick run with <a href="https://github.com/pyutils/line_profiler"><code>line_profiler</code></a> shows the time taken per line:</p>
+<pre><code class="language-bash">$ kernprof -l -v a.py
+Wrote profile results to urls.py.lprof
+Timer unit: 1e-06 s
+
+Total time: 0.636188 s
+File: a.py
+Function: get_urls at line 5
+
+Line #  Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+ 5                                           @profile
+ 6                                           def get_urls():
+ 7         1     613909.0 613909.0     96.5      response = requests.get('https://missing.csail.mit.edu')
+ 8         1      21559.0  21559.0      3.4      s = BeautifulSoup(response.content, 'lxml')
+ 9         1          2.0      2.0      0.0      urls = []
+10        25        685.0     27.4      0.1      for url in s.find_all('a'):
+11        24         33.0      1.4      0.0          urls.append(url['href'])
+</code></pre>
+<h3 id="memory"><a class="header" href="#memory">Memory</a></h3>
+<p>In languages like C or C++ memory leaks can cause your program to never release memory that it doesn't need anymore.
+To help in the process of memory debugging you can use tools like <a href="https://valgrind.org/">Valgrind</a> that will help you identify memory leaks.</p>
+<p>In garbage collected languages like Python it is still useful to use a memory profiler because as long as you have pointers to objects in memory they won't be garbage collected.
+Here's an example program and its associated output when running it with <a href="https://pypi.org/project/memory-profiler/">memory-profiler</a> (note the decorator like in <code>line-profiler</code>).</p>
+<pre><code class="language-python">@profile
+def my_func():
+    a = [1] * (10 ** 6)
+    b = [2] * (2 * 10 ** 7)
+    del b
+    return a
+
+if __name__ == '__main__':
+    my_func()
+</code></pre>
+<pre><code class="language-bash">$ python -m memory_profiler example.py
+Line #    Mem usage  Increment   Line Contents
+==============================================
+     3                           @profile
+     4      5.97 MB    0.00 MB   def my_func():
+     5     13.61 MB    7.64 MB       a = [1] * (10 ** 6)
+     6    166.20 MB  152.59 MB       b = [2] * (2 * 10 ** 7)
+     7     13.61 MB -152.59 MB       del b
+     8     13.61 MB    0.00 MB       return a
+</code></pre>
+<h3 id="event-profiling"><a class="header" href="#event-profiling">Event Profiling</a></h3>
+<p>As it was the case for <code>strace</code> for debugging, you might want to ignore the specifics of the code that you are running and treat it like a black box when profiling.
+The <a href="https://www.man7.org/linux/man-pages/man1/perf.1.html"><code>perf</code></a> command abstracts CPU differences away and does not report time or memory, but instead it reports system events related to your programs.
+For example, <code>perf</code> can easily report poor cache locality, high amounts of page faults or livelocks. Here is an overview of the command:</p>
+<ul>
+<li><code>perf list</code> - List the events that can be traced with perf</li>
+<li><code>perf stat COMMAND ARG1 ARG2</code> - Gets counts of different events related to a process or command</li>
+<li><code>perf record COMMAND ARG1 ARG2</code> - Records the run of a command and saves the statistical data into a file called <code>perf.data</code></li>
+<li><code>perf report</code> - Formats and prints the data collected in <code>perf.data</code></li>
+</ul>
+<h2 id="resource-monitoring"><a class="header" href="#resource-monitoring">Resource Monitoring</a></h2>
+<p>Sometimes, the first step towards analyzing the performance of your program is to understand what its actual resource consumption is.
+Programs often run slowly when they are resource constrained, e.g. without enough memory or on a slow network connection.
+There are a myriad of command line tools for probing and displaying different system resources like CPU usage, memory usage, network, disk usage and so on.</p>
+<ul>
+<li><strong>General Monitoring</strong> - Probably the most popular is <a href="https://htop.dev/"><code>htop</code></a>, which is an improved version of <a href="https://www.man7.org/linux/man-pages/man1/top.1.html"><code>top</code></a>.
+<code>htop</code> presents various statistics for the currently running processes on the system. <code>htop</code> has a myriad of options and keybinds, some useful ones  are: <code>&lt;F6&gt;</code> to sort processes, <code>t</code> to show tree hierarchy and <code>h</code> to toggle threads.
+See also <a href="https://nicolargo.github.io/glances/"><code>glances</code></a> for similar implementation with a great UI. For getting aggregate measures across all processes, <a href="http://dag.wiee.rs/home-made/dstat/"><code>dstat</code></a> is another nifty tool that computes real-time resource metrics for lots of different subsystems like I/O, networking, CPU utilization, context switches, &amp;c.</li>
+<li><strong>I/O operations</strong> - <a href="https://www.man7.org/linux/man-pages/man8/iotop.8.html"><code>iotop</code></a> displays live I/O usage information and is handy to check if a process is doing heavy I/O disk operations</li>
+<li><strong>Disk Usage</strong> - <a href="https://www.man7.org/linux/man-pages/man1/df.1.html"><code>df</code></a> displays metrics per partitions and <a href="http://man7.org/linux/man-pages/man1/du.1.html"><code>du</code></a> displays <strong>d</strong>isk <strong>u</strong>sage per file for the current directory. In these tools the <code>-h</code> flag tells the program to print with <strong>h</strong>uman readable format.
+A more interactive version of <code>du</code> is <a href="https://dev.yorhel.nl/ncdu"><code>ncdu</code></a> which lets you navigate folders and delete files and folders as you navigate.</li>
+<li><strong>Memory Usage</strong> - <a href="https://www.man7.org/linux/man-pages/man1/free.1.html"><code>free</code></a> displays the total amount of free and used memory in the system. Memory is also displayed in tools like <code>htop</code>.</li>
+<li><strong>Open Files</strong> - <a href="https://www.man7.org/linux/man-pages/man8/lsof.8.html"><code>lsof</code></a>  lists file information about files opened by processes. It can be quite useful for checking which process has opened a specific file.</li>
+<li><strong>Network Connections and Config</strong> - <a href="https://www.man7.org/linux/man-pages/man8/ss.8.html"><code>ss</code></a> lets you monitor incoming and outgoing network packets statistics as well as interface statistics. A common use case of <code>ss</code> is figuring out what process is using a given port in a machine. For displaying routing, network devices and interfaces you can use <a href="http://man7.org/linux/man-pages/man8/ip.8.html"><code>ip</code></a>. Note that <code>netstat</code> and <code>ifconfig</code> have been deprecated in favor of the former tools respectively.</li>
+<li><strong>Network Usage</strong> -  <a href="https://github.com/raboof/nethogs"><code>nethogs</code></a> and <a href="http://www.ex-parrot.com/pdw/iftop/"><code>iftop</code></a> are good interactive CLI tools for monitoring network usage.</li>
+</ul>
+<p>If you want to test these tools you can also artificially impose loads on the machine using the <a href="https://linux.die.net/man/1/stress"><code>stress</code></a> command.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="Vim.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="Git.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="Vim.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="Git.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

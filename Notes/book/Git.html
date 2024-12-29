@@ -1,0 +1,567 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Git and Version Control - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="1-introduction-to-git"><a class="header" href="#1-introduction-to-git">1. Introduction to Git</a></h2>
+<h3 id="what-is-git"><a class="header" href="#what-is-git">What is Git?</a></h3>
+<p>Version control systems track and maintain the history of changes in files and folders over time. These systems enable developers to view and restore previous versions of a project, document the reasoning behind changes, and work on parallel branches of development. They are essential for collaboration, allowing teams to see changes made by others and resolve conflicts that arise during concurrent development.</p>
+<p>Git, created by Linux Torvalds for managing the Linux kernel source code, distinguishes itself among version control systems like Subversion, Bitbucket, and Mercurial through its distributed architecture. In Git's approach, every developer maintains a complete copy of the repository locally. This complete copy serves dual purposes: it acts as a full backup of the project and enables developers to work offline effectively. The distributed nature eliminates single points of failure and provides teams with more flexible workflow options.</p>
+<h3 id="git-vs-github"><a class="header" href="#git-vs-github">Git vs GitHub</a></h3>
+<p>Git and GitHub serve different but complementary roles in modern software development. Git is the version control system itself—a locally installed software tool that tracks and manages code changes. Developers can use Git completely offline on their local machines, handling tasks like branching, merging, and maintaining project history without any connection to external services.</p>
+<p>GitHub, in contrast, is a web-based hosting platform that extends Git's capabilities into the cloud. It provides a centralized location for storing Git repositories and adds powerful collaborative features. These include pull requests for code review, issue tracking for project management, and wikis for documentation. GitHub also offers team management tools and supports continuous integration workflows.</p>
+<p>While GitHub has become synonymous with Git hosting, it's important to note that other services like GitLab and Bitbucket offer similar functionality. Developers can use Git without ever touching GitHub or any other hosting service, but the reverse isn't true—GitHub's functionality fundamentally depends on Git.</p>
+<h2 id="2-core-concepts"><a class="header" href="#2-core-concepts">2. Core Concepts</a></h2>
+<p>It is possible to learn how to use Git in a top-down fashion (starting with its interface), but this can lead to a lot of confusion. This ends with you just memorizing a bunch of commands and magic incantations, which makes it hard to fix things when things go wrong. Thus, we believe its important to understand Git's fundamental architecture and terminology, which will help you better understand how the commands will manipulate the underlying data model. This section explores the essential concepts that form the foundation of Git's functionality.</p>
+<h3 id="21-git-architecture"><a class="header" href="#21-git-architecture">2.1 Git Architecture</a></h3>
+<p>Git's architecture is built around a system that tracks, stores, and manages your project's content and history through three main components, the working directory, staging area / index, repository (local and remote), and stash. The repository contains the complete history and tracking information for your project, stored within a <code>.git</code> directory. The working directory represents the actual files on your filesystem where you are actively making changes like editing your code and adding files. When you check out a certain version of your project, Git will populate the working directory with those files, allowing you to see and modify them directly. Between the working directory and your repository, there is the staging area of index. This intermediate area serves as the preparation space for your next commit.</p>
+<p>Additionally, Git maintains both local and remote repositories. Your local repository stores all committed changes on your machine, while remote repositories, hosted on services like GitHub or GitLab, enable collaboration with other developers. The local repository contains all the objects and references needed to maintain your project's complete history, while remote repositories serve as central points for sharing and synchronizing changes between team members.</p>
+<p>Finally, git maintains a stash, which acts as a place to hide modifications while you work on something else.</p>
+<h3 id="22-key-terminology"><a class="header" href="#22-key-terminology">2.2 Key Terminology</a></h3>
+<p>Git's terminology precisely describes different components and operations within its version control system. Understanding these key terms provides the foundation for working effectively with Git.</p>
+<p>A commit represents a snapshot of your project at a specific point in time, capturing the complete state of all tracked files. It also contains its parents, the author of the commit and a message. Each commit is identified by a unique hash ID (like "c69e0cc32f3c1c8f2730cade36a8f75dc8e3d480"), which is derived from its metadata properties.</p>
+<p>Branches enable parallel development streams within the same repository. A branch is simply a pointer to a specific commit that automatically moves forward as new commits are added. When you create a new branch, Git creates a new pointer to your current commit. As you make changes and create new commits on this branch, only this pointer moves forward, leaving your other branches unaffected. This mechanism allows multiple development efforts to proceed simultaneously without interfering with each other. The default branch in Git is typically named 'master' (though 'main' is becoming more common), representing your project's primary development line.</p>
+<p>The HEAD is a special pointer that indicates your current position in the repository. It usually points to the latest commit of the branch you're working on, telling Git where to apply new changes when you make a commit. When you check out a different branch or specific commit, HEAD moves to point to that new location. A "detached HEAD" state occurs when HEAD points directly to a commit rather than a branch, though this is less common in typical workflows.</p>
+<p>Tags provide a way to mark specific points in your repository's history as significant, typically used for marking release versions. Unlike branches, tags are fixed references that point to specific commits and don't move when new commits are added. They serve as permanent bookmarks to important states of your project, such as release versions (v1.0, v2.0) or major milestones.</p>
+<h3 id="23-file-states"><a class="header" href="#23-file-states">2.3 File States</a></h3>
+<p>Every file in your working directory exists in one of two tracking states: tracked or untracked. Tracked files are those that were present in your last snapshot (commit) or have been explicitly staged. These files are actively managed by Git, meaning Git recognizes and monitors changes to them. Untracked files, conversely, are all other files in your working directory that weren't in your last snapshot and haven't been staged.</p>
+<p>Tracked files themselves can exist in three distinct states: modified, staged, or committed. When you first edit a tracked file, Git recognizes it as modified, indicating that changes have been made since the last commit. These modifications exist only in your working directory until you explicitly stage them. Staging a file means you've marked its current state for inclusion in your next commit—you're preparing a new snapshot of your project. Finally, a committed file has had its changes permanently stored in your Git repository. This progression of states forms a fundamental workflow in Git: you modify files in your working directory, selectively stage the changes you want to include in your next commit, and finally commit those changes to permanently record that version of your project.</p>
+<h2 id="3-essential-git-operations"><a class="header" href="#3-essential-git-operations">3. Essential Git Operations</a></h2>
+<p>This section covers the essential commands and workflows you'll use daily, from setting up repositories to tracking changes and managing your work. While Git offers numerous advanced features, mastering these basic operations provides the foundation for all version control tasks.</p>
+<h3 id="31-repository-setup"><a class="header" href="#31-repository-setup">3.1 Repository Setup</a></h3>
+<p>To create a new repository, navigate to your project's directory and execute <code>git init</code>. This command creates a hidden <code>.git</code> directory that contains all the necessary metadata and object database for version control.</p>
+<p>When you initialize a repository, Git begins tracking the directory's contents, though it won't actually record any changes until you explicitly commit them. The initialization process also creates the default branch, typically named 'master' or 'main', which serves as your primary line of development.</p>
+<p>Alternatively, you can clone an existing repository using <code>git clone &lt;repository-url&gt;</code>. This command creates a complete copy of the repository, including its entire history. When you clone a repository, Git automatically sets up a remote connection to the original repository, naming it 'origin' by default. This connection allows you to synchronize your local copy with the remote repository later.</p>
+<h3 id="32-basic-workflow"><a class="header" href="#32-basic-workflow">3.2 Basic Workflow</a></h3>
+<p>The basic workflow you follow in Git is that you make changes to your files and then record / commit those changes to the repository. The process begins in your working directory, where you make changes to files, those changes get staged in the staging area, and then you commit them.</p>
+<p>To start tracking new files or stage modified files, use <code>git add</code>. This command moves files to the staging area, preparing them for commitment. You can stage individual files (<code>git add filename</code>), multiple files (<code>git add file1 file2</code>), or all changes in the current directory (<code>git add .</code>). The staging area allows you to selectively choose which changes to include in your next commit, enabling you to create logical, atomic commits even when you have multiple unrelated changes in your working directory.</p>
+<p>Once you've staged your changes, create a new commit using <code>git commit</code>. Each commit should represent a logical unit of work and include a descriptive message explaining what changes were made and why. Write commit messages in the present tense, being specific about what the commit does rather than what you did. For example:</p>
+<pre><code class="language-bash">git commit -m "Add user authentication feature"
+</code></pre>
+<p>To view the status of your working directory at any time, use <code>git status</code>. This command shows which files are modified, staged, or untracked. For a more detailed view of changes, use <code>git diff</code> to see unstaged changes or <code>git diff --staged</code> to view staged changes that will be included in your next commit.</p>
+<p>After committing your changes locally, you'll often need to share them with others by pushing to a remote repository. The <code>git push</code> command synchronizes your local commits with a remote repository, making your changes accessible to other team members. By default, pushing updates the corresponding remote branch with your local commits. For instance, when working on the main branch, <code>git push origin main</code> sends all new commits to the 'main' branch on the remote repository named 'origin'. Before pushing, it's good practice to first update your local repository with any remote changes using <code>git pull</code> to avoid potential conflicts. Git will only allow pushes that can be cleanly integrated into the remote repository—if there are conflicting changes, you'll need to resolve them locally first by pulling and merging the remote changes before attempting to push again.</p>
+<h3 id="33-branching-and-integration"><a class="header" href="#33-branching-and-integration">3.3 Branching and Integration</a></h3>
+<p>The concept of branching lies at the heart of Git's power. A branch represents an independent line of development, allowing multiple development efforts to proceed simultaneously without interference. Understanding how branches work and how to integrate changes between them is crucial for effective version control.</p>
+<h4 id="creating-and-managing-branches"><a class="header" href="#creating-and-managing-branches">Creating and Managing Branches</a></h4>
+<p>A branch in Git is simply a lightweight movable pointer to a specific commit. When you create a new branch using <code>git branch feature-name</code>, Git creates a new pointer to your current commit. However, creating a branch doesn't automatically switch your working directory to that branch. To begin working on the new branch, use <code>git checkout feature-name</code>, or combine both operations with <code>git checkout -b feature-name</code>.
+As you make commits on a branch, only that branch's pointer moves forward. This independence allows you to switch between different features or bug fixes, maintaining separate lines of development that don't affect each other.</p>
+<p>For example:</p>
+<pre><code class="language-bash">git branch authentication   # Creates new branch
+git checkout authentication # Switches to the branch
+# Or more concisely:
+git checkout -b authentication
+</code></pre>
+<p>As you make commits on a branch, only that branch's pointer moves forward. This independence allows you to switch between different features or bug fixes, maintaining separate lines of development that don't affect each other.</p>
+<h4 id="merging-strategies"><a class="header" href="#merging-strategies">Merging Strategies</a></h4>
+<p>When it's time to incorporate changes from one branch into another, Git provides several merging strategies. The two primary approaches are fast-forward merges and three-way merges.</p>
+<p><strong>Fast-Forward Merges</strong>
+A fast-forward merge occurs when there is a direct linear path between the source and target branches. Consider this scenario: you create a feature branch, make several commits, and no new commits appear on the main branch. In this case, Git simply moves the main branch pointer forward to match the feature branch:</p>
+<pre><code class="language-bash">git checkout main
+git merge feature-branch  # Results in fast-forward if possible
+</code></pre>
+<p>This creates a clean, linear history but is only possible when no parallel development has occurred on the target branch.</p>
+<p><strong>Three-Way Merges</strong>
+When the target branch has progressed independently, Git performs a three-way merge. This process creates a new "merge commit" that has two parent commits—one from each branch. Git automatically merges the changes when they don't conflict, preserving both development histories:</p>
+<pre><code class="language-bash">git checkout main
+git merge feature-branch
+# If successful, creates a merge commit
+# If conflicts occur, requires manual resolution
+</code></pre>
+<h4 id="rebasing"><a class="header" href="#rebasing">Rebasing</a></h4>
+<p>Rebasing offers an alternative approach to integrating changes between branches. While merging preserves complete history and creates a new merge commit, rebasing rewrites history by replaying commits from one branch onto another. This results in a linear project history, as if all work had been done sequentially rather than in parallel.</p>
+<pre><code class="language-bash">git checkout feature-branch
+git rebase main
+</code></pre>
+<p>This command takes all commits from your feature branch and replays them on top of the main branch. The process works by:</p>
+<ol>
+<li>Finding the common ancestor of both branches</li>
+<li>Saving the changes from each commit in your feature branch as temporary patches</li>
+<li>Resetting your feature branch to the same commit as main</li>
+<li>Replaying your changes one by one</li>
+</ol>
+<p><strong>When to Use Rebasing vs. Merging</strong>
+Choose rebasing when:</p>
+<ul>
+<li>You want to maintain a clean, linear project history</li>
+<li>Your feature branch is private and not shared with others</li>
+<li>You need to integrate the latest changes from the main branch into your feature branch</li>
+</ul>
+<p>Choose merging when:</p>
+<ul>
+<li>You want to preserve the complete history of your project</li>
+<li>The branch is public and shared with other developers</li>
+<li>You want to maintain the context of parallel development</li>
+</ul>
+<p><strong>Interactive Rebasing</strong>
+Interactive rebasing provides fine-grained control over your commit history. Using <code>git rebase -i</code>, you can modify commits as they're replayed:</p>
+<pre><code class="language-bash">git rebase -i main
+</code></pre>
+<p>This opens an editor where you can:</p>
+<ul>
+<li>Reorder commits</li>
+<li>Edit commit messages</li>
+<li>Combine multiple commits into one</li>
+<li>Split commits into smaller ones</li>
+<li>Remove commits entirely</li>
+</ul>
+<p>Interactive rebasing is particularly useful for cleaning up your commit history before merging a feature branch into the main branch. However, use this with caution on shared branches, as rewriting history can cause problems for other developers working with the same code.</p>
+<h3 id="34-collaboration"><a class="header" href="#34-collaboration">3.4 Collaboration</a></h3>
+<p>Effective collaboration in Git extends beyond basic version control operations to encompass workflows that enable multiple developers to work together seamlessly. Understanding these collaborative features and practices is essential for successful team development.</p>
+<h4 id="working-with-remotes"><a class="header" href="#working-with-remotes">Working with Remotes</a></h4>
+<p>Remote repositories serve as the central point of collaboration in Git projects. While Git is distributed by nature, meaning every developer has a complete copy of the repository, remotes provide a shared reference point for synchronizing changes between team members. The <code>git remote</code> command manages connections to other repositories. When you clone a repository, Git automatically sets up a remote named 'origin' pointing to the source repository. You can view your configured remotes and their URLs using the following command:</p>
+<pre><code class="language-bash">git remote -v
+</code></pre>
+<p>Adding additional remotes is often useful, particularly when working with forks, where you might want to keep your copy synchronized with an upstream repository while maintaining your own separate development branch. You can add new remotes using:</p>
+<pre><code class="language-bash">git remote add upstream https://github.com/original/repository.git
+</code></pre>
+<h4 id="pull-requests"><a class="header" href="#pull-requests">Pull Requests</a></h4>
+<p>Pull requests represent a formal way to propose changes from one branch to another, typically used when contributing to shared repositories. While Git itself doesn't have a built-in pull request feature, hosting platforms like GitHub, GitLab, and Bitbucket provide this functionality as part of their collaborative toolset. The typical pull request workflow begins with creating a feature branch from the main development branch. After making and committing changes locally, you push the feature branch to your remote repository and open a pull request through your hosting platform. This initiates a period of code review and discussion, during which you can address feedback and update the pull request as needed. Once approved, the changes can be merged into the target branch.</p>
+<h4 id="handling-conflicts"><a class="header" href="#handling-conflicts">Handling Conflicts</a></h4>
+<p>Merge conflicts occur when Git cannot automatically reconcile different changes to the same part of a file. While conflicts are a natural part of collaborative development, regular synchronization with the main branch can help minimize their frequency. You should frequently update your branch with changes using:</p>
+<pre><code class="language-bash">git fetch origin
+git rebase origin/main
+</code></pre>
+<p>When conflicts do occur, Git marks the conflicting sections in your files with special markers (&lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, &gt;&gt;&gt;&gt;&gt;&gt;&gt;). Resolution involves opening the conflicting files, deciding which changes to keep or how to combine them, removing the conflict markers, and staging the resolved files. After resolving conflicts, you stage the files and continue the rebase:</p>
+<pre><code class="language-bash">git add &lt;resolved-file&gt;
+git rebase --continue
+</code></pre>
+<h2 id="4-troubleshooting-and-recovery"><a class="header" href="#4-troubleshooting-and-recovery">4. Troubleshooting and Recovery</a></h2>
+<p>While Git provides robust version control capabilities, situations inevitably arise where you need to undo changes or recover from mistakes. Understanding Git's recovery tools and processes is essential for maintaining a healthy repository and resolving common issues that occur during development. This section covers various techniques for undoing changes, recovering lost work, and addressing common Git problems.</p>
+<h3 id="41-undoing-changes"><a class="header" href="#41-undoing-changes">4.1 Undoing Changes</a></h3>
+<p>Git provides several mechanisms for undoing changes, each suited to different scenarios depending on whether the changes have been committed and whether you want to preserve the changes for later use. Understanding these options helps you choose the most appropriate approach for your situation.</p>
+<p>When working with uncommitted changes in your working directory, Git offers straightforward ways to undo modifications. For files that have been modified but not yet staged, you can use <code>git checkout</code> to discard the changes and restore the file to its state in the last commit:</p>
+<pre><code class="language-bash">git checkout -- filename.txt
+</code></pre>
+<p>For changes that have been staged but not yet committed, the <code>git restore</code> command provides a interface for unstaging changes while preserving the modifications in your working directory:</p>
+<pre><code class="language-bash">git restore --staged filename.txt
+</code></pre>
+<p>When you need to undo committed changes, Git provides several reset options with different levels of impact. A soft reset moves the branch pointer to an earlier commit while preserving your staged changes:</p>
+<pre><code class="language-bash">git reset --soft HEAD~1
+</code></pre>
+<p>This approach is particularly useful when you want to combine several commits into one or when you've committed changes to the wrong branch. The soft reset keeps your changes staged, allowing you to immediately create a new commit with the same changes.</p>
+<p>A mixed reset, which is the default behavior, moves the branch pointer and unstages changes:</p>
+<pre><code class="language-bash">git reset HEAD~1
+</code></pre>
+<p>This option gives you the flexibility to review and restage changes before recommitting them, essentially allowing you to reorganize your commits while preserving the actual changes in your working directory.</p>
+<p>The most dramatic option is a hard reset, which moves the branch pointer and discards all changes, returning your working directory to the state of the specified commit:</p>
+<pre><code class="language-bash">git reset --hard HEAD~1
+</code></pre>
+<p>Hard resets should be used with caution as they permanently discard changes. However, they can be valuable when you need to completely abandon recent commits and start fresh from a known good state.</p>
+<p>For situations where you want to undo a commit while preserving the commit history, Git provides the revert command:</p>
+<pre><code class="language-bash">git revert commit-hash
+</code></pre>
+<p>Unlike reset, which removes commits from the history, revert creates a new commit that undoes the changes from a specific commit. This approach is particularly important when working with shared branches, as it maintains a clear history of changes and avoids disrupting other developers' work.</p>
+<p>When using these commands, it's important to understand their scope and impact. The checkout command works on individual files or your entire working directory, reset affects your branch position and optionally your working directory, and revert creates new commits to undo previous changes. Each has its appropriate use case, and choosing the right tool depends on factors such as whether the changes have been shared with others, whether you want to preserve the ability to recover the changes later, and how many commits you need to affect.</p>
+<h3 id="42-common-issues-and-solutions"><a class="header" href="#42-common-issues-and-solutions">4.2 Common Issues and Solutions</a></h3>
+<p>Dangit, my branch got all tangled up with conflicts and nothing makes sense anymore!</p>
+<pre><code class="language-bash"># First, save any uncommitted changes you care about
+git stash
+
+# Get back to a known good state
+git fetch origin
+git checkout main
+git reset --hard origin/main
+
+# Create a fresh branch from here
+git checkout -b fresh-start-branch
+
+# Get your stashed changes back if needed
+git stash pop
+</code></pre>
+<p>This gives you a clean slate while preserving your work. Sometimes it's better to start fresh than to untangle a messy branch.</p>
+<p>Dangit, I committed sensitive information like passwords or API keys!</p>
+<pre><code class="language-bash"># Remove the sensitive file from git tracking but keep it locally
+git rm --cached sensitive_file.txt
+
+# Rewrite git history to remove all traces of the file
+git filter-branch --force --index-filter \
+  "git rm --cached --ignore-unmatch sensitive_file.txt" \
+  --prune-empty --tag-name-filter cat -- --all
+
+# Force push the changes (be careful!)
+git push origin --force --all
+</code></pre>
+<p>After this, immediately change any exposed passwords or API keys, as they should be considered compromised.</p>
+<p>Dangit, I've been working on the wrong remote repository this whole time!</p>
+<pre><code class="language-bash"># Check current remote
+git remote -v
+
+# Add the correct remote
+git remote add correct-origin https://correct-repo-url.git
+
+# Fetch all branches from new remote
+git fetch correct-origin
+
+# Reset main to match the correct remote
+git reset --hard correct-origin/main
+
+# Update remote URL if needed
+git remote set-url origin https://correct-repo-url.git
+</code></pre>
+<p>This helps when you've accidentally cloned the wrong fork or repository.</p>
+<p>Dangit, I need to move my last few commits to a different branch!</p>
+<pre><code class="language-bash"># Create a new branch with all current commits
+git branch new-branch
+
+# Move back 3 commits on current branch
+git reset --hard HEAD~3
+
+# Switch to the new branch with the commits
+git checkout new-branch
+</code></pre>
+<p>This is perfect for when you realize you've been committing to main instead of a feature branch.</p>
+<p>Dangit, my Git workspace is a mess with untracked files everywhere!</p>
+<pre><code class="language-bash"># See what would be deleted first (dry run)
+git clean -n
+
+# Delete all untracked files
+git clean -f
+
+# Delete all untracked files and directories
+git clean -fd
+
+# Also remove ignored files
+git clean -fdx
+</code></pre>
+<p>Be careful with clean commands - they permanently delete files!</p>
+<p>Dangit, I accidentally deleted a file but haven't committed the deletion!</p>
+<pre><code class="language-bash"># Restore the file from the last commit
+git checkout -- deleted_file.txt
+
+# If you're using newer Git versions
+git restore deleted_file.txt
+</code></pre>
+<p>This works great for recovering files that were accidentally deleted.</p>
+<p>Dangit, I need to undo a merge that was just committed!</p>
+<pre><code class="language-bash"># Find the commit before the merge
+git reflog
+
+# Reset to that commit
+git reset --hard HEAD@{1}
+
+# Or revert the merge if it's been pushed
+git revert -m 1 &lt;merge-commit-hash&gt;
+</code></pre>
+<p>The revert approach is safer if others might have pulled your changes.</p>
+<p>Dangit, I need to temporarily store my changes but don't want to commit them!</p>
+<pre><code class="language-bash"># Store all tracked changes
+git stash
+
+# Store all changes, including untracked files
+git stash -u
+
+# Store with a descriptive message
+git stash save "work in progress for feature X"
+
+# List all stashes
+git stash list
+
+# Apply most recent stash
+git stash pop
+
+# Apply specific stash
+git stash apply stash@{2}
+</code></pre>
+<p>Stashing is perfect for when you need to quickly switch contexts.</p>
+<p>Dangit, I need to find which commit introduced a bug!</p>
+<pre><code class="language-bash"># Start the binary search
+git bisect start
+
+# Mark current state as bad
+git bisect bad
+
+# Mark a known good commit
+git bisect good &lt;commit-hash&gt;
+
+# Git will checkout commits to test
+# Mark each commit as good or bad until found
+git bisect good  # or
+git bisect bad
+
+# When done, return to original state
+git bisect reset
+</code></pre>
+<p>This binary search approach helps find problematic commits quickly.</p>
+<p>Dangit, I need to remove a file from Git history completely!</p>
+<pre><code class="language-bash"># Remove file from all commits
+git filter-branch --force --index-filter \
+  'git rm --cached --ignore-unmatch path/to/file' \
+  --prune-empty --tag-name-filter cat -- --all
+
+# Force push all branches
+git push origin --force --all
+</code></pre>
+<p>Useful for removing large files or sensitive data that was accidentally committed.</p>
+<p>Dangit, I committed to develop but this should have been a hotfix!</p>
+<pre><code class="language-bash"># Create a new hotfix branch from production
+git checkout production
+git checkout -b hotfix/issue-123
+
+# Cherry pick your commit from develop
+git cherry-pick &lt;commit-hash&gt;
+
+# Delete the commit from develop
+git checkout develop
+git reset --hard HEAD~1
+</code></pre>
+<p>This keeps your hotfix separate from regular development work.</p>
+<p>Dangit, my feature branch is dozens of commits behind main!</p>
+<pre><code class="language-bash"># Update your local main
+git fetch origin
+git checkout main
+git pull
+
+# Rebase your feature branch
+git checkout feature-branch
+git rebase main
+
+# If you hit conflicts:
+# 1. Resolve conflicts
+# 2. git add resolved-files
+# 3. git rebase --continue
+# 4. Or git rebase --abort to start over
+</code></pre>
+<p>Rebasing keeps your feature branch up to date and maintains a clean history.</p>
+<p>Dangit, I need to change the author of previous commits!</p>
+<pre><code class="language-bash"># Change the last commit's author
+git commit --amend --author="New Author &lt;email@address.com&gt;"
+
+# Change multiple commits' authors
+git rebase -i HEAD~3  # Last 3 commits
+# Change 'pick' to 'edit' for commits to modify
+# For each commit:
+git commit --amend --author="New Author &lt;email@address.com&gt;" --no-edit
+git rebase --continue
+</code></pre>
+<p>Useful when commits have the wrong author information.</p>
+<p>Dangit, I pushed a massive file and now the repository is huge!</p>
+<pre><code class="language-bash"># Remove the file from git history
+git filter-branch --force --index-filter \
+  'git rm --cached --ignore-unmatch path/to/huge/file' \
+  --prune-empty --tag-name-filter cat -- --all
+
+# Clean up the repository
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+
+# Force push all branches
+git push origin --force --all
+git push origin --force --tags
+</code></pre>
+<p>This helps reduce repository size by completely removing large files from history.</p>
+<p>Dangit, my submodules are all messed up!</p>
+<pre><code class="language-bash"># Initialize submodules if they haven't been yet
+git submodule init
+
+# Update all submodules to their proper commits
+git submodule update --init --recursive
+
+# Pull latest changes for all submodules
+git submodule foreach git pull origin main
+
+# If submodules are on wrong commits
+git submodule foreach git reset --hard
+git submodule update --recursive
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="DebuggingAndProfiling.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="Networking.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="DebuggingAndProfiling.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="Networking.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

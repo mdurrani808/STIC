@@ -1,0 +1,417 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Shell Tools and Scripting - Practical Tools For Efficient Development</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="mdbook-admonish.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Practical Tools For Efficient Development</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>In this lecture, we will present some of the basics of using bash as a scripting language along with a number of shell tools that cover several of the most common tasks that you will be constantly performing in the command line.</p>
+<h1 id="shell-scripting"><a class="header" href="#shell-scripting">Shell Scripting</a></h1>
+<p>So far we have seen how to execute commands in the shell and pipe them together. However, in many scenarios you will want to perform a series of commands and make use of control flow expressions like conditionals or loops.</p>
+<p>Shell scripts are the next step in complexity. Most shells have their own scripting language with variables, control flow and its own syntax. What makes shell scripting different from other scripting programming languages is that it is optimized for performing shell-related tasks. Thus, creating command pipelines, saving results into files, and reading from standard input are primitives in shell scripting, which makes it easier to use than general purpose scripting languages. For this section we will focus on bash scripting since it is the most common.</p>
+<p>To assign variables in bash, use the syntax <code>foo=bar</code> and access the value of the variable with <code>$foo</code>.
+Note that <code>foo = bar</code> will not work since it is interpreted as calling the <code>foo</code> program with arguments <code>=</code> and <code>bar</code>. In general, in shell scripts, the space character will perform argument splitting. This behavior can be confusing to use at first, so always check for that.</p>
+<p>Strings in bash can be defined with <code>'</code> and <code>"</code> delimiters, but they are not equivalent. Strings delimited with <code>'</code> are string literals and will not substitute variable values whereas <code>"</code> delimited strings will.</p>
+<pre><code class="language-bash">foo=bar
+echo "$foo"
+# prints bar
+echo '$foo'
+# prints $foo
+</code></pre>
+<p>As with most programming languages, bash supports control flow techniques including <code>if</code>, <code>case</code>, <code>while</code> and <code>for</code>. Similarly, <code>bash</code> has functions that take arguments and can operate with them. Here is an example of a function that creates a directory and <code>cd</code>s into it.</p>
+<pre><code class="language-bash">mcd () {
+    mkdir -p "$1"
+    cd "$1"
+}
+</code></pre>
+<p>Here <code>$1</code> is the first argument to the script/function.
+Unlike other scripting languages, bash uses a variety of special variables to refer to arguments, error codes, and other relevant variables. Below is a list of some of them. A more comprehensive list can be found <a href="https://tldp.org/LDP/abs/html/special-chars.html">here</a>.</p>
+<ul>
+<li><code>$0</code> - Name of the script</li>
+<li><code>$1</code> to <code>$9</code> - Arguments to the script. <code>$1</code> is the first argument and so on.</li>
+<li><code>$@</code> - All the arguments</li>
+<li><code>$#</code> - Number of arguments</li>
+<li><code>$?</code> - Return code of the previous command</li>
+<li><code>$$</code> - Process identification number (PID) for the current script</li>
+<li><code>!!</code> - Entire last command, including arguments. A common pattern is to execute a command only for it to fail due to missing permissions; you can quickly re-execute the command with sudo by doing <code>sudo !!</code></li>
+<li><code>$_</code> - Last argument from the last command. If you are in an interactive shell, you can also quickly get this value by typing <code>Esc</code> followed by <code>.</code> or <code>Alt+.</code></li>
+</ul>
+<p>Commands will often return output using <code>STDOUT</code>, errors through <code>STDERR</code>, and a Return Code to report errors in a more script-friendly manner.
+The return code or exit status is the way scripts/commands have to communicate how execution went.
+A value of 0 usually means everything went OK; anything different from 0 means an error occurred.</p>
+<p>Exit codes can be used to conditionally execute commands using <code>&amp;&amp;</code> (and operator) and <code>||</code> (or operator), both of which are <a href="https://en.wikipedia.org/wiki/Short-circuit_evaluation">short-circuiting</a> operators. Commands can also be separated within the same line using a semicolon <code>;</code>.
+The <code>true</code> program will always have a 0 return code and the <code>false</code> command will always have a 1 return code.
+Let's see some examples</p>
+<pre><code class="language-bash">false || echo "Oops, fail"
+# Oops, fail
+
+true || echo "Will not be printed"
+#
+
+true &amp;&amp; echo "Things went well"
+# Things went well
+
+false &amp;&amp; echo "Will not be printed"
+#
+
+true ; echo "This will always run"
+# This will always run
+
+false ; echo "This will always run"
+# This will always run
+</code></pre>
+<p>Another common pattern is wanting to get the output of a command as a variable. This can be done with <em>command substitution</em>.
+Whenever you place <code>$( CMD )</code> it will execute <code>CMD</code>, get the output of the command and substitute it in place.
+For example, if you do <code>for file in $(ls)</code>, the shell will first call <code>ls</code> and then iterate over those values.
+A lesser known similar feature is <em>process substitution</em>, <code>&lt;( CMD )</code> will execute <code>CMD</code> and place the output in a temporary file and substitute the <code>&lt;()</code> with that file's name. This is useful when commands expect values to be passed by file instead of by STDIN. For example, <code>diff &lt;(ls foo) &lt;(ls bar)</code> will show differences between files in dirs  <code>foo</code> and <code>bar</code>.</p>
+<p>Since that was a huge information dump, let's see an example that showcases some of these features. It will iterate through the arguments we provide, <code>grep</code> for the string <code>foobar</code>, and append it to the file as a comment if it's not found.</p>
+<pre><code class="language-bash">#!/bin/bash
+
+echo "Starting program at $(date)" # Date will be substituted
+
+echo "Running program $0 with $# arguments with pid $$"
+
+for file in "$@"; do
+    grep foobar "$file" &gt; /dev/null 2&gt; /dev/null
+    # When pattern is not found, grep has exit status 1
+    # We redirect STDOUT and STDERR to a null register since we do not care about them
+    if [[ $? -ne 0 ]]; then
+        echo "File $file does not have any foobar, adding one"
+        echo "# foobar" &gt;&gt; "$file"
+    fi
+done
+</code></pre>
+<p>In the comparison we tested whether <code>$?</code> was not equal to 0. Bash implements many comparisons of this sort - you can find a detailed list in the manpage for <a href="https://www.man7.org/linux/man-pages/man1/test.1.html"><code>test</code></a>. When performing comparisons in bash, try to use double brackets <code>[[ ]]</code> in favor of simple brackets <code>[ ]</code>. Chances of making mistakes are lower although it won't be portable to <code>sh</code>. A more detailed explanation can be found <a href="http://mywiki.wooledge.org/BashFAQ/031">here</a>.</p>
+<p>When launching scripts, you will often want to provide arguments that are similar. Bash has ways of making this easier, expanding expressions by carrying out filename expansion. These techniques are often referred to as shell <em>globbing</em>.</p>
+<ul>
+<li>Wildcards - Whenever you want to perform some sort of wildcard matching, you can use <code>?</code> and <code>*</code> to match one or any amount of characters respectively. For instance, given files <code>foo</code>, <code>foo1</code>, <code>foo2</code>, <code>foo10</code> and <code>bar</code>, the command <code>rm foo?</code> will delete <code>foo1</code> and <code>foo2</code> whereas <code>rm foo*</code> will delete all but <code>bar</code>.</li>
+<li>Curly braces <code>{}</code> - Whenever you have a common substring in a series of commands, you can use curly braces for bash to expand this automatically. This comes in very handy when moving or converting files.</li>
+</ul>
+<pre><code class="language-bash">convert image.{png,jpg}
+# Will expand to
+convert image.png image.jpg
+
+cp /path/to/project/{foo,bar,baz}.sh /newpath
+# Will expand to
+cp /path/to/project/foo.sh /path/to/project/bar.sh /path/to/project/baz.sh /newpath
+
+# Globbing techniques can also be combined
+mv *{.py,.sh} folder
+# Will move all *.py and *.sh files
+
+
+mkdir foo bar
+# This creates files foo/a, foo/b, ... foo/h, bar/a, bar/b, ... bar/h
+touch {foo,bar}/{a..h}
+touch foo/x bar/y
+# Show differences between files in foo and bar
+diff &lt;(ls foo) &lt;(ls bar)
+# Outputs
+# &lt; x
+# ---
+# &gt; y
+</code></pre>
+<!-- Lastly, pipes `|` are a core feature of scripting. Pipes connect one program's output to the next program's input. We will cover them more in detail in the data wrangling lecture. -->
+<p>Writing <code>bash</code> scripts can be tricky and unintuitive. There are tools like <a href="https://github.com/koalaman/shellcheck">shellcheck</a> that will help you find errors in your sh/bash scripts.</p>
+<p>Note that scripts need not necessarily be written in bash to be called from the terminal. For instance, here's a simple Python script that outputs its arguments in reversed order:</p>
+<pre><code class="language-python">#!/usr/local/bin/python
+import sys
+for arg in reversed(sys.argv[1:]):
+    print(arg)
+</code></pre>
+<p>The kernel knows to execute this script with a python interpreter instead of a shell command because we included a <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a> line at the top of the script.
+It is good practice to write shebang lines using the <a href="https://www.man7.org/linux/man-pages/man1/env.1.html"><code>env</code></a> command that will resolve to wherever the command lives in the system, increasing the portability of your scripts. To resolve the location, <code>env</code> will make use of the <code>PATH</code> environment variable we introduced in the first lecture.
+For this example the shebang line would look like <code>#!/usr/bin/env python</code>.</p>
+<p>Some differences between shell functions and scripts that you should keep in mind are:</p>
+<ul>
+<li>Functions have to be in the same language as the shell, while scripts can be written in any language. This is why including a shebang for scripts is important.</li>
+<li>Functions are loaded once when their definition is read. Scripts are loaded every time they are executed. This makes functions slightly faster to load, but whenever you change them you will have to reload their definition.</li>
+<li>Functions are executed in the current shell environment whereas scripts execute in their own process. Thus, functions can modify environment variables, e.g. change your current directory, whereas scripts can't. Scripts will be passed by value environment variables that have been exported using <a href="https://www.man7.org/linux/man-pages/man1/export.1p.html"><code>export</code></a></li>
+<li>As with any programming language, functions are a powerful construct to achieve modularity, code reuse, and clarity of shell code. Often shell scripts will include their own function definitions.</li>
+</ul>
+<h1 id="shell-tools"><a class="header" href="#shell-tools">Shell Tools</a></h1>
+<h2 id="system-health--state"><a class="header" href="#system-health--state">System Health / State</a></h2>
+<p>You can easily view statistics of your system like CPU usage, memory usage, running processes, and more using the <code>top</code>(table of processes) command. You can learn more on how to parse this output [here](<a href="https://www.redhat.com/en/blog/interpret-top-output">What the first five lines of Linux’s top command tell you</a>).</p>
+<h2 id="finding-files"><a class="header" href="#finding-files">Finding files</a></h2>
+<p>One of the most common repetitive tasks that every programmer faces is finding files or directories.
+All UNIX-like systems come packaged with <a href="https://www.man7.org/linux/man-pages/man1/find.1.html"><code>find</code></a>, a great shell tool to find files. <code>find</code> will recursively search for files matching some criteria. Some examples:</p>
+<pre><code class="language-bash"># Find all directories named src
+find . -name src -type d
+# Find all python files that have a folder named test in their path
+find . -path '*/test/*.py' -type f
+# Find all files modified in the last day
+find . -mtime -1
+# Find all zip files with size in range 500k to 10M
+find . -size +500k -size -10M -name '*.tar.gz'
+</code></pre>
+<p>Beyond listing files, find can also perform actions over files that match your query.
+This property can be incredibly helpful to simplify what could be fairly monotonous tasks.</p>
+<pre><code class="language-bash"># Delete all files with .tmp extension
+find . -name '*.tmp' -exec rm {} \;
+# Find all PNG files and convert them to JPG
+find . -name '*.png' -exec convert {} {}.jpg \;
+</code></pre>
+<p>Despite <code>find</code>'s ubiquitousness, its syntax can sometimes be tricky to remember.
+For instance, to simply find files that match some pattern <code>PATTERN</code> you have to execute <code>find -name '*PATTERN*'</code> (or <code>-iname</code> if you want the pattern matching to be case insensitive).
+You could start building aliases for those scenarios, but part of the shell philosophy is that it is good to explore alternatives.
+Remember, one of the best properties of the shell is that you are just calling programs, so you can find (or even write yourself) replacements for some.
+For instance, <a href="https://github.com/sharkdp/fd"><code>fd</code></a> is a simple, fast, and user-friendly alternative to <code>find</code>.
+It offers some nice defaults like colorized output, default regex matching, and Unicode support. It also has, in my opinion, a more intuitive syntax.
+For example, the syntax to find a pattern <code>PATTERN</code> is <code>fd PATTERN</code>.</p>
+<p>Most would agree that <code>find</code> and <code>fd</code> are good, but some of you might be wondering about the efficiency of looking for files every time versus compiling some sort of index or database for quickly searching.
+That is what <a href="https://www.man7.org/linux/man-pages/man1/locate.1.html"><code>locate</code></a> is for.
+<code>locate</code> uses a database that is updated using <a href="https://www.man7.org/linux/man-pages/man1/updatedb.1.html"><code>updatedb</code></a>.
+In most systems, <code>updatedb</code> is updated daily via <a href="https://www.man7.org/linux/man-pages/man8/cron.8.html"><code>cron</code></a>.
+Therefore one trade-off between the two is speed vs freshness.
+Moreover <code>find</code> and similar tools can also find files using attributes such as file size, modification time, or file permissions, while <code>locate</code> just uses the file name.
+A more in-depth comparison can be found <a href="https://unix.stackexchange.com/questions/60205/locate-vs-find-usage-pros-and-cons-of-each-other">here</a>.</p>
+<h2 id="finding-code"><a class="header" href="#finding-code">Finding code</a></h2>
+<p>Finding files by name is useful, but quite often you want to search based on file <em>content</em>.
+A common scenario is wanting to search for all files that contain some pattern, along with where in those files said pattern occurs.
+To achieve this, most UNIX-like systems provide <a href="https://www.man7.org/linux/man-pages/man1/grep.1.html"><code>grep</code></a>, a generic tool for matching patterns from the input text.
+<code>grep</code> is an incredibly valuable shell tool that we will cover in greater detail during the data wrangling lecture.</p>
+<p>For now, know that <code>grep</code> has many flags that make it a very versatile tool.
+Some I frequently use are <code>-C</code> for getting <strong>C</strong>ontext around the matching line and <code>-v</code> for in<strong>v</strong>erting the match, i.e. print all lines that do <strong>not</strong> match the pattern. For example, <code>grep -C 5</code> will print 5 lines before and after the match.
+When it comes to quickly searching through many files, you want to use <code>-R</code> since it will <strong>R</strong>ecursively go into directories and look for files for the matching string.</p>
+<p>But <code>grep -R</code> can be improved in many ways, such as ignoring <code>.git</code> folders, using multi CPU support, &amp;c.
+Many <code>grep</code> alternatives have been developed, including <a href="https://github.com/beyondgrep/ack3">ack</a>, <a href="https://github.com/ggreer/the_silver_searcher">ag</a> and <a href="https://github.com/BurntSushi/ripgrep">rg</a>.
+All of them are fantastic and pretty much provide the same functionality.
+For now I am sticking with ripgrep (<code>rg</code>), given how fast and intuitive it is. Some examples:</p>
+<pre><code class="language-bash"># Find all python files where I used the requests library
+rg -t py 'import requests'
+# Find all files (including hidden files) without a shebang line
+rg -u --files-without-match "^#\!"
+# Find all matches of foo and print the following 5 lines
+rg foo -A 5
+# Print statistics of matches (# of matched lines and files )
+rg --stats PATTERN
+</code></pre>
+<p>Note that as with <code>find</code>/<code>fd</code>, it is important that you know that these problems can be quickly solved using one of these tools, while the specific tools you use are not as important.</p>
+<h2 id="finding-shell-commands"><a class="header" href="#finding-shell-commands">Finding shell commands</a></h2>
+<p>So far we have seen how to find files and code, but as you start spending more time in the shell, you may want to find specific commands you typed at some point.
+The first thing to know is that typing the up arrow will give you back your last command, and if you keep pressing it you will slowly go through your shell history.</p>
+<p>The <code>history</code> command will let you access your shell history programmatically.
+It will print your shell history to the standard output.
+If we want to search there we can pipe that output to <code>grep</code> and search for patterns.
+<code>history | grep find</code> will print commands that contain the substring "find".</p>
+<p>In most shells, you can make use of <code>Ctrl+R</code> to perform backwards search through your history.
+After pressing <code>Ctrl+R</code>, you can type a substring you want to match for commands in your history.
+As you keep pressing it, you will cycle through the matches in your history.
+This can also be enabled with the UP/DOWN arrows in <a href="https://github.com/zsh-users/zsh-history-substring-search">zsh</a>.
+A nice addition on top of <code>Ctrl+R</code> comes with using <a href="https://github.com/junegunn/fzf/wiki/Configuring-shell-key-bindings#ctrl-r">fzf</a> bindings.
+<code>fzf</code> is a general-purpose fuzzy finder that can be used with many commands.
+Here it is used to fuzzily match through your history and present results in a convenient and visually pleasing manner.</p>
+<p>Another cool history-related trick I really enjoy is <strong>history-based autosuggestions</strong>.
+First introduced by the <a href="https://fishshell.com/">fish</a> shell, this feature dynamically autocompletes your current shell command with the most recent command that you typed that shares a common prefix with it.
+It can be enabled in <a href="https://github.com/zsh-users/zsh-autosuggestions">zsh</a> and it is a great quality of life trick for your shell.</p>
+<p>You can modify your shell's history behavior, like preventing commands with a leading space from being included. This comes in handy when you are typing commands with passwords or other bits of sensitive information.
+To do this, add <code>HISTCONTROL=ignorespace</code> to your <code>.bashrc</code> or <code>setopt HIST_IGNORE_SPACE</code> to your <code>.zshrc</code>.
+If you make the mistake of not adding the leading space, you can always manually remove the entry by editing your <code>.bash_history</code> or <code>.zsh_history</code>.</p>
+<h2 id="directory-navigation"><a class="header" href="#directory-navigation">Directory Navigation</a></h2>
+<p>So far, we have assumed that you are already where you need to be to perform these actions. But how do you go about quickly navigating directories?
+There are many simple ways that you could do this, such as writing shell aliases or creating symlinks with <a href="https://www.man7.org/linux/man-pages/man1/ln.1.html">ln -s</a>, but the truth is that developers have figured out quite clever and sophisticated solutions by now.</p>
+<p>As with the theme of this course, you often want to optimize for the common case.
+Finding frequent and/or recent files and directories can be done through tools like <a href="https://github.com/clvv/fasd"><code>fasd</code></a> and <a href="https://github.com/wting/autojump"><code>autojump</code></a>.
+Fasd ranks files and directories by <a href="https://web.archive.org/web/20210421120120/https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Places/Frecency_algorithm"><em>frecency</em></a>, that is, by both <em>frequency</em> and <em>recency</em>.
+By default, <code>fasd</code> adds a <code>z</code> command that you can use to quickly <code>cd</code> using a substring of a <em>frecent</em> directory. For example, if you often go to <code>/home/user/files/cool_project</code> you can simply use <code>z cool</code> to jump there. Using autojump, this same change of directory could be accomplished using <code>j cool</code>.</p>
+<p>More complex tools exist to quickly get an overview of a directory structure: <a href="https://linux.die.net/man/1/tree"><code>tree</code></a>, <a href="https://github.com/Canop/broot"><code>broot</code></a> or even full fledged file managers like <a href="https://github.com/jarun/nnn"><code>nnn</code></a> or <a href="https://github.com/ranger/ranger"><code>ranger</code></a>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="UsingTheShell.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="CommandLineEnvironment.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="UsingTheShell.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="CommandLineEnvironment.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

@@ -1,5 +1,5 @@
 # Summary
-
+- [Syllabus](./syllabus.md)
 - [Using The Shell](./UsingTheShell.md)
 - [Shell Tools and Scripting](./ShellToolsAndScripting.md)
 - [Command Line Environment](./CommandLineEnvironment.md)

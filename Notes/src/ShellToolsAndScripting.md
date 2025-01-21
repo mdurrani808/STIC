@@ -18,7 +18,18 @@ Start by creating a script file using any text editor, here we will create `mysc
 echo "Hello world!"
 ```
 
-The first line, called a shebang (`#!/bin/bash`), tells the system to use bash to execute this script. For better portability, use `#!/usr/bin/env bash`, which locates bash using the system's PATH variable. The second line executes the echo program with an argument of "Hello world!".
+The first line, called a *shebang* (`#!/bin/bash`), tells the system to use bash to execute this script. For better portability, use `#!/usr/bin/env bash`, which locates bash using the system's PATH variable. The second line executes the echo program with an argument of "Hello world!".
+
+```admonish info
+The *shebang* mentioned earlier is short of "Shell Bang" as the `!` mark is historically referred to as a "bang" in computing circles.  The first line of scripts will have this syntax though `bash` may be replaced by other script interpreters depending on the programmign language used int the script. Some common examples are
+
+| Shebang               | Interpreter / Language           |
+|-----------------------|----------------------------------|
+| `#!/bin/bash`         | Bash shell script                |
+| `#!/bin/sh`           | Traditional vanilla shell script |
+| `#!/usr/bin/python`   | Python script                    |
+| `#!/usr/bin/awk -f`   | AWK script                       |
+```
 
 Now, make the script executable and run it.
 
@@ -29,8 +40,7 @@ chmod +x myscript.sh
 
 Here, we are adding execute permission for all to the myscript.sh file and then execute it. You should see "Hello world!" in your stdout.
 
-Commands will often return output using `STDOUT`, errors through `STDERR`, and a Return Code to report errors in a more script-friendly manner.
-The return code or exit status is the way scripts/commands have to communicate how execution went. A value of 0 usually means everything went OK; anything different from 0 means an error occurred. Commands can also be separated within the same line using a semicolon `;`.
+Commands will often produce output using Standard Output (`STDOUT`, defaults to the screen), errors through Standard Error (`STDERR`, defaults to the screen), accept input through Standard Input (`STDIN`, defaults to typed intput), and a Return Code (also called Exit Code) to report errors in a more script-friendly manner.  The return code is the way scripts/commands communicate the success or failure of their execution. A value of 0 usually means everything went OK; anything different from 0 means an error occurred. Commands can also be separated within the same line using a semicolon `;`.
 
 ### Assigning Variables
 
@@ -89,6 +99,14 @@ Common conditional tests:
 
 Exit codes can be used to conditionally execute commands using `&&` (and operator) and `||` (or operator), both of which are [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation) operators. The `true` program will always have a 0 return code and the `false` command will always have a 1 return code.
 
+
+```admonish info
+Both the following syntaxes will be honored for conditions in BASH scripts:
+1. `if [ condition ]; then ...; fi`  : Historical
+2. `if [[ condition ]]; then ...; fi` : Modern
+The difference is age: the first which uses a single pair of `[ ]` is the original shell syntax and uses a subshell (starts another program) to evaluate the `condition`. This gets the job done but is computationally costly for its need to start a new shell. Newer shells including BASH offer the double pair `[[ ]]` operator which evaluates a condition within the running shell.  Favor the Modern version in all code that you write unless you expect it will be run on an ancient computing platform.
+```
+
 #### For loops
 
 ```bash
@@ -106,14 +124,27 @@ done
 for ((i=0; i<5; i++)); do
     echo "Count: $i"
 done
+
+# counting loop via the seq command
+for i in $(seq 0 5 30); do 
+    echo i is $i; 
+done
 ```
+
 
 #### While loops
 
 ```bash
-# Basic while loop
+# Basic while loop using builtin [[ ]] and -lt comparison
 count=0
 while [[ $count -lt 5 ]]; do
+    echo "Count: $count"
+    ((count++))
+done
+
+# Use more standard arithmetic comparison via (( expr ))
+count=0
+while (( $count < 5 )); do
     echo "Count: $count"
     ((count++))
 done
@@ -123,6 +154,8 @@ while read -r line; do
     echo "Line: $line"
 done < input.txt
 ```
+
+As the last example indicates, loop syntax can use I/O redirection and pipes via the `< > |` shell operators.
 
 ### Functions
 
@@ -143,7 +176,13 @@ check_file() {
 
 # Function usage
 check_file "example.txt" 
+echo Function returned $?
 ```
+
+Note several features
+- Functions in shell scripts do not declare a parameter list making their prototypes less informative than in modern programming languages.
+- The argument to the function is obtained via the `$1` automatic variable; functions called with several arguments will have `$2` and so on populated and the `$#` variable indicates how many arguments were passed.
+- The final `echo` command shows the return value of the function using the built-in `$?` mentioned earlier which contains the last return code from a function or child process.
 
 To return a non-integer value from a function, we have a few options. The simplest option is to assign the result of the function to a global variable:
 
@@ -192,7 +231,7 @@ for file in "$@"; do
 done
 ```
 
-### Providing Arguments
+### Shell Globs and Script Arguments
 
 When launching scripts, you will often want to provide arguments that are similar. Bash has ways of making this easier, expanding expressions by carrying out filename expansion. These techniques are often referred to as shell _globbing_.
 
@@ -225,9 +264,74 @@ diff <(ls foo) <(ls bar)
 # > y
 ```
 
+```admonish info
+Shell Globs and Regular Expressions are related but distinct methods to specify a pattern to be matched. Globs are tailored best to easily do the most common types of file name matching like all `*.txt` files (all text files). Regular expressions allow finer-grained control over matching at the expense being somewhat longer to specify.  Some programmign libraries allow you to specify use of whichever is more convenient such as Python which has a [glob](https://docs.python.org/3/library/glob.html) library for file matching and a regular expression library in [re](https://docs.python.org/3/library/re.html).
+```
+
 ### Shell Check
 
 Writing `bash` scripts can be tricky and unintuitive. There are tools like [shellcheck](https://github.com/koalaman/shellcheck) that will help you find errors in your sh/bash scripts.
+
+### Additional Built-in Syntax
+
+Most shells have additional built-in commands and capabilities that they recognize like `cd / if / for / (( expr ))` and so on.  Bash will reveal a summary of its syntactic features by typing `help` with `help CMD` giving more information on the specific command. It is best to do some online reading to look for examples of the builtins as they can be tricky to use effectively.
+
+```console
+>> help bash
+...
+ job_spec [&]                                  history [-c] [-d offset] [n] or history -a>
+ (( expression ))                              if COMMANDS; then COMMANDS; [ elif COMMAND>
+ . filename [arguments]                        jobs [-lnprs] [jobspec ...] or jobs -x com>
+ :                                             kill [-s sigspec | -n signum | -sigspec] p>
+ [ arg... ]                                    let arg [arg ...]
+ [[ expression ]]                              local [option] name[=value] ...
+ alias [-p] [name[=value] ... ]                logout [n]
+ bg [job_spec ...]                             mapfile [-d delim] [-n count] [-O origin] >
+ bind [-lpsvPSVX] [-m keymap] [-f filename] >  popd [-n] [+N | -N]
+ break [n]                                     printf [-v var] format [arguments]
+ builtin [shell-builtin [arg ...]]             pushd [-n] [+N | -N | dir]
+ caller [expr]                                 pwd [-LP]
+ case WORD in [PATTERN [| PATTERN]...) COMMA>  read [-ers] [-a array] [-d delim] [-i text>
+ cd [-L|[-P [-e]] [-@]] [dir]                  readarray [-d delim] [-n count] [-O origin>
+ command [-pVv] command [arg ...]              readonly [-aAf] [name[=value] ...] or read>
+ compgen [-abcdefgjksuv] [-o option] [-A act>  return [n]
+ complete [-abcdefgjksuv] [-pr] [-DEI] [-o o>  select NAME [in WORDS ... ;] do COMMANDS; >
+ compopt [-o|+o option] [-DEI] [name ...]      set [-abefhkmnptuvxBCEHPT] [-o option-name>
+ continue [n]                                  shift [n]
+ coproc [NAME] command [redirections]          shopt [-pqsu] [-o] [optname ...]
+ declare [-aAfFgiIlnrtux] [name[=value] ...]>  source filename [arguments]
+ dirs [-clpv] [+N] [-N]                        suspend [-f]
+ disown [-h] [-ar] [jobspec ... | pid ...]     test [expr]
+ echo [-neE] [arg ...]                         time [-p] pipeline
+ enable [-a] [-dnps] [-f filename] [name ...>  times
+ eval [arg ...]                                trap [-lp] [[arg] signal_spec ...]
+ exec [-cl] [-a name] [command [argument ...>  true
+ exit [n]                                      type [-afptP] name [name ...]
+ export [-fn] [name[=value] ...] or export ->  typeset [-aAfFgiIlnrtux] name[=value] ... >
+ false                                         ulimit [-SHabcdefiklmnpqrstuvxPRT] [limit]
+ fc [-e ename] [-lnr] [first] [last] or fc ->  umask [-p] [-S] [mode]
+ fg [job_spec]                                 unalias [-a] name [name ...]
+ for NAME [in WORDS ... ] ; do COMMANDS; don>  unset [-f] [-v] [-n] [name ...]
+ for (( exp1; exp2; exp3 )); do COMMANDS; do>  until COMMANDS; do COMMANDS-2; done
+ function name { COMMANDS ; } or name () { C>  variables - Names and meanings of some she>
+ getopts optstring name [arg ...]              wait [-fn] [-p var] [id ...]
+ hash [-lr] [-p pathname] [-dt] [name ...]     while COMMANDS; do COMMANDS-2; done
+ help [-dms] [pattern ...]                     { COMMANDS ; }
+
+>> help read
+read: read [-ers] [-a array] [-d delim] [-i text] [-n nchars] [-N nchars] [-p prompt] [-t timeout] [-u fd] [name ...]
+    Read a line from the standard input and split it into fields.
+    
+    Reads a single line from the standard input, or from file descriptor FD
+    if the -u option is supplied.  The line is split into fields as with word
+...
+```
+
+### Limitations of Shell Scripts
+
+As seen, the Programming Language understood by BASH and other shells has many of the features of other programming languages though the syntax for them is archaic.  One can accomplish a lot with shell scripts ([example 1](https://github.com/kauffman77/testy/blob/master/testyb), [example 2](https://github.com/gcc-mirror/gcc/blob/master/configure)).  That should not encourage you attempt such monoliths regularly: the Shell Programming language lacks adequate abstraction mechanisms to scale up to large code bases and is notoriously difficult to maintain.
+
+If a script begins to grow beyond a few dozen lines, it is a good idea to refactor and rewrite, possibly adopting a new language better suited to growing. Python is a good choice as it has specific features aimed to make shell-like scripts easy to write but also many modern features including object-oriented programming and a modules system.
 
 ## Shell Tools
 
@@ -342,4 +446,4 @@ Finding frequent and/or recent files and directories can be done through tools l
 Fasd ranks files and directories by [_frecency_](https://web.archive.org/web/20210421120120/https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Places/Frecency_algorithm), that is, by both _frequency_ and _recency_.
 By default, `fasd` adds a `z` command that you can use to quickly `cd` using a substring of a _frecent_ directory. For example, if you often go to `/home/user/files/cool_project` you can simply use `z cool` to jump there. Using autojump, this same change of directory could be accomplished using `j cool`.
 
-More complex tools exist to quickly get an overview of a directory structure: [`tree`](https://linux.die.net/man/1/tree), [`broot`](https://github.com/Canop/broot) or even full fledged file managers like [`nnn`](https://github.com/jarun/nnn) or [`ranger`](https://github.com/ranger/ranger).
+More complex tools exist to quickly get an overview of a directory structure: [`tree`](https://linux.die.net/man/1/tree), [`broot`](https://github.com/Canop/broot) or even full fledged file managers like [`nnn`](https://github.com/jarun/nnn), [`ranger`](https://github.com/ranger/ranger), and [midnight commander `mc`](https://midnight-commander.org/).

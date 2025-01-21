@@ -146,6 +146,19 @@ Often times, you will want to search for a specific flag or action within the ma
 
 Other times, it may be more convenient to use the online versions of these man pages, which can be found here: <https://man7.org/linux/man-pages/>. Alternatively, you could use ``curl cheat.sh/[yourcommand]``, which uses cheat.sh to give you nice examples for the command you want to run.
 
+If you are unsure of what command / function is of interest, you can search all manual pages for a word or phrase via either of `man -k <query_phrase>` or `apropos <query_phrase>` which will show one-line summaries of relevant manual pages.
+```console
+mdurrani@MDXPS139380:~/stic$ apropos bash
+bash (1)             - GNU Bourne-Again SHell
+bashbug (1)          - report a bug in bash
+screenfetch (1)      - The Bash Screenshot Information Tool
+
+mdurrani@MDXPS139380:~/stic$ apropos gcc
+avr-gcc (1)          - GNU project C and C++ compiler
+gcc (1)              - GNU project C and C++ compiler
+gccmakedep (1)       - create dependencies in makefiles using 'gcc -M'
+```
+
 [TLDR pages](https://tldr.sh/) are a nifty complementary solution that focuses on giving example use cases of a command so you can quickly figure out which options to use.
 
 ## Connecting Programs

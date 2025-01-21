@@ -142,7 +142,7 @@ cmsc398w:~$ man ls
 
 ### Searching man pages
 
-Often times, you will want to search for a specific flag or action within the man pages for a command. To do this, you can type ``/[regex]`` where ``[regex]`` is a valid regular expression and then hit enter. For example, if I wanted to search for the flag ``-B``, I would type ``/-B``.
+Often times, you will want to search for a specific flag or action within the man pages for a command. To do this, you can type ``/[regex]`` where ``[regex]`` is a valid regular expression and then hit enter. For example, if I wanted to search for the flag ``-B``, I would type ``/-B``. Manual pages are usually displayed via a *pager*, a program that displays text. The most common pager is `less` and typing `man less` will show information about that program and its many other shortcut keys.
 
 Other times, it may be more convenient to use the online versions of these man pages, which can be found here: <https://man7.org/linux/man-pages/>. Alternatively, you could use ``curl cheat.sh/[yourcommand]``, which uses cheat.sh to give you nice examples for the command you want to run.
 

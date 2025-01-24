@@ -1,8 +1,9 @@
 # Summary
 
-## Notes
-
 - [Syllabus](./Notes/syllabus.md)
+
+# Notes
+
 - [Using The Shell](./Notes/UsingTheShell.md)
 - [Shell Tools and Scripting](./Notes/ShellToolsAndScripting.md)
 - [Command Line Environment](./Notes/CommandLineEnvironment.md)
@@ -12,6 +13,6 @@
 - [Git and Version Control](./Notes/Git.md)
 - [Networking](./Notes/Networking.md)
 
-## Projects
+# Projects
 
 - [System Monitoring Tool](./Projects/SystemMonitoring/ProjectDescription.md)

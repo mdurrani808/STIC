@@ -27,7 +27,7 @@ jobs:
 
       - name: Install mdbook-admonition
         run: |
-          cargo install mdbook-admonish
+          cargo install mdbook-admonish --locked
 
       - name: Setup Pages
         id: pages
@@ -36,7 +36,7 @@ jobs:
       - name: Build with mdBook
         run: |
           mdbook build documentation/
-          mdbook-admonish install documentation/book
+          mdbook-admonish install documentation/
 
 
       - name: Upload artifact

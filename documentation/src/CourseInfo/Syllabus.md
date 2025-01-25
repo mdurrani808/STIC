@@ -18,7 +18,7 @@ This course will provide a broad overview of many common and useful tools, like 
 * Course Facilitator(s): Mohammad Durrani, Karan Jain
 * Faculty Advisor: Prof. Christopher Kauffman
 
-## Topics Covered*
+## Topics Covered
 
 Syllabus may be subject to minor changes, but drastic revisions will require input of students/facilitators, and those involved will be notified immediately
 
@@ -33,6 +33,30 @@ Syllabus may be subject to minor changes, but drastic revisions will require inp
 * Continuous Integration
 * Networking
 
+
+## Course Schedule
+
+This is subject to change.
+
+| Date | Concept | Assignment |
+|--------|----------|------------|
+| 01/31/2025 | The Shell | |
+| 02/07/2025 | Shell Tools and Scripting | |
+| 02/14/2025 | Data Wrangling | |
+| 02/21/2025 | Command-line Environment | System Monitoring Project Due |
+| 02/28/2025 | Version Control (Git) | |
+| 03/07/2025 | Version Control (Git) | |
+| 03/14/2025 | Vim (video lesson) | PacMan Project Part 1 Due |
+| 03/21/2025 | Spring Break | |
+| 03/28/2025 | Debugging and Profiling | |
+| 04/04/2025 | Build Systems / Continuous Integration | |
+| 04/11/2025 | Build Systems / Continuous Integration | |
+| 04/18/2025 | Docker | PacMan Project Part 2 Due |
+| 04/25/2025 | Networking 1 | |
+| 05/02/2025 | Networking 2 | |
+| 05/09/2025 | Flex | Networking Project Due |
+
+
 ## Grading
 
 Grades will be maintained on ELMS. You will be responsible for all material discussed in lecture as well as other standard means of communication (Piazza, email announcements, etc.), including but not limited to deadlines, policies, assignment changes, etc.
@@ -43,7 +67,7 @@ Your final course grade will be determined according to the following percentage
 
 | Percentage | Title | Description |
 |------------|-------|-------------|
-| 90% | Projects / Assignments | 3 major projects, 1 assignment |
+| 90% | Projects / Assignments | 4 major projects |
 | 10% | Participation | Participation in class. |
 
 ## Communicating with course staff

@@ -1,20 +1,37 @@
 #!/bin/bash
 
+get_cpu_usage() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        top -l 2 -n 0 -F | grep -E "^CPU" | tail -1 | awk '{print $3+$5}'
+    else
+        top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}'
+    fi
+}
+
+get_memory_usage() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        top -l 1 -n 0 | grep "PhysMem" | awk '{print $2}' | sed 's/M//' | awk '{print ($1/4096)*100}'
+    else
+        free | grep Mem | awk '{print $3/$2 * 100.0}'
+    fi
+}
+
 display_stats() {
     clear
     echo "System Monitor Dashboard"
     echo "========================"
     
     # CPU Usage
-    cpu=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
+    cpu=$(get_cpu_usage)
     printf "CPU Usage: %5.1f%% " $cpu
-    draw_bar ${cpu%.*}  # Remove decimal part
+    draw_bar ${cpu%.*}
+    echo ""
     
     # Memory Usage
-    mem=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
+    mem=$(get_memory_usage)
     printf "Memory Usage: %5.1f%% " $mem
-    draw_bar ${mem%.*}  # Remove decimal part
-    
+    draw_bar ${mem%.*}
+    echo ""
     
     echo "========================"
     echo "Press Ctrl+C to exit"

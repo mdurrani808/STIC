@@ -5,7 +5,11 @@ print_usage() {
     echo "Displays all stats between the start and end times."
 }
 
-# Parse command line arguments
+if [[ "$1" == "--help" ]]; then
+    print_usage
+    exit 0
+fi
+
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --start) start_date="$2"; shift ;;
@@ -14,18 +18,23 @@ while [[ "$#" -gt 0 ]]; do
     esac
     shift
 done
-
-# Validate inputs
 if [[ -z "$start_date" || -z "$end_date" ]]; then
-    echo "Both start and end dates must be specified"
+    echo "ERROR: Both start and end dates must be specified"
     print_usage
     exit 1
 fi
 
-# Execute query
+# Determine log file location
+LOGFILE=${SYSTEM_STATSFILE:-/tmp/system_stats.log}
+
+if [[ ! -f "$LOGFILE" ]]; then
+    echo "ERROR: Log file not found at $LOGFILE"
+    exit 1
+fi
+
 echo "Timestamp,CPU%,Memory%"
 awk -F',' -v start="$start_date" -v end="$end_date" '
     $1 >= start && $1 <= end {
         printf "%s,%.2f,%.2f,\n", $1, $2, $3
     }
-' /tmp/system_stats.log
+' "$LOGFILE"

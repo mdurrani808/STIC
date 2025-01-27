@@ -7,32 +7,15 @@ This course will provide a broad overview of many common and useful tools, like 
 
 ## Course Details
 
-* Course:
-* Prerequisites: CMSC132
+* Course: Practical Tools For Efficient Development
+* Prerequisites: Minimum grade of C- in CMSC216 and CM250
 * Credits: 1
-* Seats:
-* Lecture Time:
-* Location:
+* Seats: 30
+* Lecture Time: Friday 2:00pm - 2:50pm
+* Location: CSI 2107
 * Semester: Spring 2025
-* Textbook: N/A
 * Course Facilitator(s): Mohammad Durrani, Karan Jain
 * Faculty Advisor: Prof. Christopher Kauffman
-
-## Topics Covered
-
-Syllabus may be subject to minor changes, but drastic revisions will require input of students/facilitators, and those involved will be notified immediately
-
-* Course overview
-* Shell Tools and Scripting
-* Editors (Vim)
-* Data Wrangling
-* Command-line Environment
-* Version Control (Git)
-* Debugging and Profiling
-* Build Systems and Versioning
-* Continuous Integration
-* Networking
-
 
 ## Course Schedule
 
@@ -56,12 +39,13 @@ This is subject to change.
 | 05/02/2025 | Networking 2 | |
 | 05/09/2025 | Flex | Networking Project Due |
 
-
 ## Grading
 
 Grades will be maintained on ELMS. You will be responsible for all material discussed in lecture as well as other standard means of communication (Piazza, email announcements, etc.), including but not limited to deadlines, policies, assignment changes, etc.
 
 Any request for reconsideration of any grading on coursework must be submitted within one week of when it is returned. No requests will be considered afterwards.
+
+Participation grades will be determined by the tracking of participation in class.
 
 Your final course grade will be determined according to the following percentages:
 
@@ -72,16 +56,14 @@ Your final course grade will be determined according to the following percentage
 
 ## Communicating with course staff
 
-Communication should be done with course facilitators over email with [CMSC389W] in the email subject. Other means of communication have not been chosen as of now.
+Communication should be done over Piazza, with preferably public posts unless a private post is necessary (grading disputes, student-specifc questions, etc). Communication should primarily be done with the course facilitators (Mohammad and Karan).
 
-### Instructor(s) Name(s) and Email(s)
+* Lecturers / Instructors:
+  * Mohammad Durrani: <durranim@terpmail.umd.edu>
+  * Karan Jain: <kjain12@terpmail.umd.edu>
 
-* Prof. Kauffman: <profk@umd.edu>
-
-### Facilitator(s) Name(s) and Email(s)
-
-* Mohammad Durrani: <durranim@terpmail.umd.edu>
-* Karan Jain: <kjain12@terpmail.umd.edu>
+* Advisor:
+  * Prof. Kauffman: <profk@umd.edu>
 
 ## Excused Absence and Academic Accommodations
 
@@ -95,9 +77,13 @@ See the section titled "Accessibility" available at [Course Related Policies](ht
 
 Note that academic dishonesty includes not only cheating, fabrication, and plagiarism, but also includes helping other students commit acts of academic dishonesty by allowing them to obtain copies of your work. In short, all submitted work must be your own. Cases of academic dishonesty will be pursued to the fullest extent possible as stipulated by the [Office of Student Conduct](http://osc.umd.edu/OSC/Default.aspx). It is very important for you to be aware of the consequences of cheating, fabrication, facilitation, and plagiarism. For more information on the Code of Academic Integrity or the Student Honor Council, please visit <http://www.shc.umd.edu>.
 
+### AI / LLM Policy
+
+The ultimate goal of this course is that you learn a wide breadth of tools that help you become a more efficient developer. Large Language Models (LLMs) are likely one of the tools you will have access to in your development, so reasonably, you should be able to use it in this class. However, like everything else in this course, this is a *tool* for you to use and not something that should be completely replacing your learning. Thus, our policy is that you are allowed to use LLMs to clarify your understanding, ask questions, etc. (think of it as a tutor) but any and all submitted work must be your own. Any violation of this policy will be escalated as per the standard University procedures.
+
 ## Course Evaluations
 
-If you have a suggestion for improving this class, don't hesitate to tell the facilitators during the semester. At the end of the semester, please don't forget to provide your feedback using the campus-wide CourseEvalUM system. Your comments will help make this class better.
+If you have a suggestion for improving this class, don't hesitate to tell the instructors at any point during the semester. At the end of the semester, please don't forget to provide your feedback using the campus-wide CourseEvalUM system. Your comments will help make this class better.
 
 ## Citation
 

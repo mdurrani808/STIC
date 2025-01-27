@@ -151,6 +151,13 @@ done
 while read -r line; do
     echo "Line: $line"
 done < input.txt
+
+# iterating through command line flags
+while [[ $# -gt 0 ]]; do
+    if [[ $1 = "--help" ]]; then
+        echo "you asked for help"
+    shift
+done
 ```
 
 As the last example indicates, loop syntax can use I/O redirection and pipes via the `< > |` shell operators.
@@ -336,7 +343,7 @@ If a script begins to grow beyond a few dozen lines, it is a good idea to refact
 
 ### System Health / State
 
-You can easily view statistics of your system like CPU usage, memory usage, running processes, and more using the ``top``(table of processes) command. You can learn more on how to parse this output [here]([What the first five lines of Linux’s top command tell you](https://www.redhat.com/en/blog/interpret-top-output)).
+You can easily view statistics of your system like CPU usage, memory usage, running processes, and more using the ``top``(table of processes) command. You can learn more on how to parse this output [here](https://www.redhat.com/en/blog/interpret-top-output). You can also use ``free`` but note that this is not avaliable on macOS.
 
 ### Finding files
 

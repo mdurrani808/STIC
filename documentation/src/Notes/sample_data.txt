@@ -1,0 +1,6 @@
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line

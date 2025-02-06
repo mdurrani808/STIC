@@ -6,6 +6,38 @@ We've already seen some basic data wrangling in past lectures. Pretty much any t
 
 ## Regular Expression Refresher
 
+Many text tools utilize regular expressions to specify patterns of interest. Hopefully this is not your first time encountering "regexs" as they often come up in beginning CS courses either as a theoretical topic, a practical tool, or both (UMD's CMSC330 covers regex theory and practice).
+
+**CAUTION:** Regular expression syntax varies between tools. The refresher below emphasizes the most common syntax used by UNIX tools but some tools may not honor all constructs.  A good example is `grep` supports limited regular expression syntax and an Extended set when run via `grep -E`. A quick example to show the difference:
+
+```console
+# sample file contents
+$ cat sample_data.txt
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line
+
+$ grep 'foo$' sample_data.txt
+A line ending with foo
+
+# normal alternation/grouping not supported in standard grep
+$ grep '(foo|bar)$' sample_data.txt
+
+# extended regex syntax does support grouping/alternation
+$ grep -E '(foo|bar)$' sample_data.txt
+A line ending with foo
+A foo line ending in bar
+
+# standard grep has a slightly different syntax
+$ grep '\(foo\|bar\)$' sample_data.txt
+A line ending with foo
+A foo line ending in bar
+```
+Tools like `grep, awk, sed, vim, emacs,` etc. all support slightly different regular expressions with the most common features described below.
+
 ### Basic Characters
 
 Most letters and numbers in a regex pattern match themselves exactly. For example, the pattern `cat` matches the word "cat".
@@ -88,7 +120,7 @@ The stream editor, commonly known as sed, is one of the most powerful text proce
 
 It has two buffers, called the pattern space and the hold space. The pattern buffer is a temporary buffer, the scratchpad where the current information is stored. The hold buffer is for long term storage. There is also an address range, that specifies which lines the command should operate on.
 
-### Basic Command structure
+### Basic `sed` Command structure
 
 The syntax of a sed command is:
 
@@ -111,9 +143,8 @@ A sed script will consist of one or more commands to execute on the input file, 
 
 Where `addr` is optional and can be a single line number, a regular expression, or a range of lines. When addr is specified, the command will only be executed on matched lines. `X` will be a single letter sed command. Additional `options` can be specified for some sed commands. Commands within a script can be seperated using a `;` or newlines.
 
-### Essential Commands
 
-#### Substitution Command (s)
+### Substitution Command (s)
 
 The substitution command is the most frequently used sed command. Its basic syntax is:
 
@@ -121,7 +152,7 @@ The substitution command is the most frequently used sed command. Its basic synt
 sed 's/pattern/replacement/flags'
 ```
 
-The `s` command will attempt to match what you have in the pattern space (the current line) against your supplied regular expression (`pattern`). If there is a match, then that portion of your pattern space is replaced with `replacement`. By default, this will only operate on the first match. You can use flags to modify the behavior of the `s` command as well. 
+The `s` command will attempt to match what you have in the pattern space (the current line) against your supplied regular expression (`pattern`). If there is a match, then that portion of your pattern space is replaced with `replacement`. By default, this will only operate on the first match. You can use flags to modify the behavior of the `s` command as well.
 
 Flags:
 
@@ -137,6 +168,46 @@ sed 's/dog/cat/' file.txt
 
 # Replace all occurrences of 'dog' with 'cat'
 sed 's/dog/cat/g' file.txt
+```
+
+Here are a few more examples that illustrate uses of `sed`. Note that by default `sed` prints the altered content to the screen but options and I/O redirection can adjust this.
+```console
+$ cat sample_data.txt
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line
+
+# transform foo to FUBAR
+$ sed 's/foo/FUBAR/g' sample_data.txt
+A line ending with FUBAR
+Another line with FUBAR but not at the end
+A bar line (with parentheses)
+A FUBAR line ending in bar
+An unbalanced line ending with )
+FUBAR and bar both appear on this line
+
+# transform either of foo or bar to FUBAR, note use of -E for
+# extended regular expressions simliar to grep
+$ sed -E 's/(foo|bar)/FUBAR/g' sample_data.txt
+A line ending with FUBAR
+Another line with FUBAR but not at the end
+A FUBAR line (with parentheses)
+A FUBAR line ending in FUBAR
+An unbalanced line ending with )
+FUBAR and FUBAR both appear on this line
+
+# put double quotes "" around instances of foo or bar using
+# the grouping and 1st group match in the substitution
+$ sed -E 's/(foo|bar)/"\1"/g' sample_data.txt
+A line ending with "foo"
+Another line with "foo" but not at the end
+A "bar" line (with parentheses)
+A "foo" line ending in "bar"
+An unbalanced line ending with )
+"foo" and "bar" both appear on this line
 ```
 
 ### Delete Command (d)
@@ -172,6 +243,33 @@ sed '/pattern/a\New Line' file.txt
 sed '/pattern/i\New Line' file.txt
 ```
 
+## Sequencing Commands
+Several `sed` commands sequenced by separating them with semi-colons to produce more complex effects. The below example combines 3 substitution commands.
+1. Substitute `foo` for `FOO`
+2. Substitute `bar` for `BAR`
+3. For only lines 2 to 5, substitute `FOO` or `BAR` with itself with
+   double quotes around it.
+
+The three commands are done in sequence to the output before printing.
+```console
+$ cat sample_data.txt
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line
+
+# 3 sed commands sequenced
+$ sed -E 's/foo/FOO/g; s/bar/BAR/g; 2,5 s/FOO|BAR/"\0"/g' sample_data.txt
+A line ending with FOO
+Another line with "FOO" but not at the end
+A "BAR" line (with parentheses)
+A "FOO" line ending in "BAR"
+An unbalanced line ending with )
+FOO and BAR both appear on this line
+```
+
 ## Practical Examples
 
 ```bash
@@ -191,9 +289,49 @@ sed '/password/s/^/#/' config.txt > config_safe.txt
 # Delete all lines containing "DEBUG" from a log file
 sed '/DEBUG/d' app.log > production.log
 
-# Common use: Filtering out verbose debug messages when you only need 
+# Common use: Filtering out verbose debug messages when you only need
 # to see warnings and errors
 ```
+
+## In Place Modification of Files
+`sed` prints its output to stdout (the screen) by default. A common desire is to actually modify a file using `sed` rather than output to the screen. Running via `sed -i ...` or `sed --in-place` will make changes to files. Both of these will overwrite the existing file but can also create a backup of the original (highly recommended).
+```console
+$ cat sample_data.txt
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line
+
+# transform the data in place; no output as the file changes
+$ sed --in-place=.bk 's/foo/FOO/g; s/bar/BAR/g;' sample_data.txt
+
+# show contents of file have changed
+$ cat sample_data.txt
+A line ending with FOO
+Another line with FOO but not at the end
+A BAR line (with parentheses)
+A FOO line ending in BAR
+An unbalanced line ending with )
+FOO and BAR both appear on this line
+
+# show the backup file created with the specified .bk suffix
+$ cat sample_data.txt.bk
+A line ending with foo
+Another line with foo but not at the end
+A bar line (with parentheses)
+A foo line ending in bar
+An unbalanced line ending with )
+foo and bar both appear on this line
+```
+
+### Limitations of `sed`
+`sed` is a powerful tool but is best used in small doses for things like
+- printing a specified range of lines in file via `sed -n '25,70p' file.txt`
+- substituting one string for another via `s/original/transformed/g`
+
+If more than 3 or 4 operations are needed and if conditional structure is required, its best to consider a more structured alternative like AWK.
 
 ## AWK
 
@@ -295,7 +433,7 @@ This is useful for tasks like finding high-value transactions in sales data or f
 
 ```awk
 # Count occurrences of HTTP status codes
-awk '{ codes[$9]++ } 
+awk '{ codes[$9]++ }
      END { for(code in codes) print code, codes[code] }' access.log
 ```
 
@@ -325,16 +463,16 @@ AWK supports familiar programming constructs for more complex tasks:
 
 ```awk
 # Example of control structures
-if ($3 > 1000) { 
-    total += $3 
+if ($3 > 1000) {
+    total += $3
 }
 
-for (i=1; i<=NF; i++) { 
-    sum += $i 
+for (i=1; i<=NF; i++) {
+    sum += $i
 }
 
-while (getline > 0) { 
-    count++ 
+while (getline > 0) {
+    count++
 }
 ```
 
@@ -406,3 +544,29 @@ find . -name "*.log" | xargs -I {} mv {} {}.old
 ```
 
 The `-I {}` option lets you specify where in the command to place each input item, giving you more flexibility in how you use the input.
+
+### `xargs` versus Shell Loops
+
+There is overlap between what `xargs` and shell `for` loops can accomplish. Take the previous examples of `xargs` which can be done with shell loops as well.
+
+```bash
+# xargs: resize images, allows for 3-wide parallelism
+ls *.jpg | xargs -n 3 convert -resize 800x600
+
+# loop: resize images, allows for 3-wide parallelism
+for f in *.jpg; do
+  convert -resize 800x600 $f
+done
+
+# xargs: Rename log files with .old extension
+find . -name "*.log" | xargs -I {} mv {} {}.old
+
+# loop: Rename log files with .old extension
+for f in $(find . -name "*.log"); do
+    mv $f $f.old
+done
+```
+When confronted with a choice between these, consider these trade-offs
+- `xargs` allows for built-in parallel execution via `xargs -n` to specify how many jobs processes are run. For loops do not have this capability.
+- `for` loops can include multiple statements, nested conditionals, variable substitutions, and other features. `xargs` has a much harder time with these types of activities.
+Overall `xargs` is best suited for a single command that is to be run on multiple inputs with limited conditional or naming tasks involved while shell loops are preferable when the task has these complexities.

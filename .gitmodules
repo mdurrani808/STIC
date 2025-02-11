@@ -1,0 +1,3 @@
+[submodule "documentation/src/Projects/PacManProject_student"]
+	path = documentation/src/Projects/PacManProject_student
+	url = git@github.com:KaranJain22/PacManProject_student.git

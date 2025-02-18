@@ -12,26 +12,65 @@ In some cases you will need to interrupt a job while it is executing, for instan
 
 Your shell is using a UNIX communication mechanism called a _signal_ to communicate information to the process. When a process receives a signal it stops its execution, deals with the signal and potentially changes the flow of execution based on the information that the signal delivered. For this reason, signals are _software interrupts_.
 
+```admonish info
+Signals are a communication mechanism that is supported by most operating systems including all flavors of UNIX, Linux among them.  Programs can elect to **handle** signals or send signals to other programs. The amount of information that is conveyed is quite limited: just that a signal arrived and it is a certain "flavor".  Mostly signals are used as demonstrated here to affect process control in a terminal. However, they can be used for other purposes though often this is trickier than it seems. Signals are **asynchronous** and may arrive in a program at any point making it hard to set up communication protocols that require order.
+```
+
 In our case, when typing `Ctrl-C` this prompts the shell to deliver a `SIGINT` signal to the process.
 
 Here's a minimal example of a Python program that captures `SIGINT` and ignores it, no longer stopping. To kill this program we can now use the `SIGQUIT` signal instead, by typing `Ctrl-\`. The difference between `SIGINT` and `SIGQUIT` is that `SIGQUIT` will produce a core dump once the process is terminated.
 
 ```python
 #!/usr/bin/env python
+# 
+# A simple python program that will "handle" INT (keyboard interrupt)
+# signals by printing a message. Other signals like QUIT or KILL or
+# TERM will still cause the program to end.
+
 import signal, time
 
-def handler(signum, time):
+def handler(signum, time):             # a function to run when a signal is received
     print("\nI got a SIGINT, but I am not stopping")
 
-signal.signal(signal.SIGINT, handler)
+signal.signal(signal.SIGINT, handler)  # when SIGINT is recieved, run the above function
 i = 0
-while True:
+while True:                            # enter a loop the never ends
     time.sleep(.1)
     print("\r{}".format(i), end="")
     i += 1
 ```
 
 While `SIGINT` and `SIGQUIT` are both usually associated with terminal related requests, a more generic signal for asking a process to exit gracefully is the `SIGTERM` signal. To send this signal we can use the [`kill`](https://www.man7.org/linux/man-pages/man1/kill.1.html) command, with the syntax `kill -TERM <PID>`.
+
+### Table of Most Commonly Used Signals
+
+Below is a table of the most commonly used signals. The table comes primarily from invoking `man 7 signal` and is augmented some notes on keystrokes in the terminal to issue the given signal to the foreground process.
+
+```
+           x86   Default
+Signal    Value  Action   Comment
+-----------------------------------------------------------------
+SIGHUP       1    Term    Hangup detected on controlling terminal or death of controlling process
+SIGINT       2    Term    Interrupt from keyboard  (press Ctrl-C in terminal)
+SIGQUIT      3    Core    Quit from keyboard       (press Ctrl-\ in terminal)
+SIGILL       4    Core    Illegal Instruction
+SIGTRAP      5    Core    Trace/breakpoint trap
+SIGABRT      6    Core    Abort signal from abort(3)
+SIGBUS       7    Core    Bus error (bad memory access)
+SIGFPE       8    Core    Floating-point exception (Actually integer divide by 0)
+SIGKILL      9    Term    Kill signal
+SIGUSR1     10    Term    User-defined signal 1
+SIGSEGV     11    Core    Invalid memory reference (Bane of C programmers)
+SIGUSR2     12    Term    User-defined signal 2
+SIGPIPE     13    Term    Broken pipe: write to pipe with no readers; see pipe(7)
+SIGALRM     14    Term    Timer signal from alarm(2)
+SIGTERM     15    Term    Termination signal
+SIGSTKFLT   16    Term    Stack fault on coprocessor (unused)
+SIGCHLD     17    Ign     Child stopped or terminated
+SIGCONT     18    Cont    Continue if stopped       (use fg or bg in a terminal)
+SIGSTOP     19    Stop    Stop process              (press Ctrl-Z in terminal)
+SIGTSTP     20    Stop    Stop typed at terminal
+```
 
 ### Pausing and Backgrounding Processes
 
@@ -129,6 +168,12 @@ Terminal multiplexers like [`tmux`](https://www.man7.org/linux/man-pages/man1/tm
   - `<C-b> [` Start scrollback. You can then press `<space>` to start a selection and `<enter>` to copy that selection.
   - `<C-b> <space>` Cycle through pane arrangements.
 For further reading,[here](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/) is a quick tutorial on `tmux` and [this](http://linuxcommand.org/lc3_adv_termmux.php) has a more detailed explanation that covers the original `screen` command. You might also want to familiarize yourself with [`screen`](https://www.man7.org/linux/man-pages/man1/screen.1.html), since it comes installed in most UNIX systems.
+
+### Alternatives
+
+The idea of Terminal Multiplexing is good enough to have drawn varied implementations. In addition to `tmux`, there are other programs that allow for similar effects.
+- GNU screen has a similar nature to `tmux` allow multiple windows to be created and navigated and allows for session persistence
+- Emacs has in addition to its text editing features all the features of `tmux` including session persistence, multiple windows etc.
 
 ## Shell Environment Customization
 

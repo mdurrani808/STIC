@@ -54,6 +54,10 @@ Your final course grade will be determined according to the following percentage
 | 90% | Projects / Assignments | 4 major projects |
 | 10% | Participation | Participation in class. |
 
+### Late Policy
+
+There will be a standard 10% late policy per 24-hour period late for any projects submitted past the deadline. This means a project due at 11:59 PM the day before that gets submitted at 12:02 AM the next day will get a standard 10% penalty automatically applied. No late submissions will be accepted for the last project (to ensure that there is enough time to submit grades).
+
 ## Communicating with course staff
 
 Communication should be done over Piazza, with preferably public posts unless a private post is necessary (grading disputes, student-specifc questions, etc). Communication should primarily be done with the course facilitators (Mohammad and Karan).

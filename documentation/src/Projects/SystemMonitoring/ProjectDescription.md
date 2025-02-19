@@ -125,3 +125,7 @@ Press Ctrl+C to exit
 - Submit three bash scripts: `collect_stats.sh`, `display_stats.sh`, and `query_stats.sh`
 - Submit a video showing the usage of your scripts.
 - Upload the required video and files to the assignment listed on Gradescope.
+
+### Late Policy
+
+- 10% deduction per day late

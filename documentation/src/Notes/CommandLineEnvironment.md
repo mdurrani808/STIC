@@ -44,33 +44,30 @@ While `SIGINT` and `SIGQUIT` are both usually associated with terminal related r
 
 ### Table of Most Commonly Used Signals
 
-Below is a table of the most commonly used signals. The table comes primarily from invoking `man 7 signal` and is augmented some notes on keystrokes in the terminal to issue the given signal to the foreground process.
+Below is a table of the most commonly used signals. The table comes primarily from invoking `man 7 signal` and is augmented with some notes on keystrokes in the terminal to issue the given signal to the foreground process.
 
-```
-           x86   Default
-Signal    Value  Action   Comment
------------------------------------------------------------------
-SIGHUP       1    Term    Hangup detected on controlling terminal or death of controlling process
-SIGINT       2    Term    Interrupt from keyboard  (press Ctrl-C in terminal)
-SIGQUIT      3    Core    Quit from keyboard       (press Ctrl-\ in terminal)
-SIGILL       4    Core    Illegal Instruction
-SIGTRAP      5    Core    Trace/breakpoint trap
-SIGABRT      6    Core    Abort signal from abort(3)
-SIGBUS       7    Core    Bus error (bad memory access)
-SIGFPE       8    Core    Floating-point exception (Actually integer divide by 0)
-SIGKILL      9    Term    Kill signal
-SIGUSR1     10    Term    User-defined signal 1
-SIGSEGV     11    Core    Invalid memory reference (Bane of C programmers)
-SIGUSR2     12    Term    User-defined signal 2
-SIGPIPE     13    Term    Broken pipe: write to pipe with no readers; see pipe(7)
-SIGALRM     14    Term    Timer signal from alarm(2)
-SIGTERM     15    Term    Termination signal
-SIGSTKFLT   16    Term    Stack fault on coprocessor (unused)
-SIGCHLD     17    Ign     Child stopped or terminated
-SIGCONT     18    Cont    Continue if stopped       (use fg or bg in a terminal)
-SIGSTOP     19    Stop    Stop process              (press Ctrl-Z in terminal)
-SIGTSTP     20    Stop    Stop typed at terminal
-```
+| Signal    | x86 Value | Default Action | Comment |
+|-----------|-----------|----------------|---------|
+| SIGHUP    | 1         | Term          | Hangup detected on controlling terminal or death of controlling process |
+| SIGINT    | 2         | Term          | Interrupt from keyboard (press Ctrl-C in terminal) |
+| SIGQUIT   | 3         | Core          | Quit from keyboard (press Ctrl-\ in terminal) |
+| SIGILL    | 4         | Core          | Illegal Instruction |
+| SIGTRAP   | 5         | Core          | Trace/breakpoint trap |
+| SIGABRT   | 6         | Core          | Abort signal from abort(3) |
+| SIGBUS    | 7         | Core          | Bus error (bad memory access) |
+| SIGFPE    | 8         | Core          | Floating-point exception (Actually integer divide by 0) |
+| SIGKILL   | 9         | Term          | Kill signal |
+| SIGUSR1   | 10        | Term          | User-defined signal 1 |
+| SIGSEGV   | 11        | Core          | Invalid memory reference (Bane of C programmers) |
+| SIGUSR2   | 12        | Term          | User-defined signal 2 |
+| SIGPIPE   | 13        | Term          | Broken pipe: write to pipe with no readers; see pipe(7) |
+| SIGALRM   | 14        | Term          | Timer signal from alarm(2) |
+| SIGTERM   | 15        | Term          | Termination signal |
+| SIGSTKFLT | 16        | Term          | Stack fault on coprocessor (unused) |
+| SIGCHLD   | 17        | Ign           | Child stopped or terminated |
+| SIGCONT   | 18        | Cont          | Continue if stopped (use fg or bg in a terminal) |
+| SIGSTOP   | 19        | Stop          | Stop process (press Ctrl-Z in terminal) |
+| SIGTSTP   | 20        | Stop          | Stop typed at terminal |
 
 ### Pausing and Backgrounding Processes
 
@@ -137,7 +134,7 @@ You can learn more about these and other signals [here](https://en.wikipedia.org
 
 ### Job Control Use Cases
 
-It is possible to perform simple edit/compile/debug sessions in a terminal using job control. Below is an example
+It is possible to perform simple edit/compile/debug sessions in a terminal using job control. Below is an example:
 
 ```console
 # make edits to the code
@@ -232,6 +229,7 @@ For further reading,[here](https://www.hamvocke.com/blog/a-quick-and-easy-guide-
 ### Alternatives
 
 The idea of Terminal Multiplexing is so appealing as to have drawn varied implementations. In addition to `tmux`, there are other programs that allow for similar effects.
+
 - GNU screen has a similar nature to `tmux` allowing multiple windows to be created and navigated as well as facilitating session persistence (log out and then log back in to see the same programs still active)
 - Emacs has, in addition to its text editing features all, the features of `tmux` including session persistence, multiple windows etc. which can be accessed within a terminal, in a GUI, or in a combination of these two.
 
@@ -289,6 +287,7 @@ Aliasing tends to be simple and associated with single commands or short pipelin
 Many programs are configured using plain-text files known as _dotfiles_. The naming convention stems from the fact that such files begin with a `.`, e.g. `~/.vimrc`, so that they are hidden in normal directory listings from `ls` by default (use `ls -a` to show ALL files including the hidden ones).
 
 UNIX programs have a long tradition of using dot files for customization. Software that uses dot files ranges from:
+
 - All major Shells and many terminal emulators
 - Most editors like VIM and Emacs
 - Many programming environments like Java, OCaml, Python, Rust, etc.
@@ -299,7 +298,7 @@ If you want to tailor the behavior of a program in UNIX/Linux, you're likely goi
 ```admonish info
 Customizing software is desirable but the location of where such customizations are retained is a matter of some debate.  The ad hoc distributed nature of the many dot files which UNIX employs has both advantages (plain text, usually in the home directory) and disadvantages (wide variety of formats/syntax unique to different programs, loads of dot files crowd the home directory). 
 
-The [Windows Registry](https://en.wikipedia.org/wiki/Windows_Registry) used on Windows systmes is an alternative that has a central database of settings for any and all programs that want to retain settings of some type. It goes the opposite route having a centralized, large, binary structure where most programs store information. MacOS favors [Property Lists (plist files)](https://en.wikipedia.org/wiki/Property_list) that are usually stored in a centralized directory like `~/Library/Preferences/` and dictate settings for programs with a somewhat more uniform format in text or binary formats. These speak to the cultural heritage of Microsoft and Apple being able to dictate the design of programs on their OS to others while UNIX and Linux are a federation of many contributors and so lack a central authority to force such uniformity.
+The [Windows Registry](https://en.wikipedia.org/wiki/Windows_Registry) used on Windows systems is an alternative that has a central database of settings for any and all programs that want to retain settings of some type. It goes the opposite route having a centralized, large, binary structure where most programs store information. MacOS favors [Property Lists (plist files)](https://en.wikipedia.org/wiki/Property_list) that are usually stored in a centralized directory like `~/Library/Preferences/` and dictate settings for programs with a somewhat more uniform format in text or binary formats. These speak to the cultural heritage of Microsoft and Apple being able to dictate the design of programs on their OS to others while UNIX and Linux are a federation of many contributors and so lack a central authority to force such uniformity.
 ```
 
 Shells are one example of programs configured with such files. On startup, your shell will read many files to load its configuration. Depending on the shell, whether you are starting a login and/or interactive the entire process can be quite complex.
@@ -628,11 +627,13 @@ There are several ways to copy files over SSH:
   ```
 
 ### Further Uses of SSH
+
 Remote work via a terminal has been around a long time and if you find yourself working in such situations frequently, investigate the following items more.
 
-**The (SSH File System or SSHFS)[https://en.wikipedia.org/wiki/SSHFS]** which allows one to mount a remote system via SSH and treat it as a local directory greatly easing the transfer of data to and from. SSHFS is readily available on most Linux systems and provides and easy way to connect one machine to another: 
+**The [SSH File System or SSHFS](https://en.wikipedia.org/wiki/SSHFS)** which allows one to mount a remote system via SSH and treat it as a local directory greatly easing the transfer of data to and from. SSHFS is readily available on most Linux systems and provides and easy way to connect one machine to another:
+
 ```console
-$ sshfs -o follow_symlinks myid@remote.umd.edu: ~/remote-machine
+sshfs -o follow_symlinks myid@remote.umd.edu: ~/remote-machine
 ```
 
 **FTP and SFTP, File Transfer Protocols** that are old but still much used mechanisms that allow data to be moved between machines in bulk (mentioned above)

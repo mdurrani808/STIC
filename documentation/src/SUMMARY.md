@@ -5,7 +5,6 @@
 
 # Notes
 
-
 - [Using The Shell](./Notes/UsingTheShell.md)
 - [Shell Tools and Scripting](./Notes/ShellToolsAndScripting.md)
 - [Data Wrangling](./Notes/DataWrangling.md)
@@ -18,3 +17,4 @@
 # Projects
 
 - [System Monitoring Dashboard](./Projects/SystemMonitoring/ProjectDescription.md)
+- [PacMan Part 1](./Projects/pacman_part1.md)

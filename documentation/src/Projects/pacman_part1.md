@@ -83,6 +83,11 @@ Write a markdown report (2-3 sentences) in the main branch outlining each team m
 
 Groups will receive the same grade unless a team member did not contribute meaningfully. In such cases, grading will be adjusted accordingly.
 
+## **Submission Requirements**
+
+- Markdown report with link to the repository the group worked off of.
+  - You must ensure that you have added our GitHub accounts as collaborators before submission, otherwise the assignment will be considered incomplete and the standard late penalty will apply until corrected.
+
 ## **Additional Notes**
 
 - **Git Workflow**: In real-world development, you would typically test your code locally first, ensuring that everything works as expected. Once the code is tested and ready, you would then push your changes to the feature branch on the remote repository. This allows your teammates to review the code and run additional tests before merging it into the main branch.

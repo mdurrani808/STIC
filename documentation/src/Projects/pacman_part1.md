@@ -4,6 +4,8 @@
 
 In this project, you and your team will collaboratively build a Pac-Man game in Python. The focus is on implementing key game features, using version control with Git, and writing tests to ensure the functionality of your code. Part 1 covers feature development, collaboration via Git, and creating tests.
 
+You can find the upstream repository [here](https://github.com/KaranJain22/PacManProject_student/tree/main).
+
 ## **Objectives**
 
 1. **Implement key Pac-Man game features**:

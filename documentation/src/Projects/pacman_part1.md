@@ -85,7 +85,7 @@ Groups will receive the same grade unless a team member did not contribute meani
 
 ## **Submission Requirements**
 
-- Markdown report with link to the repository the group worked off of.
+- Link to markdown report (should be in your group's main repository on GitHub)
   - You must ensure that you have added our GitHub accounts as collaborators before submission, otherwise the assignment will be considered incomplete and the standard late penalty will apply until corrected.
 
 ## **Additional Notes**

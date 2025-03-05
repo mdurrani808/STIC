@@ -12,13 +12,19 @@ Modern VCSs also let you easily (and often automatically) answer questions like:
 * When was this particular line of this particular file edited? By whom? Why was it edited?
 * Over the last 1000 revisions, when/why did a particular unit test stop working?
 
-Over time, Git has emerged as the de facto standard for version control systems. However, many developers learn Git through memorizing commands without understanding its elegant underlying design. This approach often leads to confusion when things go wrong, as developers lack the theoretical foundation to reason about Git's behavior.
+### What is Git?
 
-This text takes a different approach. Instead of starting with commands, we'll build understanding from the ground up by exploring Git's data model and theoretical foundations. When you understand these fundamentals, you'll be able to reason about Git's behavior rather than memorizing commands, solve complex version control problems with confidence, and develop mental models that translate across different Git workflows.
+Git is a distributed version control system that tracks changes to files over time. Originally created for Linux kernel development, Git allows developers to maintain a complete history of their work. As a distributed system, each developer has a full copy of the entire repository on their local machine. This enables them to work independently before synchronizing their changes with remote repositories hosted on services like GitHub, facilitating effective team collaboration.
+
+### Aside: Git vs. GitHub
+
+A common point of confusion is realizing the difference between Git and GitHub. Git is the version control software, but GitHub is a website that provides cloud hosting for Git repositories as well as as a front end to a lot of Git features. It also includes some GitHub specific features like issues, pull requests, and more. There are alternatives to GitHub like GitLab or BitBucket, and there are also alternatives to Git like SVN or Mercurial.
 
 ## The Data Model: How Git Stores Your Code
 
-Git is a content-addressable filesystem, meaning all objects are stored and retrieved based on their content rather than their location. When you add content to Git, it generates a hash based on that content which is then used to store and retrieve the content.
+Over time, Git has emerged as the de facto standard for version control systems. However, many developers learn Git through memorizing commands without understanding its elegant underlying design. This approach often leads to confusion when things go wrong, as developers lack the theoretical foundation to reason about Git's behavior.
+
+This text takes a different approach. Instead of starting with commands, we'll build understanding from the ground up by exploring Git's data model and theoretical foundations. When you understand these fundamentals, you'll be able to reason about Git's behavior rather than memorizing commands, solve complex version control problems with confidence, and develop mental models that translate across different Git workflows.
 
 ### Blobs
 
@@ -118,17 +124,42 @@ gitGraph
     merge feature
 ```
 
-This graph structure enables Git's powerful branching and merging capabilities.
-
 ## References: Naming Points in History
 
 References provide human-readable names to specific points in your commit history. Git uses two main types of references:
 
-1. **Branches**: Mutable references that automatically point to the latest commit in a line of development. When you commit changes, the current branch reference updates to point to the new commit. Creating a branch is lightweight because Git just creates a new reference pointing to an existing commit—no content is copied.
+1. **Branches**: Mutable references that automatically point to the latest commit in a line of development. When you commit changes, the current branch reference updates to point to the new commit. Creating a branch is lightweight because Git just creates a new reference pointing to an existing commit.
 
 2. **Tags**: Immutable references that permanently mark specific commits, typically used for releases (e.g., v1.0.0).
 
 HEAD is a special reference that points to the commit you're currently working with, usually through a branch. For example, when you're working on the main branch, HEAD points to main, which points to a specific commit.
+
+### Branches
+
+Branches are Git's way of allowing parallel development streams within a single repository. At the conceptual level, a branch is simply a lightweight, movable pointer to a specific commit. This explains why creating a branch in Git is nearly instantaneous—Git only needs to write a small file containing the SHA-1 hash of a commit.
+
+When you're working on a branch, Git updates the special HEAD reference to point to that branch. As you make new commits, the branch pointer automatically moves forward to your latest commit. This automatic movement is what makes branches so useful for isolating work—each branch maintains its own independent line of development.
+
+```mermaid
+
+gitGraph
+    commit
+    commit
+    branch feature
+    checkout feature
+    commit
+    commit
+    checkout main
+    commit
+    merge feature
+    commit
+```
+
+In the diagram above, we can see how the commit history forms a directed acyclic graph (DAG) when branches are involved. The main branch and feature branch diverge after the second commit, then proceed independently until they're merged back together.
+
+When you merge branches, Git creates a "merge" commit with multiple parent commits (in this case, the latest commits from both branches). This preserves the complete history of development on both branches and records when and how they were integrated.
+
+Understanding branches as simple pointers to commits in Git's object database helps explain many Git operations: creating a branch (adding a pointer), deleting a branch (removing a pointer), and merging branches (creating a commit with multiple parents and moving pointers).
 
 ## Git's Working Spaces
 
@@ -183,7 +214,7 @@ graph LR
 When you stage changes with git add:
 
 * Git creates new blob objects for the changed files
-* Updates the index tree to point to these new blobs
+* Updates the staging area to point to these new blobs
 * When you commit, this tree becomes your new commit's root tree
 
 ## Workflow
@@ -203,3 +234,48 @@ When you work with Git, work progresses as:
    * Adds the commit to the repository's history graph
 
 Whenever you're typing in any command, think about what manipulation the command is making to the underlying graph data structure. Conversely, if you're trying to make a particular kind of change to the commit DAG, e.g. "discard uncommitted changes and make the 'master' ref point to commit 5d83f9e", there's probably a command to do it (e.g. in this case, git checkout master; git reset --hard 5d83f9e).
+
+I've written a new section on Git remotes that matches the existing style of the document. You should place this after the "Workflow" section:
+
+## Remotes: Collaborating Beyond Your Local Repository
+
+Remotes are Git repositories hosted on a network or the internet that allow you to collaborate with others. A remote is essentially a copy of your repository that exists elsewhere, enabling you to push your changes to it or pull others' changes from it. Each remote has a name (commonly "origin" for the primary remote) and a URL pointing to its location.
+
+When you clone a repository, Git automatically sets up the source as a remote called "origin." You can add multiple remotes to a single local repository, allowing you to fetch changes from or push changes to various sources.
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#2E7DAF',
+    'primaryBorderColor': '#1B4B69',
+    'mainBkg': '#FFFFFF',
+    'secondBkg': '#F4F4F4',
+    'lineColor': '#666666',
+    'textColor': '#333333',
+    'border1': '#CCCCCC',
+    'border2': '#AAAAAA',
+    'noteBkgColor': '#FFF9C4',
+    'noteTextColor': '#333333',
+    'noteBorderColor': '#E7C000'
+  }
+}}%%
+graph TD
+    L[Local Repository] -->|push| R1[Remote: origin]
+    L -->|push| R2[Remote: upstream]
+    R1 -->|fetch/pull| L
+    R2 -->|fetch/pull| L
+    style L fill:#b8d4ff,stroke:#333
+    style R1 fill:#90EE90,stroke:#333
+    style R2 fill:#90EE90,stroke:#333
+```
+
+Remote branches are references to the state of branches in your remote repositories. When you fetch from a remote, Git updates these remote-tracking branches to reflect the remote's state. Note that you can't modify these remote branches directly, they only change when you communicate with the remote repository. This separation provides a clear distinction between your local work and the shared history on the remote.
+
+Understanding remote operations is crucial to Git's collaboration model:
+
+1. **Fetching**: Downloads objects and references from a remote repository without integrating them into your working files
+2. **Pulling**: Fetches from a remote repository and automatically merges the remote branch into your current branch
+3. **Pushing**: Uploads your local branch commits to a remote repository, updating its references
+
+This remote collaboration model enables distributed teams to work on the same codebase asynchronously, with each developer maintaining their own complete repository while still being able to share and integrate changes with others.

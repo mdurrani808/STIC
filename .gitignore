@@ -1,3 +1,4 @@
 *.bk
 .vscode/
 documentation/book/
+documentation/*.js

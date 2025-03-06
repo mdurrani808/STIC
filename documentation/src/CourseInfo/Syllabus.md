@@ -23,18 +23,18 @@ This is subject to change.
 
 | Date | Concept | Assignment |
 |--------|----------|------------|
-| 01/31/2025 | The Shell | |
+| 01/31/2025 | The Shell | System Monitoring Project Released |
 | 02/07/2025 | Shell Tools and Scripting | |
 | 02/14/2025 | Data Wrangling | |
 | 02/21/2025 | Command-line Environment | System Monitoring Project Due |
 | 02/28/2025 | Version Control (Git) | |
 | 03/07/2025 | Version Control (Git) | |
-| 03/14/2025 | Vim (video lesson) | PacMan Project Part 1 Due |
+| 03/14/2025 | Vim (video lesson) | |
 | 03/21/2025 | Spring Break | |
-| 03/28/2025 | Debugging and Profiling | |
+| 03/28/2025 | Debugging and Profiling | PacMan Project Part 1 Due, PacMan Project Part 2 Released |
 | 04/04/2025 | Build Systems / Continuous Integration | |
 | 04/11/2025 | Build Systems / Continuous Integration | |
-| 04/18/2025 | Docker | PacMan Project Part 2 Due |
+| 04/18/2025 | Docker | PacMan Project Part 2 Due, Networking Project Released|
 | 04/25/2025 | Networking 1 | |
 | 05/02/2025 | Networking 2 | |
 | 05/09/2025 | Flex | Networking Project Due |

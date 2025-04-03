@@ -16,7 +16,7 @@ Modern VCSs also let you easily (and often automatically) answer questions like:
 
 Git is a distributed version control system that tracks changes to files over time. Originally created for Linux kernel development, Git allows developers to maintain a complete history of their work. As a distributed system, each developer has a full copy of the entire repository on their local machine. This enables them to work independently before synchronizing their changes with remote repositories hosted on services like GitHub, facilitating effective team collaboration.
 
-<img src="./git_xkcd.png" alt="Git XKCD Comic" width="500"/>
+<img src="../resources/git_xkcd.png" alt="Git XKCD Comic" width="500"/>
 
 ### Aside: Git vs. GitHub
 

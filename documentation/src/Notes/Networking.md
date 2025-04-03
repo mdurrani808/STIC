@@ -4,7 +4,7 @@ As a software developer, your work constantly relies on networks. Whether you're
 
 Because this reliance is so fundamental, network problems can be significant roadblocks. When services become unreachable, APIs return strange errors, or deployments fail, understanding the underlying network behavior is crucial. This session aims to demystify network troubleshooting by providing you with both the foundational concepts and the practical command-line tools needed to diagnose common issues. Think of this as learning to use a debugger, not just for your code's logic, but for the vital connections it makes. Mastering these skills will make you a more effective, resilient developer, capable of systematically tackling problems that might otherwise seem opaque.
 
-<img src="./networking_xkcd.png" alt="Networking XKCD Comic" width="50%" margin: auto/>
+<img src="../Resources/networking_xkcd.png" alt="Networking XKCD Comic" width="50%" margin: auto/>
 
 ## Network Stack / OSI Model
 

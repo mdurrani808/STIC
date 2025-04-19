@@ -13,8 +13,10 @@
 - [Git Commands](./Notes/git_application.md)
 - [Vim](./Notes/Vim.md)
 - [Debugging and Profiling](./Notes/DebuggingAndProfiling.md)
-[//]: <> (- [Metaprogramming.md](./Notes/Metaprogramming.md)
-[//]: <> (- [Networking](./Notes/Networking.md))
+- [Build Systems](./Notes/Metaprogramming.md)
+- [CI / CD](./Notes/CI_CD.md)
+- [Docker](./Notes/Docker.md)
+- [Networking](./Notes/Networking.md)
 
 # Projects
 

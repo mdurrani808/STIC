@@ -6,21 +6,7 @@
 # Notes
 
 - [Using The Shell](./Notes/UsingTheShell.md)
-- [Shell Tools and Scripting](./Notes/ShellToolsAndScripting.md)
-- [Data Wrangling](./Notes/DataWrangling.md)
-- [Command Line Environment](./Notes/CommandLineEnvironment.md)
-- [Git Theory](./Notes/git_theory.md)
-- [Git Commands](./Notes/git_application.md)
-- [Vim](./Notes/Vim.md)
-- [Debugging and Profiling](./Notes/DebuggingAndProfiling.md)
-- [Build Systems](./Notes/Metaprogramming.md)
-- [CI / CD](./Notes/CI_CD.md)
-- [Docker](./Notes/Docker.md)
-- [Networking](./Notes/Networking.md)
+
 
 # Projects
 
-- [System Monitoring Dashboard](./Projects/SystemMonitoring/ProjectDescription.md)
-- [PacMan Part 1](./Projects/pacman_part1.md)
-- [PacMan Part 2](./Projects/pacman_part2.md)
-- [Networking Project](./Projects/NetworkingProject/ProjectDescription.md)

@@ -11,9 +11,9 @@ This course will provide a broad overview of many common and useful tools, like 
 * Prerequisites: Minimum grade of C- in CMSC216 and CM250
 * Credits: 1
 * Seats: 30
-* Lecture Time: Friday 2:00pm - 2:50pm
+* Lecture Time: Friday 10:00am - 10:50am
 * Location: CSI 2107
-* Semester: Spring 2025
+* Semester: Fall 2025
 * Course Facilitator(s): Mohammad Durrani, Karan Jain
 * Faculty Advisor: Prof. Christopher Kauffman
 
@@ -22,22 +22,22 @@ This course will provide a broad overview of many common and useful tools, like 
 This is subject to change.
 
 | Date | Concept | Assignment |
-|--------|----------|------------|
-| 01/31/2025 | The Shell | System Monitoring Project Released |
-| 02/07/2025 | Shell Tools and Scripting | |
-| 02/14/2025 | Data Wrangling | |
-| 02/21/2025 | Command-line Environment | System Monitoring Project Due |
-| 02/28/2025 | Version Control (Git) | |
-| 03/07/2025 | Version Control (Git) | |
-| 03/14/2025 | Vim (video lesson) | |
-| 03/21/2025 | Spring Break | |
-| 03/28/2025 | Debugging and Profiling | PacMan Project Part 1 Due, PacMan Project Part 2 Released |
-| 04/04/2025 | Build Systems / Continuous Integration | |
-| 04/11/2025 | Build Systems / Continuous Integration | |
-| 04/18/2025 | Docker | PacMan Project Part 2 Due, Networking Project Released|
-| 04/25/2025 | Networking 1 | |
-| 05/02/2025 | Networking 2 | |
-| 05/09/2025 | Flex | Networking Project Due |
+|------|---------|------------|
+| 09/05/2025 | The Shell | System Monitoring Project Released |
+| 09/12/2025 | Shell Tools and Scripting | |
+| 09/19/2025 | Data Wrangling / Command-line Environment | |
+| 09/26/2025 | Shell "Application Day" | |
+| 10/03/2025 | Debugging and Profiling | System Monitoring Project Due, Release PacMan Part 1 |
+| 10/10/2025 | No Class | |
+| 10/17/2025 | Version Control (Git) | |
+| 10/24/2025 | Version Control (Git) | |
+| 10/31/2025 | Git "Application Day" | PacMan Part 1 Due, Release part 2 |
+| 11/07/2025 | Build Systems / CI | |
+| 11/14/2025 | Docker | |
+| 11/21/2025 | Networking |PacMan Part 2 due, Networking Project Released|
+| 11/28/2025 | Thanksgiving | |
+| 12/05/2025 | Vim / Flex / Application Day | |
+| 12/12/2025 | ML/AI Tools |Networking Project Due|
 
 ## Grading
 
@@ -51,7 +51,8 @@ Your final course grade will be determined according to the following percentage
 
 | Percentage | Title | Description |
 |------------|-------|-------------|
-| 90% | Projects / Assignments | 4 major projects |
+| 80% | Projects | 4 major projects |
+| 10% | Application Days | Completion of Application Days assignments. |
 | 10% | Participation | Participation in class. |
 
 ### Late Policy

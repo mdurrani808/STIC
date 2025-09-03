@@ -167,7 +167,26 @@ Timestamp,CPU%,Memory%
 #### Operating Mode Parsing
 
 ```bash
->> echo Coming soon!
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --c)
+            echo "Collect mode"
+            ;;
+        --d)
+            echo "Display mode"
+            ;;
+        --q)
+            echo "Query mode"
+            ;;
+        *)
+            echo "Unknown parameter: $1"
+            echo "Usage: $0 [--c | --d | --q]"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 ```
 
 #### WSL / VMs

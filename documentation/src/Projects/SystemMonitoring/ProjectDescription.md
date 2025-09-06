@@ -198,7 +198,7 @@ done
 
 ```
 
-For parsing the start and end dates, the `$@` variable can be used to pass the arguments to a function. Calling `shift` discards the `$1` and `$2` assumes its place. Then, you can parse arguments using a very similar for loop to the above.
+For parsing the start and end dates, the `$@` variable can be used to pass the command line arguments to a function. Note that calling `shift` discards `$1` (the first argument) and the other arguments shift down. Then, you can parse arguments using a very similar for loop to the above.
 
 #### WSL / VMs
 

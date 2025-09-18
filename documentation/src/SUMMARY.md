@@ -6,8 +6,8 @@
 # Notes
 
 - [Using The Shell](./Notes/UsingTheShell.md)
-- [Shell Tools](./Notes/ShellToolsAndScripting.md)
-
+- [Shell Tools and Scripting](./Notes/ShellToolsAndScripting.md)
+- [Data Wrangling](./Notes/DataWrangling.md)
 
 # Projects
 

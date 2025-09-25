@@ -86,11 +86,11 @@ Cleaned up 1 completed tasks
 ## Submission Requirements
 
 - Source code consisting of runnable bash script called todo.sh.
-- Your output must exactly match that of the example above.
 
 ## Evaluation Criteria (5 pts)
 
-- 5 pts awarded per correct function.
+- 5 pts awarded per function.
+- We want to see a good-faith attempt on each part.
 
 ## Starter Code
 

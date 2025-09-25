@@ -15,4 +15,3 @@
 
 # Application Day
 
-- [Basic TODO App](./ApplicationDays/todo_list.md)

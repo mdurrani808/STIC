@@ -15,3 +15,4 @@
 
 # Application Day
 
+- [TODO List](./ApplicationDays/todo_list.md)

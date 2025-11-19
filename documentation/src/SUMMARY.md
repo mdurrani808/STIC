@@ -10,6 +10,9 @@
 - [Data Wrangling](./Notes/DataWrangling.md)
 - [Debugging And Profiling](./Notes/DebuggingAndProfiling.md)
 - [Git Theory](./Notes/git_theory.md)
+- [Git Application](./Notes/git_application.md)
+- [Build Systems](./Notes/CI_CD.md)
+- [Networking](./Notes/Networking.md)
 
 # Projects
 

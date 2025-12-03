@@ -1,0 +1,2 @@
+# This simple server uses only Python standard library
+# No external dependencies needed

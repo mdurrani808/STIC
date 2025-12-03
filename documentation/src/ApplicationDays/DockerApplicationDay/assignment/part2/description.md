@@ -105,9 +105,4 @@ The application will start successfully, but when you check if it can reach Redi
 
 ### What to Submit
 
-- The corrected `api/app.py` file (only change the REDIS_HOST line)
-- A brief write-up (DEBUGGING.md) that includes:
-  - What the original Redis host was and why it didn't work
-  - What commands you ran and what they showed
-  - What you changed the host to and why it works
-  - An explanation of what `localhost` means in Docker
+- A brief write-up that talks about the change you made and why you made it.

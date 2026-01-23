@@ -11,10 +11,10 @@ This course will provide a broad overview of many common and useful tools, like 
 * Prerequisites: Minimum grade of C- in CMSC216 and CM250
 * Credits: 1
 * Seats: 30
-* Lecture Time: Friday 10:00am - 10:50am
-* Location: CSI 2107
-* Semester: Fall 2025
-* Course Facilitator(s): Mohammad Durrani, Karan Jain
+* Lecture Time: Friday 11:00 AM - 11:50 AM
+* Location: IRB 2207
+* Semester: Spring 2026
+* Course Facilitator(s): Mohammad Durrani
 * Faculty Advisor: Prof. Christopher Kauffman
 
 ## Course Schedule
@@ -23,21 +23,21 @@ This is subject to change.
 
 | Date | Concept | Assignment |
 |------|---------|------------|
-| 09/05/2025 | The Shell | System Monitoring Project Released |
-| 09/12/2025 | Shell Tools and Scripting | |
-| 09/19/2025 | Data Wrangling / Command-line Environment | |
-| 09/26/2025 | Shell "Application Day" | |
-| 10/03/2025 | Debugging and Profiling | System Monitoring Project Due, Release PacMan Part 1 |
-| 10/10/2025 | No Class | |
-| 10/17/2025 | Version Control (Git) | |
-| 10/24/2025 | Version Control (Git) | |
-| 10/31/2025 | Git "Application Day" | PacMan Part 1 Due, Release part 2 |
-| 11/07/2025 | Build Systems / CI | |
-| 11/14/2025 | Docker | |
-| 11/21/2025 | Networking |PacMan Part 2 due, Networking Project Released|
-| 11/28/2025 | Thanksgiving | |
-| 12/05/2025 | Vim / Flex / Application Day | |
-| 12/12/2025 | ML/AI Tools |Networking Project Due|
+| 01/30/2026 | The Shell | System Monitoring Project Released |
+| 02/06/2026 | Shell Tools and Scripting | |
+| 02/13/2026 | Data Wrangling / Command-line Environment | |
+| 02/20/2026 | Shell "Application Day" | |
+| 02/27/2026 | Debugging and Profiling | System Monitoring Project Due, Release Pacman Part 1 |
+| 03/06/2026 | Version Control (Git) | |
+| 03/13/2026 | Version Control (Git) | |
+| 03/20/2026 | Spring Break | |
+| 03/27/2026 | Build Systems / CI | PacMan Project Part 1 Due, release part 2 |
+| 04/03/2026 | Git "Application Day" | |
+| 04/10/2026 | Docker | |
+| 04/17/2026 | Networking | Part 2 due, Networking Project Released |
+| 04/24/2026 | Docker/Networking Application Day | |
+| 05/01/2026 | ML/AI Tools | |
+| 05/08/2026 | Flex | Networking Project Due |
 
 ## Grading
 
@@ -52,8 +52,8 @@ Your final course grade will be determined according to the following percentage
 | Percentage | Title | Description |
 |------------|-------|-------------|
 | 80% | Projects | 4 major projects |
-| 10% | Application Days | Completion of Application Days assignments. |
-| 10% | Participation | Participation in class. |
+| 15% | Application Days | Completion of Application Days assignments. |
+| 5% | Participation | Participation in class. |
 
 ### Late Policy
 
@@ -65,7 +65,6 @@ Communication should be done over Piazza, with preferably public posts unless a 
 
 * Lecturers / Instructors:
   * Mohammad Durrani: <durranim@terpmail.umd.edu>
-  * Karan Jain: <kjain12@terpmail.umd.edu>
 
 * Advisor:
   * Prof. Kauffman: <profk@umd.edu>

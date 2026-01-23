@@ -3,3 +3,4 @@
 documentation/book/
 documentation/*.js
 **/.DS_Store
+.pnpm-store/

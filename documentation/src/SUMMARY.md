@@ -17,6 +17,7 @@
 # Projects
 
 - [System Monitoring Project](./Projects/SystemMonitoring/ProjectDescription.md)
+- [Git Project](./Projects/GitPart1/ProjectDescription.md)
 
 # Application Day
 

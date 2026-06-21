@@ -1,0 +1,506 @@
+#+Title: CI & Build Systems
+#+SUBTITLE: CMSC398W: Practical Tools For Efficient Development
+#+AUTHOR: Mohammad Durrani
+#+DATE: \today
+#+OPTIONS: H:2 toc:nil num:nil
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: Madrid
+#+BEAMER_COLOR_THEME: dolphin
+#+BEAMER_FONT_THEME: structurebold
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{shapes,arrows,positioning,shadows,calc,fit}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepgfplotslibrary{polar}
+#+LATEX_HEADER: \pgfplotsset{compat=1.18}
+#+LATEX_HEADER: \usepackage[height=1890]{beamer-reveal}
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col)
+
+* CI & Build Systems
+
+** What Happens When There's No CI?
+
+Three developers, one shared repo, pushing to =main= all day.
+
+- Mohammad pushes a fix Friday at noon. Tests pass on his laptop.
+- Karthik pushes a feature Friday at 3pm. Tests pass on his laptop.
+- Lilli try to deploy Friday at 5pm. It fails.
+
+Whose commit broke it? You have 23 changed files across two pushes.
+
+* Continuous Integration
+
+** What Is CI?
+
+*** Definition
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+*Continuous Integration*: every commit triggers an automated sequence of checks before code merges.
+
+- Short feedback loops
+- When the build breaks you finds out immediately, not three commits later
+- Failed checks block the merge before broken code spreads
+
+*** Why Bother?
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Without it, you find out code is broken when someone tries to deploy, not when the bad commit landed.
+
+** The CI Workflow
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[node distance=2.8cm, auto,
+    box/.style={rectangle, draw, fill=blue!20, text width=5.5em, text centered,
+                rounded corners, minimum height=3em, thick, font=\small},
+    line/.style={draw, -latex', very thick}]
+    \node [box] (commit) {Commit};
+    \node [box, right of=commit] (build) {Build};
+    \node [box, right of=build] (test) {Test};
+    \node [box, right of=test] (notify) {Notify};
+
+    \path [line] (commit) -- (build);
+    \path [line] (build) -- (test);
+    \path [line] (test) -- (notify);
+
+    \node[below=0.4cm of build, font=\footnotesize, text=gray] {fails here?};
+    \node[below=0.4cm of test, font=\footnotesize, text=gray] {fails here?};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+Each stage gates the next. If the build fails, the tests don't run.
+
+** GitHub Actions
+
+GitHub Actions is GitHub's built-in CI service. Add a YAML file in =.github/workflows/= and GitHub runs it on their servers every time something happens to your repo.
+
+- *Events* trigger the pipeline (=push=, =pull_request=, =schedule=)
+- *Jobs* are the units of work, each running on its own machine
+- *Steps* are commands inside a job, run top to bottom
+
+*** Jobs Form a DAG
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Job B can declare =needs: [A]=, meaning it won't start until A finishes. Jobs with no =needs= run in parallel.
+
+** The Blog App's Workflow File
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** Code                                                     :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.60
+:END:
+
+#+ATTR_LATEX: :options fontsize=\footnotesize
+#+BEGIN_SRC yaml
+name: Blog CI
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install flake8 && flake8 .
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt
+      - run: pytest
+#+END_SRC
+
+**** Annotations                                              :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.36
+:END:
+
+- =on=: what triggers the workflow
+- =runs-on=: fresh VM spun up by GitHub
+- =needs=: waits for =lint= to pass first
+- =uses=: pre-built action (=checkout= = =git clone=)
+- =steps=: run in order, top to bottom
+
+* CI Design
+
+** Design Your Pipeline
+
+*** The Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You're on a blog app team. Three people push throughout the day. You need a CI pipeline.
+
+*With your table, sketch:*
+1. What checks does your pipeline run?
+2. What order do they run in?
+3. Which failure should stop everything downstream?
+
+*** Constraints
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+- Python/Flask backend with =pytest= tests
+- React frontend with its own test suite
+- A database migration script (dangerous if run on broken code)
+- Linting and type checking available for both sides
+
+** Debrief
+
+*** One Reasonable Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.4cm and 2.2cm,
+    box/.style={rectangle, draw, fill=orange!20, text width=5.5em, text centered,
+                rounded corners, minimum height=2.5em, thick, font=\small},
+    line/.style={draw, -latex', thick}]
+
+    \node [box] (lint)     {Lint \& Types};
+    \node [box, below right=1cm and 1.5cm of lint]  (pytests) {pytest};
+    \node [box, above right=1cm and 1.5cm of lint]  (frontend) {Frontend Tests};
+    \node [box, right=3.5cm of pytests]  (migrate) {DB Migrate};
+
+    \path [line] (lint) -- (pytests);
+    \path [line] (lint) -- (frontend);
+    \path [line] (pytests) -- (migrate);
+    \path [line] (frontend) -- (migrate);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+Lint first (fast, cheap). Backend and frontend tests run in parallel. Migration waits for both.
+
+* Build Systems
+
+** Why Not Just Shell Scripts?
+
+*** Consider This
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You change one CSS file. You run =./build.sh=. What happens?
+
+- Recompiles the Python package (Python didn't change)
+- Re-runs the entire test suite (no logic changed)
+- Rebuilds the frontend bundle (this one is actually needed)
+- Re-runs the linter on every file, every time
+
+*** The Problem
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+| Problem | Consequence |
+|---------|-------------|
+| No dependency tracking | Everything rebuilds on every change |
+| No caching | Slow feedback loops |
+| Order is hardcoded | Can't parallelize safely |
+
+** What Build Systems Do
+
+*** The Core Abstraction
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A *DAG* (Directed Acyclic Graph) is a graph where edges point one way and there are no cycles. Build systems represent your work as one.
+
+- A node = a task (compile, lint, bundle, test)
+- An edge = "B requires A to finish first"
+- The build system figures out the right order and runs tasks in parallel where possible
+
+*** Incremental Builds
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Change a file $\rightarrow$ only the tasks that depend on it re-run.
+
+| Property | What it means |
+|----------|---------------|
+| Correctness | Nothing is skipped that shouldn't be |
+| Speed | Unchanged outputs come from cache |
+| Reproducibility | Same inputs always produce the same outputs |
+
+** The Blog App's Build Graph
+
+Source files (green) feed into tasks (blue), which feed into the final piece.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.8cm and 2.5cm,
+    src/.style={rectangle, draw, fill=green!15, text width=5.5em, text centered,
+                rounded corners, minimum height=2.5em, thick, font=\small},
+    task/.style={rectangle, draw, fill=blue!15, text width=5.5em, text centered,
+                 rounded corners, minimum height=2.5em, thick, font=\small},
+    output/.style={rectangle, draw, fill=orange!20, text width=5.5em, text centered,
+                rounded corners, minimum height=2.5em, thick, font=\small},
+    line/.style={draw, -latex', thick}]
+
+    \node [src] (css)    {styles.css};
+    \node [src, right=3.5cm of css] (py) {app.py};
+
+    \node [task, below=1.8cm of css]  (bundle) {Bundle JS/CSS};
+    \node [task, below=1.8cm of py]   (pytest) {pytest};
+
+    \node [output, below right=1.8cm and -0.5cm of bundle] (deploy) {Deploy};
+
+    \path [line] (css) -- (bundle);
+    \path [line] (py)  -- (pytest);
+    \path [line] (bundle) -- (deploy);
+    \path [line] (pytest) -- (deploy);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+* What Re-Runs?
+
+**  What Re-Runs?
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.4cm and 2cm,
+    src/.style={rectangle, draw, fill=green!15, text width=5em, text centered,
+                rounded corners, minimum height=2em, thick, font=\small},
+    task/.style={rectangle, draw, fill=blue!15, text width=5em, text centered,
+                 rounded corners, minimum height=2em, thick, font=\small},
+    output/.style={rectangle, draw, fill=orange!20, text width=5em, text centered,
+                rounded corners, minimum height=2em, thick, font=\small},
+    line/.style={draw, -latex', thick}]
+    \node [src] (css)    {styles.css};
+    \node [src, right=3cm of css] (py) {app.py};
+    \node [task, below=1.4cm of css]  (bundle) {Bundle JS/CSS};
+    \node [task, below=1.4cm of py]   (pytest) {pytest};
+    \node [output, below right=1.4cm and -0.3cm of bundle] (deploy) {Deploy};
+    \path [line] (css) -- (bundle);
+    \path [line] (py)  -- (pytest);
+    \path [line] (bundle) -- (deploy);
+    \path [line] (pytest) -- (deploy);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+*** Scenarios
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+*Scenario A*: You change =styles.css= $\quad$ *Scenario B*: You change =app.py=
+
+Which nodes re-run? Which come from cache?
+
+** Activity 2: Answers
+
+*** Scenario A: Change =styles.css=
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Re-runs: *Bundle JS/CSS* $\rightarrow$ *Deploy*
+
+=pytest= is cached. Python code is unchanged.
+
+*** Scenario B: Change =app.py=
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <3->
+:END:
+
+Re-runs: *pytest* $\rightarrow$ *Deploy*
+
+Bundle is cached. Frontend is unchanged.
+
+** At Google Scale
+
+*** Bazel
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+The blog app's graph has six nodes. Google's internal build graph has millions. Running everything on every commit would take days.
+*Bazel* is Google's open-source build system that has a similar DAG model and uses distributed caching across thousands of machines. This enables Googles operations at scale
+
+* Dependency Management
+
+** The Problem
+
+*** Your Code Depends on Code You Don't Control
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+The blog app pulls in:
+
+| Package | Version |
+|---------|---------|
+| =flask= | =3.0.1= |
+| =react= | =18.2.0= |
+| =pytest= | =7.4.0= |
+
+Eventually, this softare will have to be updated. Sometimes, updates break things.
+
+*** The Dependency Graph
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Running =pip install flask= actually installs five packages. =flask= pulls in =werkzeug=, =werkzeug= pulls in =click=, and so on.
+
+** Dependency Hell
+
+*** Diamond Dependencies
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+The blog app uses =flask-login= for auth and =celery= for background tasks. Both need =requests=, but different versions.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.5cm and 2.5cm,
+    box/.style={rectangle, draw, fill=red!15, text width=6.5em, text centered,
+                rounded corners, minimum height=2.5em, thick, font=\small},
+    line/.style={draw, -latex', thick}]
+
+    \node [box] (app) {Blog App};
+    \node [box, below left=1.2cm and 1.2cm of app]  (A) {flask-login};
+    \node [box, below right=1.2cm and 1.2cm of app] (B) {celery};
+    \node [box, below right=1.2cm and -0.5cm of A]  (req) {requests};
+
+    \node[above=0.05cm of A, font=\footnotesize, text=red] {needs v2.28};
+    \node[above=0.05cm of B, font=\footnotesize, text=red] {needs v2.31};
+
+    \path [line] (app) -- (A);
+    \path [line] (app) -- (B);
+    \path [line] (A)   -- (req);
+    \path [line] (B)   -- (req);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+=pip= can only install one version of =requests=. Which one wins?
+
+** Semantic Versioning
+
+*** The Convention: $\text{MAJOR}.\text{MINOR}.\text{PATCH}$
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=react@18.2.0=:
+
+| Part | Number | Meaning |
+|------|--------|---------|
+| MAJOR | 18 | Breaking change; existing code may stop working |
+| MINOR | 2  | New features, backwards compatible |
+| PATCH | 0  | Bug fixes only |
+
+*** Range Specifiers
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+=^18.2.0= in =package.json=: give me anything $\geq$ 18.2.0 but $<$ 19.0.0
+
+=~3.0.1= in =requirements.txt=: give me anything $\geq$ 3.0.1 but $<$ 3.1.0
+
+** Activity 3: SemVer Cases
+
+*** The Flask Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You maintain =flask=. For each change, vote: *MAJOR*, *MINOR*, or *PATCH*?
+
+1. Fix a crash when the request body is empty
+2. Add a new =app.config.from_prefixed_env()= helper
+3. Remove the deprecated =before_first_request= decorator
+4. Rename an internal method... that 10,000 projects call anyway
+
+*** Vote
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Try and back up your answer with reasoning
+
+** Activity 3: Answers
+
+*** Cases 1-3
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+| Case | Answer | Reason |
+|------|--------|--------|
+| Empty body crash fix | PATCH | Bug fix, no API change |
+| New config helper | MINOR | New feature, nothing breaks |
+| Remove =before_first_request= | MAJOR | Deleting a public API |
+
+*** Case 4: Hyrum's Law
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <3->
+:END:
+
+/"With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of your system will be depended on by somebody."/ — Hyrum Wright
+
+*Internal* method, but 10k projects call it. PATCH or MAJOR?
+
+* Wrap-Up
+
+** Overall View
+
+CI pipelines, build systems, and package managers all have the same shape.
+
+| System | Nodes | Edges | Goal |
+|--------|-------|-------|------|
+| CI pipeline | lint, test, deploy | job dependencies | catch breakage early |
+| Build system | source files, artifacts | file dependencies | rebuild only what changed |
+| Package graph | libraries | version constraints | resolve compatible set |
+
+*** The Common Question
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+*What is the minimum work, in the right order, to get a reliable result?*

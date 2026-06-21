@@ -1,0 +1,10 @@
+*
+!.gitignore
+!*.org
+!*/
+*_files/
+!*.png
+!*.jpg
+!*.jpeg
+!*.gif
+!*.svg

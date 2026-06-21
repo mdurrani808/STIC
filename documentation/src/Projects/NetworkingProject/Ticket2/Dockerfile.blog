@@ -1,5 +1,0 @@
-FROM nginx:alpine-slim
-RUN sed -i 's/https/http/' /etc/apk/repositories
-RUN apk add --no-cache iproute2
-COPY blog.conf /etc/nginx/conf.d/default.conf
-CMD ["nginx", "-g", "daemon off;"]

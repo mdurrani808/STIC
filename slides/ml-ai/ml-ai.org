@@ -1,0 +1,502 @@
+#+Title: AI in Software Development
+#+SUBTITLE: CMSC398W: Practical Tools For Efficient Development
+#+AUTHOR: Mohammad Durrani
+#+DATE: \today
+#+OPTIONS: H:2 toc:nil num:nil
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: Madrid
+#+BEAMER_COLOR_THEME: dolphin
+#+BEAMER_FONT_THEME: structurebold
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{shapes,arrows,positioning,shadows,calc}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepgfplotslibrary{polar}
+#+LATEX_HEADER: \pgfplotsset{compat=1.18}
+#+LATEX_HEADER: \renewcommand{\thempfootnote}{\arabic{mpfootnote}}
+#+LATEX_HEADER: \usepackage[height=1890]{beamer-reveal}
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col)
+
+* AI in Software Development
+
+** What We're Covering Today
+
+*** Four Topics
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Topic | Focus |
+|-------|-------|
+| Productivity | When AI helps and when it does not |
+| Specification | Writing clear instructions so the AI does what you mean |
+| Context | Giving the AI the right information |
+| Code Review | Checking that the output is actually correct |
+
+* Why This Matters
+
+** Access is Easy, Shipping Actual Code is Hard
+
+*** The Tools Are Here
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Installing Claude Code, Gemini CLI, Cursor, or Copilot takes five minutes and generating code is trivial.
+
+*** So Why Study This?
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+If generating code is easy, why dedicate a lecture to it? Because generating code is not the same as shipping working software. Without proper technique, AI tools can actually slow you down.
+
+** AI Making Undesired Changes
+
+*** The Setup
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You ask the AI to fix a small CSS bug on a button. It fixes the bug, but also "cleans up" the rest of the component to use a slightly different state management pattern.
+
+*** The Catch
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Did you just fix a bug, or did you just adopt code you no longer understand?
+
+The button works, but the AI silently removed the edge-case handling for offline users. You have lost cognitive control over the file. If you spend an hour untangling the AI's "helpful" refactor to restore the old logic, you *lost* time.
+
+** Is AI Actually Faster?
+
+*** Look At The Numbers
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Studies show mixed results. A 2024 Copilot study showed junior developers gaining 27-39% productivity, while seniors gained 8-13%.[fn:1] 
+
+But a 2024 Uplevel study found AI assistants actually *increased* cycle time and introduced more bugs in some enterprise teams.
+
+[fn:1] Demirer et al, The Effects of Generative AI on High Skilled Work, 2024.
+
+*** How Do We Estimate Time Saved?
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Net time saved equals AI generation time minus the time you spend fixing its mistakes.
+
+** The Techniques Stay, The Models Change
+
+*** Model Evolution
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Models get better every month, meaning a tool that fails at a task today might succeed tomorrow. Maybe if models get good enough, you can just give vague answers and get the results you want, and this lecture is pointless.
+
+*** Engineering Principles
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+While the tools change, the engineering techniques do not:
+1. Writing clear specifications.
+2. Providing the right context.
+3. Auditing the output.
+
+This lecture covers these skills.
+
+* Specification-Driven Development
+
+** Vibe Coding
+
+*** What It Looks Like
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You give the AI a vague goal ("Make a login page") and run the output.
+
+*** What Goes Wrong
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+- Output changes each time you run the same prompt
+- Logic is hard to follow and harder to debug
+- You don't fully understand the code you're shipping
+
+** English as Code
+
+*** Prompt as Source
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Think of your prompt as source code and the LLM as the compiler.
+
+Ambiguous source means the compiler picks an interpretation, a real compiler would  reject the code, but an LLM will make a silent guess (as they are probabilistic models).
+
+*** Discussion
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+What does a real compiler do when it hits ambiguous syntax?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <3->
+:END:
+
+It either rejects the code or picks one parse and runs with it, but LLMs always pick and never say so.
+
+** A Better Approach
+
+*** Specify $\rightarrow$ Plan $\rightarrow$ Audit $\rightarrow$ Implement
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Step | What You Do | Output |
+|------|------------|--------|
+| *Specify* | Write what the system should do.              | =SPEC.md= |
+| *Plan* | Ask the AI for a step-by-step implementation plan | Plan doc |
+| *Audit* | Read the plan and flag logical problems | Annotated plan |
+| *Implement* | AI writes code against the approved plan | Code |
+
+*** Why This Order
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+A bad architecture decision caught in the plan takes 30 seconds to fix. If you implement and then realize the architecture is bad, you have to rewrite everything.
+
+
+** Atomic Tasking
+
+*** Vague vs. Specific
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+#+ATTR_LATEX: :align p{0.32\textwidth}p{0.6\textwidth}
+| Vague Prompt | Specific Task |
+|:-------------|:--------------|
+| "Fix the sidebar bug." | "1. Open =Sidebar.tsx=. 2. Make =isOpen= persist in =localStorage=. 3. Add a 200ms CSS transition." |
+| "Add search." | "1. Add a =search= query param to =GET /api/posts=. 2. Filter =title= by substring match. 3. Return =[]= (not 404) on no results." |
+
+*** One Task, One Outcome
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+If you cannot write a single test that passes or fails based on the task, the task is probably too vague. This isn't a hard and fast rule, for simple things a vague prompt can do but once you do more complicated work, it starts to matter more.
+
+** Discussion: Writing a Plan
+
+*** Building a Grading Tool
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You are building a Grade Tracker for UMD students.
+
+What should I tell the LLM if I want to build this?
+
+*** Data Shape
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+#+BEGIN_SRC text
+[{ "course": "CMSC132", "credits": 4, "grade": "A" }, ...]
+#+END_SRC
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <3->
+:END:
+
+1. Map each object: multiply =credits= by its grade-point weight (A=4.0, B=3.0, ...).
+2. Sum all products $\rightarrow$ total quality points. Sum all =credits= $\rightarrow$ total credits.
+3. Divide total quality points by total credits. Round to 2 decimal places.
+
+* Context Engineering
+
+** The Context Window
+
+*** What It Is
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+The context window is the LLM's working memory meaning that it holds everything the model can see when it generates a response.
+
+*** Context Rot
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+When you paste in too much irrelevant code, the model loses track of the actual task and starts making mistakes on things it got right earlier.
+
+*** Fresh Context
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <3->
+:END:
+
+When a session gets long and messy, starting a new conversation is often faster than continuing a degraded one.
+
+** Token Management
+
+*** The Budget
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Every model has a hard token limit meaning that every token you use costs latency and money. Being very careful about what you load has real cost implications.
+
+As of recent, model providers like OpenAI, Anthropic, etc. have heavily subsidized model inference. However, as the pressure for these companies to actually become profitable increases, their prices will continue to rise. This means that minimizing the tokens you use is in your best interest (usually).
+
+
+*** The Rule
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Load the minimum context that lets the model answer correctly. When it gets something wrong, the missing piece is usually one function or one config value, not the whole codebase.
+
+** Explicit vs. Automatic Context
+
+*** Two Modes
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Mode | How It Works |
+|------|-------------|
+| *Automatic* | Tool indexes your codebase and retrieves what it thinks is relevant |
+| *Explicit* | You point the tool at a specific file, function, or doc |
+
+*** When the AI Fails
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Before blaming the model, check what it could actually see. The root cause is usually missing context, not a bad model. 
+
+** How AI Actually Reads Your Code
+
+*** Not Magic, Just CLI Tools
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Modern AI CLI agents (like Claude Code or Gemini CLI) don't have magical contextual awareness. They literally run =ls= to see files, =grep= to find keywords, and =cat= to read them. We actually learned about these same tools in class!
+
+*** Clean Code Matters More Now
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+If your code is poorly organized or your variable names are terrible (e.g., =data1=, =temp_val=), =grep= fails. If =grep= fails, the AI fails. Writing clean, modular code has always been important but it also helps out AI (and humans for that matter) if you needed any extra motivation.
+
+** MCP: Model Context Protocol
+
+*** What It Is
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+MCP is a standard protocol that lets AI agents connect to external tools and data sources.
+
+*** Why It Matters
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Without MCP, your AI only knows what you paste into the prompt. With MCP, your AI can run SQL queries against your database, read Jira tickets, and check Slack messages directly.
+
+** MCP In Practice
+
+*** Examples
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| MCP Server | What It Lets the AI Do |
+|------------|------------------------|
+| Postgres | Read your schema, run queries |
+| GitHub | Read issues, open PRs |
+| Linear | Update tickets as work completes |
+| Slack | Post to a channel on deploy |
+
+*** The Result
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Instead of copy-pasting database output into the chat, the AI queries the database directly and sees live data.
+
+* Developer as Reviewer
+
+** Your New Job
+
+*** From Author to Reviewer
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Prompting AI for code shifts your role from author to reviewer. The AI opens the pull request, and you decide whether it merges.
+
+*** Accountability
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+You own everything you ship, regardless of who wrote it. "The AI generated it" is not a defense when a bug reaches production.
+
+** AI-Generated Code and Security
+
+*** The Security Gap
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+AI-coauthored pull requests contain *2.74x more security vulnerabilities* than human-only PRs, with XSS, logic flaws, and missing input validation being the most common. [fn:2]
+
+[fn:2] CodeRabbit, State of AI vs Human Code Generation Report, December 2025
+
+*** Read More, Write Less
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Generating code is the easy part but reading and auditing the output requires more effort.
+
+** Code Auditing
+
+*** Three Practices
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Practice | What You Do |
+|----------|------------|
+| *Plan Audit* | Read the full plan before the AI writes any code |
+| *Red-Teaming* | Ask the AI to critique its own output: "List 3 potential race conditions in this code" |
+| *TDD-First* | Write tests before implementation so the AI codes against your spec |
+
+** Debugging with AI
+
+*** The "Wrong" Way
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Pasting a 50-line stack trace and saying "Fix this."
+
+*** The "Right" Way
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Provide the AI with:
+1. The error trace
+2. The specific environment (e.g., "Node 18, React Native 0.72")
+3. The *expected* behavior
+
+*** Why This Matters
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <3->
+:END:
+
+AI is eager to please. If you just say "fix this," it might delete the feature entirely to make the error go away, rather than fixing the underlying logic.
+
+** Trust But Verify
+
+*** What "Done" Means
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| AI Says | What You Do |
+|---------|------------|
+| "I've updated the database schema." | Check that migration files were generated. |
+| "The bug is fixed." | Run =npm test= and confirm the failing case now passes. |
+| "This code is secure." | Ask: "How would an attacker bypass this =if= statement?" |
+
+*** The Rule
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Treat every AI claim as something to verify, not something to assume.
+
+* Takeaways
+
+** What We Covered
+
+*** Four Areas
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Area | Idea      |
+|------|-----------|
+| *Productivity* | Net time gain, not line count; experience changes the calculus |
+| *Specification* | Write explicit, verifiable tasks before prompting, and commit first |
+| *Context* | Code must be clean for AI to search it; load the minimum context |
+| *Code Review* | Treat every AI PR as something to review, not assume |
+
+*** Tools
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Cursor, Windsurf, Claude Code, and MCP servers are all interfaces for these ideas. Once you understand the underlying primitives, the tools become much easier to use well.
+
+* Parting Messages
+
+** This Is Our Last Class!
+
+Thank you all for showing up to and participating in class. I've had a lot of fun teaching this class and I hope you have learned something that is actually useful in your day to day life or careers. Some parting asks, and unsolicited advice:
+
+1. Connect with me on LinkedIn! I'd like to see what you all get up to in the future: www.linkedin.com/in/mohammad-durrani/
+2. If you ever need any help with internships / jobs / interviews, I am always happy to help and to be a resource.
+3. Note: Using your judgement and building taste in software engineering. Be opinionated!
+4. Note: Keeping your brain sharp.
+5. Spread the knowledge of the tools that you use to your coworkers, classmates, friends etc.
+6. Fill out the course evaluation! I want to continue teaching in the future and would love to know what I can be better at. You will also get some extra credit!
+Best of luck with everything that you do in the future!

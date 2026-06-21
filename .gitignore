@@ -1,6 +1,13 @@
 *.bk
+**/*.org~
 .vscode/
-documentation/book/
-documentation/*.js
 **/.DS_Store
 .pnpm-store/
+
+# Astro
+dist/
+.astro/
+node_modules/
+
+# Generated slide output (built in CI from .org/.html sources)
+public/slides/

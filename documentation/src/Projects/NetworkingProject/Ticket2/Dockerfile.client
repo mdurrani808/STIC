@@ -1,9 +1,0 @@
-FROM alpine:edge
-RUN sed -i 's/https/http/' /etc/apk/repositories
-RUN apk add --no-cache \
-    busybox-extras \
-    curl \
-    nano \
-    bind-tools \
-    iproute2
-

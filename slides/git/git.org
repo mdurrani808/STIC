@@ -1,0 +1,1361 @@
+#+Title: Git
+#+SUBTITLE: CMSC398W: Practical Tools For Efficient Development
+#+AUTHOR: Mohammad Durrani
+#+DATE: \today
+#+OPTIONS: H:2 toc:nil num:nil
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: Madrid
+#+BEAMER_COLOR_THEME: dolphin
+#+BEAMER_FONT_THEME: structurebold
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{shapes,arrows,positioning,shadows,calc,fit}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepgfplotslibrary{polar}
+#+LATEX_HEADER: \pgfplotsset{compat=1.18}
+#+LATEX_HEADER: \usepackage[height=1890]{beamer-reveal}
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col)
+
+* Git
+
+* Learning Objectives
+
+** Goals for Today
+
+*** Objectives
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- Model Git as a *graph of snapshots*.
+- Use the three-stage workflow: Working Directory $\rightarrow$ Staging $\rightarrow$ Repository.
+- See what a commit contains.
+- View history, diff changes, and undo mistakes.
+- Sync with remotes using push and pull.
+- Manage branches and resolve merge conflicts.
+
+** Project 1 Overview
+
+*** Overview
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- Group project with 3-4 people
+- Each given an individual branch to work off of and tasks to complete, write a mini-report, and then combine them together as a group
+- Released (hopefully) Saturday, see Piazza for details
+
+ 
+
+*** In Class
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- Groups are due by the end of class (see Piazza post)
+- Take 5 minutes to either find a group or exchange contact information with your group to make your life easier
+
+
+* Introduction
+
+** What is Git?
+
+*** Definition
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- Git is a open-source distributed version control system (VCS) designed to track changes in files and source code during software development.
+- Git != GitHub
+
+
+*** History
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- Created by *Linus Torvalds* in 2005 for Linux kernel development.
+- Built for speed and data integrity in a distributed environment.
+
+*** Core Philosophy
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Unlike SVN or CVS, Git gives every developer a *complete copy* of the entire history. It is a *distributed* version control system.
+
+** Why Git?
+
+*** The Problem
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+- "It worked yesterday. What changed?"
+- "I deleted that function and now I need it back."
+- "My teammate's changes broke my code."
+
+*** The Alternative (Don't do this!)
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+- =project_v1.zip=, =project_final.zip=, =project_FINAL_FINAL.zip=
+- Emailing code to yourself.
+
+Git replaces this with a snapshot of your project at every commit.
+
+* Getting a Repository
+
+** Two Ways to Start
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** New Project                                              :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+=git init=
+
+- Creates a hidden =.git/= folder.
+- Use this to start tracking a new project from scratch.
+- All history is stored locally in your folder.
+
+**** Existing Project                                         :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+=git clone <url>=
+
+- Downloads a full copy of the repo *and its entire history*
+- Automatically sets up =origin= pointing back to the source
+- Use when joining an existing project
+
+* Recording Changes
+
+** The Three Areas
+
+*** The Three Areas
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[node distance=5cm, auto,
+    box/.style={rectangle, draw, fill=blue!20, text width=5.5em, text centered, rounded corners, minimum height=3em},
+    line/.style={draw, -latex', thick}]
+    \node [box] (wd) {Working\\Directory};
+    \node [box, right of=wd] (idx) {Staging\\Area};
+    \node [box, right of=idx] (repo) {Repository};
+
+    \path [line] (wd) -- node[above]{\texttt{git add}} (idx);
+    \path [line] (idx) -- node[above]{\texttt{git commit}} (repo);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+- *Working Directory*: Where you edit files. Changes here are not tracked until staged.
+- *Staging Area (Index)*: Intermediate area where you can decide what goes into the next commit.
+- *Repository*: The permanent record, stored in =.git/=.
+
+** Discussion: The Staging Area
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Why doesn't Git just commit everything the moment you save a file? Why do we *have* to run =git add= first?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+The staging area lets you group related changes together. You can fix five different things but commit them as five separate, logical units.
+
+** Workflow Example
+
+*** Workflow Example
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+BEGIN_SRC bash
+$ git status
+On branch main
+Changes not staged for commit:
+  modified:   app.py
+
+$ git add app.py
+$ git status
+On branch main
+Changes to be committed:
+  modified:   app.py
+
+$ git commit -m "Fix login bug"
+[main a1b2c3d] Fix login bug
+ 1 file changed, 1 insertion(+)
+#+END_SRC
+
+** Think-Pair-Share: What Gets Committed?
+
+*** The Setup
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You edit two files: =app.py= and =README.md=.
+You run =git add app.py= then =git commit -m "fix login bug"=.
+
+*** Question
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+What is inside the new commit?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+*Only =app.py= is committed.* Changes to =README.md= remain in your Working Directory. You must explicitly stage files to include them in a commit.
+
+* File Status Lifecycle
+
+** The Lifecycle of a File
+
+*** Status Lifecycle
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    state/.style={ellipse, draw, fill=blue!15, text width=6em, text centered, minimum height=3em, font=\small},
+    arr/.style={draw, -latex', thick, font=\footnotesize}]
+
+  \node[state] (untracked)  at (0,    0) {Untracked};
+  \node[state] (staged)     at (5.2,  0) {Staged};
+  \node[state] (unmodified) at (10.4, 0) {Unmodified\\(Committed)};
+  \node[state] (modified)   at (10.4,-3.2) {Modified};
+
+  \draw[arr] (untracked)  -- node[above]{\texttt{git add}}    (staged);
+  \draw[arr] (staged)     -- node[above]{\texttt{git commit}} (unmodified);
+  \draw[arr] (unmodified) -- node[right]{edit file}           (modified);
+  \draw[arr] (modified)   to[out=180, in=-90] node[pos=0.4, below left]{\texttt{git add}} (staged);
+  \draw[arr] (unmodified) to[bend left=30] node[above, midway]{\texttt{git rm -{}-cached}} (untracked);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+A new file starts as *Untracked*. Once committed, it cycles: *Unmodified* $\to$ *Modified* $\to$ *Staged* $\to$ *Unmodified*.
+
+* What's in a Commit
+
+** Anatomy of a Commit
+
+*** Commit Object
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Git stores *full snapshots*, not diffs. Each commit is an object in the =.git/= database.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    field/.style={rectangle, draw, fill=blue!10, minimum width=10em, minimum height=1.5em, font=\scriptsize, align=center},
+    trow/.style={rectangle, draw, fill=green!10, minimum width=10em, minimum height=1.5em, font=\scriptsize, align=center},
+    blob/.style={rectangle, draw, rounded corners, fill=orange!20, minimum width=6em, minimum height=2.2em, font=\scriptsize, align=center},
+    boxtitle/.style={font=\small\bfseries},
+    arr/.style={draw, -latex', thick}]
+
+  % --- Commit Object ---
+  \node[field] (c1) at (0, 2.4) {hash: \texttt{a1b2c3d}};
+  \node[field] (c2) at (0, 1.8) {parent: \texttt{9f8e7d6}};
+  \node[field] (c3) at (0, 1.2) {author: Alice};
+  \node[field] (c4) at (0, 0.6) {message: Fix login bug};
+  \node[field] (c5) at (0, 0.0) {tree: \texttt{3c4d5e6}};
+  \draw[thick, rounded corners=4pt, blue!60!black] (-1.5, -0.3) rectangle (1.5, 2.75);
+  \node[boxtitle] at (0, 3.1) {Commit Object};
+
+  % --- Tree Object ---
+  \node[trow] (t1) at (5.5, 1.5) {blob~~app.py};
+  \node[trow] (t2) at (5.5, 0.5) {blob~~README.md};
+  \draw[thick, rounded corners=4pt, green!60!black] (4.0, 0.2) rectangle (7.0, 1.8);
+  \node[boxtitle] at (5.5, 2.2) {Tree Object};
+  \node[font=\tiny\itshape] at (5.5, 1.95) {(list of files in this snapshot)};
+
+  % --- Blobs ---
+  \node[blob] (b1) at (10, 1.5) {app.py\\contents};
+  \node[blob] (b2) at (10, 0.5) {README.md\\contents};
+  \node[boxtitle] at (10, 2.2) {Blobs};
+  \node[font=\tiny\itshape] at (10, 1.95) {(raw file contents)};
+
+  % --- Arrows ---
+  \draw[arr] (c5.east) to[out=30, in=180] (4.0, 1.0);
+  \draw[arr] (t1.east) -- (b1.west);
+  \draw[arr] (t2.east) -- (b2.west);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+** Commit Graph
+
+*** The Graph
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  lbl/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+              font=\tiny\bfseries, inner sep=2pt, minimum width=1.2cm},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit] (C1) at (0,0)   {C1};
+  \node[commit] (C2) at (2.5,0) {C2};
+  \node[commit] (C3) at (5,0)   {C3};
+  \node[font=\tiny, below=3pt of C1] {init project};
+  \node[font=\tiny, below=3pt of C2] {add README};
+  \node[font=\tiny, below=3pt of C3] {fix typo};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \node[lbl] (main) at (5, 1.0) {main};
+  \draw[arr] (main) -- (C3);
+  \node[headlbl] (HEAD) at (5, 1.75) {HEAD};
+  \draw[arr] (HEAD) -- (main);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+*** Note
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:END:
+
+Every commit points to its *parent*. =HEAD= marks your current position. The graph grows forward; you walk backward through history.
+
+* Viewing History
+
+** Inspecting Your State
+
+*** Commands
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | What It Shows |
+|---------|---------------|
+| =git log= | Full commit history |
+| =git log --oneline --graph --all= | Compact graph view of all branches |
+| =git diff= | Changes not yet staged |
+| =git diff --staged= | Changes staged for the next commit |
+| =git show HEAD= | Full detail of the last commit |
+
+** Who Changed This?
+
+*** git blame <file>
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Shows which user modified each line of a file, when they did it, and in which commit.
+
+- Excellent for finding the *context* behind a line of code.
+- Combine with =git show <hash>= to see the full change.
+
+* Undoing Things
+
+** Revert: Safe Undo
+
+*** git revert <hash>
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Creates a *new commit* that is the inverse of the target commit. History is never rewritten, making it safe for shared branches.
+
+** Reset: Undo Local Commits
+
+*** git reset
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Moves the branch pointer to an earlier commit. Rewrites history; only use on unpushed commits.
+
+| Mode | Command | Side Effect (all will undo commits) |
+|------|---------|--------|
+| Soft | =git reset --soft HEAD~1= | Changes stay *staged*              |
+| Mixed (default) | =git reset HEAD~1= | Changes go to *working directory*              |
+| Hard | =git reset --hard HEAD~1= | Changes are *discarded*              |
+
+*** Relative Refs
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=HEAD~N= means N commits behind HEAD:
+
+| Ref | Meaning |
+|-----|---------|
+| =HEAD~1= or =HEAD~= | One commit back (parent) |
+| =HEAD~2= | Two commits back (grandparent) |
+
+** The Reflog
+
+*** Using the Reflog
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Git records *every time HEAD moves*, including destructive operations.
+
+#+BEGIN_SRC bash
+# Destroyed work with a hard reset
+$ git reset --hard HEAD~2
+
+# Find the lost commit
+$ git reflog
+a1b2c3d HEAD@{2}: commit: Add payment feature  <- this one!
+
+# Restore it
+$ git reset --hard a1b2c3d
+#+END_SRC
+
+** Discussion: Reset or Revert?
+
+*** Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You pushed a commit to =main= that breaks the production server. Your team has already pulled it.
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Do you use =git reset --hard= or =git revert=?
+What happens to your teammates' history if you pick the wrong one?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Use *=git revert=*. It creates a new "undo" commit that others can pull safely. Resetting rewrites history, which would cause your teammates' local repos to diverge and break their next pull.
+
+** Stashing: Save for Later
+
+*** The Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You're in the middle of a feature, but need to fix a bug on =main=. You don't want to commit half-broken work.
+
+*** Commands
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+| Command | Action |
+|---------|--------|
+| =git stash= | Saves all uncommitted changes and clears your WD |
+| =git stash pop= | Restores stashed work and removes it from the stack |
+| =git stash list= | View all stashed items |
+| =git stash apply= | Restores stashed work but keeps it in the stack |
+
+* Working with Remotes
+
+** Remotes: Another Copy of the Repo
+
+*** Overview
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A *remote* is another copy of the repository, on GitHub's servers or a teammate's machine. The graphs stay in sync by pushing and pulling commits.
+
+| Term | Meaning |
+|------|---------|
+| =origin= | Default nickname for the remote URL |
+| =upstream= | The original repo you forked from |
+| =origin/main= | Local bookmark of where the remote's branch last was |
+
+** Managing Remotes
+
+*** Commands
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | Action |
+|---------|--------|
+| =git remote add <name> <url>= | Connect local repo to a new server |
+| =git remote -v= | List all configured remotes |
+| =git remote remove <name>= | Delete a remote connection |
+
+- =origin= is just the default name for the first remote.
+- You can have multiple remotes (e.g., =origin=, =upstream=).
+
+** Push, Fetch, Pull
+
+*** Commands
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | What It Does |
+|---------|--------------|
+| =git push <remote> <branch>= | Upload commits to a specific server/branch |
+| =git push -u origin <branch>= | First push; links local branch to remote |
+| =git fetch <remote>= | Download new commits; does not touch working files |
+| =git pull <remote> <branch>= | =fetch= + =merge= in one step |
+
+- Plain =git pull= only works if a branch is "tracking" a remote (set with =-u=).
+- Use =git fetch= to see what changed before merging.
+
+** Visualizing Push and Pull
+
+*** Sync Flow
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={rectangle, draw=black!70, fill=blue!10, rounded corners=4pt,
+              minimum width=3.0cm, minimum height=1.8cm, align=center, font=\small\bfseries},
+  arr/.style={-latex', thick},
+  rarr/.style={latex'-, thick}]
+  \node[box] (local)  at (0,0)   {Local\\Repo};
+  \node[box] (remote) at (5.5,0) {Remote\\(origin)};
+  \draw[arr]  ([yshift=14pt]local.east) -- node[above, font=\scriptsize\ttfamily] {git push}              ([yshift=14pt]remote.west);
+  \draw[rarr] ([yshift= 0pt]local.east) -- node[above, font=\scriptsize\ttfamily] {git fetch}             ([yshift= 0pt]remote.west);
+  \draw[rarr] ([yshift=-14pt]local.east) -- node[below, font=\scriptsize\ttfamily] {git pull (fetch+merge)} ([yshift=-14pt]remote.west);
+  \node[font=\tiny\itshape, below=10pt of local] {\texttt{origin/main} = local bookmark of remote state};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+*** Note on =-u=
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:END:
+
+Without =-u= on the first push, Git errors: *"The current branch has no upstream branch."* Use =git push -u origin <branch>= once; after that, plain =git push= works.
+
+* Branching
+
+** Branches Are Pointers
+
+*** What Is a Branch?
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A branch is a *pointer to a commit*. Creating one copies no files. =HEAD= points to the current branch, which points to the tip commit.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  lbl/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+              font=\tiny\bfseries, inner sep=3pt, minimum width=1.3cm},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=3pt},
+  arr/.style={-latex', thick, draw=blue!70!black},
+  harr/.style={-latex', thick, draw=orange!80!black}]
+  \node[commit] (C1) at (0,0) {C1};
+  \node[commit] (C2) at (2,0) {C2};
+  \node[commit] (C3) at (4,0) {C3};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \node[lbl]     (main) at (4, 1.1)  {main};
+  \node[headlbl] (HEAD) at (4, 1.95) {HEAD};
+  \draw[arr]  (main) -- (C3);
+  \draw[harr] (HEAD) -- (main);
+  \node[font=\tiny\itshape, right=8pt of HEAD] {"You are here"};
+  \node[font=\tiny\itshape, right=8pt of main] {stored in \texttt{.git/refs/heads/main}};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+** Discussion: Branching Mental Model
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+If a branch is just a pointer to a commit, what actually happens to the files on your hard drive when you run =git switch=? Does Git create a new folder for every branch?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Git updates the files in your Working Directory in-place to match the snapshot of the target commit. It does *not* create new folders; it swaps the contents of your existing folder based on where HEAD is pointing.
+
+*** Why Branch?
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+- Keep work off =main= until it's done
+- Run multiple features in parallel
+- Each Pull Request is one branch
+
+** Visualizing Branches
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** Commands                                                  :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.36
+:END:
+
+#+BEGIN_SRC bash
+$ git switch -c feature
+# Make commits C3, C4
+$ git switch main
+# Make commit C5
+#+END_SRC
+
+#+BEGIN_SRC bash
+$ git log --oneline --graph --all
+  * a1b2c3d (HEAD -> main) C5
+  | * e5f6g7h (feature) C4
+  | * i8j9k0l C3
+  |/
+  * m1n2o3p C2
+  * q4r5s6t C1
+#+END_SRC
+
+**** Graph                                                     :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.62
+:END:
+
+#+BEGIN_EXPORT latex
+\hfill
+\begin{tikzpicture}[scale=0.80, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit] (C1) at (0,0)    {C1};
+  \node[commit] (C2) at (1.8,0)  {C2};
+  \node[commit] (C3) at (3.6,1.2) {C3};
+  \node[commit] (C4) at (5.4,1.2) {C4};
+  \node[commit] (C5) at (3.6,0)  {C5};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \draw[arr] (C4) -- (C3);
+  \draw[arr] (C5) -- (C2);
+  \node[fbranch] (flbl) at (5.4,2.1) {feature};
+  \draw[arr] (flbl) -- (C4);
+  \node[mbranch] (mlbl) at (3.6,-1.0) {main};
+  \draw[arr] (mlbl) -- (C5);
+  \node[headlbl] (HEAD) at (3.6,-1.75) {HEAD};
+  \draw[arr] (HEAD) -- (mlbl);
+\end{tikzpicture}
+#+END_EXPORT
+
+** Branch Commands
+
+*** Branch Commands
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | Action |
+|---------|--------|
+| =git branch <name>= | Create a new pointer at HEAD |
+| =git switch <name>= | Move HEAD to that branch |
+| =git switch -c <name>= | Create and switch in one step |
+| =git branch -d <name>= | Delete a merged branch pointer |
+| =git branch -D <name>= | Force-delete even if unmerged |
+| =git branch -v= | List branches with their latest commit |
+| =git push origin --delete <name>= | Delete a branch on the remote |
+
+*** Note on =git checkout=
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Older tutorials use =git checkout -b <name>=, which does the same thing. =git switch= was added in Git 2.23 to make this explicit.
+
+** Detached HEAD
+
+*** Detached HEAD State
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=git switch --detach <hash>= puts you in *detached HEAD* state: =HEAD= points directly to a commit, not a branch name.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  lbl/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+              font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  dethead/.style={rectangle, rounded corners=2pt, fill=red!70!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  % --- Left: Normal attached ---
+  \node[font=\small\bfseries] at (1.5, 2.4) {Normal (Attached)};
+  \node[commit] (A1) at (0,0)   {C1};
+  \node[commit] (A2) at (2.2,0) {C2};
+  \draw[arr] (A2) -- (A1);
+  \node[lbl]     (Amain) at (2.2,1.0) {main};
+  \node[headlbl] (AHEAD) at (2.2,1.8) {HEAD};
+  \draw[arr] (Amain) -- (A2);
+  \draw[arr] (AHEAD) -- (Amain);
+  % --- Divider ---
+  \draw[dashed, black!30] (3.8,-0.6) -- (3.8,2.7);
+  % --- Right: Detached ---
+  \node[font=\small\bfseries] at (6.5, 2.4) {Detached HEAD};
+  \node[commit] (B1) at (4.8,0) {C1};
+  \node[commit] (B2) at (7.0,0) {C2};
+  \draw[arr] (B2) -- (B1);
+  \node[lbl]     (Bmain) at (7.0,1.0) {main};
+  \node[dethead] (BHEAD) at (4.8,1.0) {HEAD};
+  \draw[arr] (Bmain) -- (B2);
+  \draw[arr] (BHEAD) -- (B1);
+  \node[font=\scriptsize\itshape, above=4pt of BHEAD] {git switch --detach C1};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+** Discussion: Detached HEAD Rescue
+
+*** Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You used =git switch --detach= to look at an old version of the code. You found a bug, fixed it, and made a commit. Then, you ran =git switch main= to go back to work. Your fix is now "invisible" because it has no branch label.
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+How do you find that commit hash to save your work?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Use *=git reflog=*. It records every movement of HEAD, including commits made in a detached state. Find the hash in the log and run =git switch -c fix-branch <hash>=.
+
+* Merging
+
+** Fast-Forward Merge
+
+*** Concept
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+If =main= hasn't moved since you branched off, Git just moves the pointer forward. No merge commit.
+
+*** Result
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\centering\textbf{Before}\\[4pt]
+\begin{tikzpicture}[scale=0.78, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit] (C1) at (0,0)   {C1};
+  \node[commit] (C2) at (2,0)   {C2};
+  \node[commit] (C3) at (4,0)   {C3};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \node[mbranch] (mlbl) at (2, 1.0) {main};
+  \draw[arr] (mlbl) -- (C2);
+  \node[headlbl] (HEAD) at (2, 1.8) {HEAD};
+  \draw[arr] (HEAD) -- (mlbl);
+  \node[fbranch] (flbl) at (4, 1.0) {feature};
+  \draw[arr] (flbl) -- (C3);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.48\textwidth}
+\centering\textbf{After} \texttt{git merge feature}\\[4pt]
+\begin{tikzpicture}[scale=0.78, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick},
+  note/.style={font=\tiny\itshape, draw=black!40, dashed, rounded corners=3pt,
+               fill=yellow!10, inner sep=3pt}]
+  \node[commit] (C1) at (0,0)   {C1};
+  \node[commit] (C2) at (2,0)   {C2};
+  \node[commit] (C3) at (4,0)   {C3};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \node[fbranch] (flbl) at (4, 0.8) {feature};
+  \node[mbranch] (mlbl) at (4, 1.6) {main};
+  \node[headlbl] (HEAD) at (4, 2.4) {HEAD};
+  \draw[arr] (flbl) -- (C3);
+  \draw[arr] (mlbl) -- (C3);
+  \draw[arr] (HEAD) -- (mlbl);
+  \node[note] at (2,-1.0) {No merge commit};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+#+END_EXPORT
+
+** Merge Commit
+
+*** Diverged History
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+When both branches have diverged, Git ties them together with a *merge commit* that has two parents.
+
+*** Result
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{columns}[T]
+\begin{column}{0.46\textwidth}
+\centering\textbf{Before}\\[4pt]
+\begin{tikzpicture}[scale=0.78, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit] (C1) at (0,0)    {C1};
+  \node[commit] (C2) at (1.8,0)  {C2};
+  \node[commit] (C3) at (3.4,1.1) {C3};
+  \node[commit] (C4) at (3.4,0)  {C4};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \draw[arr] (C4) -- (C2);
+  \node[fbranch] (flbl) at (3.4,1.9) {feature};
+  \draw[arr] (flbl) -- (C3);
+  \node[mbranch] (mlbl) at (3.4,-0.9) {main};
+  \draw[arr] (mlbl) -- (C4);
+  \node[headlbl] (HEAD) at (3.4,-1.7) {HEAD};
+  \draw[arr] (HEAD) -- (mlbl);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.52\textwidth}
+\centering\textbf{After} \texttt{git merge feature}\\[4pt]
+\begin{tikzpicture}[scale=0.78, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  mcommit/.style={circle, draw=black, fill=purple!40, minimum size=8mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit]  (C1) at (0,0)    {C1};
+  \node[commit]  (C2) at (1.6,0)  {C2};
+  \node[commit]  (C3) at (3.2,1.1) {C3};
+  \node[commit]  (C4) at (3.2,0)  {C4};
+  \node[mcommit] (M)  at (4.8,0)  {M};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \draw[arr] (C4) -- (C2);
+  \draw[arr] (M)  -- (C4);
+  \draw[arr] (M)  -- (C3);
+  \node[fbranch] (flbl) at (3.2,1.9) {feature};
+  \draw[arr] (flbl) -- (C3);
+  \node[mbranch] (mlbl) at (4.8,-0.9) {main};
+  \draw[arr] (mlbl) -- (M);
+  \node[headlbl] (HEAD) at (4.8,-1.7) {HEAD};
+  \draw[arr] (HEAD) -- (mlbl);
+  \node[font=\tiny\itshape, above=3pt of M] {merge commit};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+#+END_EXPORT
+
+** Conflict Resolution
+
+*** When Conflicts Happen
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A conflict happens when both branches changed the same line. Git can't pick for you.
+
+1. *Git stops* and writes conflict markers into the file.
+2. *Open the file*, delete the markers, keep what you want.
+3. =git add <file>= to mark it resolved.
+4. =git commit= to finish.
+
+Changed your mind? =git merge --abort= puts everything back.
+
+** Conflict Markers → Resolved
+
+*** Before: Conflict Markers
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Git writes markers showing both sides. =HEAD= is your branch:
+
+#+BEGIN_EXPORT latex
+{\small\ttfamily
+\textcolor{red}{<<<<<<< HEAD}\\
+return total * 1.08\\
+\textcolor{red}{=======}\\
+return total * 1.10\\
+\textcolor{red}{>>>>>>> feature/tax-update}
+}
+#+END_EXPORT
+
+*** After: Delete Markers, Keep What You Want
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+#+BEGIN_EXPORT latex
+{\small\ttfamily
+return total * 1.10
+}
+#+END_EXPORT
+
+Then: =git add <file>= $\to$ =git commit=.
+VSCode: click \textit{Resolve in Merge Editor} to avoid editing by hand.
+
+* Rebasing
+
+** Rebase: Replaying on a New Base
+
+*** The Idea
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Rebase takes your commits and replays them on top of another branch. The result is a straight-line history with no merge commit.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  ghost/.style={circle, draw=black!25, fill=gray!10, minimum size=7mm, font=\tiny\bfseries, text=black!30},
+  rcommit/.style={circle, draw=black, fill=green!30, minimum size=7mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick},
+  garr/.style={-latex', thick, draw=black!20},
+  rarr/.style={-latex', thick, dashed, draw=green!60!black}]
+  % BEFORE label
+  \node[font=\small\bfseries] at (2.2,  2.2) {Before};
+  \node[commit] (C1) at (0,0)   {C1};
+  \node[commit] (C2) at (1.8,0) {C2};
+  \node[commit] (C3) at (3.4,1.1) {C3};
+  \node[commit] (C4) at (3.4,0)   {C4};
+  \draw[arr] (C2)--(C1); \draw[arr] (C3)--(C2); \draw[arr] (C4)--(C2);
+  \node[fbranch] at (3.4,1.9) (fb) {feature}; \draw[arr] (fb)--(C3);
+  \node[mbranch] at (3.4,-0.9) (mb) {main};   \draw[arr] (mb)--(C4);
+  % Arrow between before/after
+  \draw[-latex', very thick, draw=black!50] (4.8,0.5) -- node[above,font=\scriptsize\ttfamily]{git rebase main} (6.2,0.5);
+  % AFTER label
+  \node[font=\small\bfseries] at (9.0, 2.2) {After};
+  \node[commit]  (D1)  at (6.8,0) {C1};
+  \node[commit]  (D2)  at (8.2,0) {C2};
+  \node[commit]  (D4)  at (9.6,0) {C4};
+  \node[rcommit] (D3p) at (11.0,0) {C3'};
+  \draw[arr] (D2)--(D1); \draw[arr] (D4)--(D2); \draw[arr] (D3p)--(D4);
+  \node[mbranch] at (9.6,0.9)  (dm) {main};    \draw[arr] (dm)--(D4);
+  \node[fbranch] at (11.0,0.9) (df) {feature}; \draw[arr] (df)--(D3p);
+  \node[font=\tiny\itshape, below=3pt of D3p] {new hash};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+#+BEGIN_SRC bash
+# While on your feature branch:
+git rebase main
+#+END_SRC
+
+Each replayed commit gets a new hash. Same changes, different parent.
+
+** Discussion: Merge vs. Rebase Philosophy
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Rebasing creates a "clean" linear history, while merging preserves the reality of when work actually overlapped. In a workplace setting, which is more important: a readable history or a more accurate audit trail?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+It depends on team policy!
+- *Rebase*: Easier to read/debug (=git bisect=), but "lies" about when work was done.
+- *Merge*: Clearer record of parallel work and integration points, but can lead to messy history.
+
+** Merge vs. Rebase
+
+*** Before: Diverged History
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit] (C1) at (0,0)    {C1};
+  \node[commit] (C2) at (2,0)    {C2};
+  \node[commit] (C3) at (4,1.1)  {C3};
+  \node[commit] (C4) at (4,0)    {C4};
+  \draw[arr] (C2) -- (C1);
+  \draw[arr] (C3) -- (C2);
+  \draw[arr] (C4) -- (C2);
+  \node[fbranch] at (4,1.9) (flbl) {feature}; \draw[arr] (flbl) -- (C3);
+  \node[mbranch] at (4,-0.9) (mlbl) {main};    \draw[arr] (mlbl) -- (C4);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:BEAMER_ACT: <2->
+:END:
+
+**** Merge                                                    :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+#+BEGIN_SRC bash
+$ git switch main
+$ git merge feature
+#+END_SRC
+
+#+BEGIN_EXPORT latex
+\begin{tikzpicture}[scale=0.75, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  mcommit/.style={circle, draw=black, fill=purple!40, minimum size=7mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit]  (C1) at (0,0)    {C1};
+  \node[commit]  (C2) at (1.8,0)  {C2};
+  \node[commit]  (C3) at (3.3,1.1) {C3};
+  \node[commit]  (C4) at (3.3,0)  {C4};
+  \node[mcommit] (M)  at (5.0,0)  {M};
+  \draw[arr] (C2)--(C1); \draw[arr] (C3)--(C2); \draw[arr] (C4)--(C2);
+  \draw[arr] (M)--(C4);  \draw[arr] (M)--(C3);
+  \node[fbranch] at (3.3,1.9) (f) {feature}; \draw[arr] (f)--(C3);
+  \node[mbranch] at (5.0,-0.9) (m) {main};    \draw[arr] (m)--(M);
+\end{tikzpicture}
+#+END_EXPORT
+
+- C1–C4 are unchanged
+- The merge commit shows when the branches joined
+
+**** Rebase                                                   :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+#+BEGIN_SRC bash
+$ git switch feature
+$ git rebase main
+#+END_SRC
+
+#+BEGIN_EXPORT latex
+\begin{tikzpicture}[scale=0.75, every node/.append style={transform shape},
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=7mm, font=\tiny\bfseries},
+  rcommit/.style={circle, draw=black, fill=green!30, minimum size=7mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick}]
+  \node[commit]  (C1)  at (0,0)   {C1};
+  \node[commit]  (C2)  at (1.8,0) {C2};
+  \node[commit]  (C4)  at (3.6,0) {C4};
+  \node[rcommit] (C3p) at (5.4,0) {C3'};
+  \draw[arr] (C2)--(C1); \draw[arr] (C4)--(C2); \draw[arr] (C3p)--(C4);
+  \node[mbranch] at (3.6,0.9) (m) {main};    \draw[arr] (m)--(C4);
+  \node[fbranch] at (5.4,0.9) (f) {feature}; \draw[arr] (f)--(C3p);
+  \node[font=\tiny\itshape, below=3pt of C3p] {new hash};
+\end{tikzpicture}
+#+END_EXPORT
+
+- Straight-line history
+- C3 is gone; C3' has the same changes, new hash
+
+** Interactive Rebase: Clean History
+
+*** git rebase -i <base>
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Opens your =$EDITOR= with the last N commits listed. Change the keyword on each line, save, and quit.
+
+#+BEGIN_SRC bash
+git rebase -i HEAD~5   # open the last 5 commits
+#+END_SRC
+
+Vim tip: =i= to edit, =Esc= =:wq= to save. To use nano instead: =git config --global core.editor "nano"=.
+
+*** Common Commands
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{columns}[T]
+\begin{column}{0.54\textwidth}
+{\small
+\begin{tabular}{ll}
+\textbf{Keyword} & \textbf{Action} \\[2pt]
+\texttt{pick}   & Keep the commit as is \\
+\texttt{reword} & Edit the commit message \\
+\texttt{squash} & Combine with commit above \\
+\texttt{drop}   & Delete the commit entirely \\
+\end{tabular}
+}
+\end{column}
+\begin{column}{0.43\textwidth}
+{\small\ttfamily
+pick\phantom{xx}a1b2c3d add login\\
+squash d4e5f6g fix typo\\
+reword k0l1m2n add payment\\
+drop\phantom{xx}n3o4p5q debug print
+}
+\end{column}
+\end{columns}
+#+END_EXPORT
+
+** Discussion: Squash for PRs
+
+*** Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Your branch has 5 commits: ="fix"=, ="typo"=, ="asdf"=, ="wip"=, ="finally"=. You need to open a PR.
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+How do you squash these into one commit? What command and what keyword?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+=git rebase -i HEAD~5=. First line: =pick=. Rest: =squash=. Git folds them into one.
+
+** Rebase Warning
+
+*** The Rule
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:END:
+
+*Never rebase commits that have been pushed.*
+
+Rebasing rewrites hashes. If a teammate pulled your branch, their history diverges from yours and =git pull= breaks for them.
+
+*** When to Use
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Safe on branches that only exist locally.
+
+** Discussion: Parallel Universe Conflict
+
+*** Scenario
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Alice and Bob both branch off =main= at the same time. Alice finishes her =UI-fix= and merges it into =main=. Bob is still working on his =db-refactor=.
+
+*** Question (Discuss at your tables)
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+1. Does Bob have Alice's UI changes yet?
+2. If Bob needs Alice's changes to continue his work, what are his two options to get them?
+3. Which option should he pick if he wants a clean, linear history?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+1. No, Bob's branch is isolated.
+2. Bob can either =git merge main= into his branch OR =git rebase main=.
+3. He should *=rebase=* on top of =main=.
+
+* Advanced Workflows
+
+** Cherry-Pick
+
+*** The Command
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Copies *one specific commit* from another branch and applies it to your current branch.
+
+#+BEGIN_SRC bash
+git cherry-pick <hash>
+#+END_SRC
+
+Creates a new commit with the same changes but a different hash.
+
+*** When to Use It
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+| Scenario | Why Cherry-Pick? |
+|----------|-----------------|
+| Hotfix on =main= needed on =release= | Avoid merging all of =main= |
+| One useful commit from an abandoned branch | No need to revive the whole branch |
+| Backport a fix to an older version | Target exactly one change |
+
+** Visualizing Cherry-Pick
+
+*** The Graph
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+  commit/.style={circle, draw=black, fill=gray!30, minimum size=8mm, font=\tiny\bfseries},
+  cpcommit/.style={circle, draw=black, fill=orange!35, minimum size=8mm, font=\tiny\bfseries},
+  bugcommit/.style={circle, draw=black, fill=red!25, minimum size=8mm, font=\tiny\bfseries},
+  mbranch/.style={rectangle, rounded corners=2pt, fill=blue!60!white, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  fbranch/.style={rectangle, rounded corners=2pt, fill=green!50!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  headlbl/.style={rectangle, rounded corners=2pt, fill=orange!80!black, text=white,
+                  font=\tiny\bfseries, inner sep=2pt},
+  arr/.style={-latex', thick},
+  cparr/.style={-latex', thick, dashed, draw=orange!70!black}]
+  \node[commit]    (C1)  at (0,0)    {C1};
+  \node[commit]    (C2)  at (2,0)    {C2};
+  \node[bugcommit] (C3f) at (4,1.4)  {C3};
+  \node[commit]    (C4)  at (6,1.4)  {C4};
+  \node[cpcommit]  (C3m) at (4,0)    {C3'};
+  \draw[arr] (C2)  -- (C1);
+  \draw[arr] (C3f) -- (C2);
+  \draw[arr] (C4)  -- (C3f);
+  \draw[arr] (C3m) -- (C2);
+  \draw[cparr] (C3f) to[out=-70, in=70] node[right, font=\tiny\ttfamily] {cherry-pick} (C3m);
+  \node[font=\tiny, below=2pt of C3f] {bugfix};
+  \node[font=\tiny, below=2pt of C3m] {same changes, new hash};
+  \node[fbranch] (flbl) at (6,2.3)  {feature}; \draw[arr] (flbl) -- (C4);
+  \node[mbranch] (mlbl) at (4,-1.1) {main};     \draw[arr] (mlbl) -- (C3m);
+  \node[headlbl] (HEAD) at (4,-1.85) {HEAD};     \draw[arr] (HEAD) -- (mlbl);
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+*** Key Detail
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+=C3= and =C3'= contain the same changes but are independent commits with different hashes.
+

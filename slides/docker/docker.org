@@ -1,0 +1,670 @@
+#+Title: Docker
+#+SUBTITLE: CMSC398W: Practical Tools For Efficient Development
+#+AUTHOR: Mohammad Durrani
+#+DATE: \today
+#+OPTIONS: H:2 toc:nil num:nil ^:nil
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: Madrid
+#+BEAMER_COLOR_THEME: dolphin
+#+BEAMER_FONT_THEME: structurebold
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usetikzlibrary{shapes,arrows,positioning,shadows,calc,fit}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepgfplotslibrary{polar}
+#+LATEX_HEADER: \pgfplotsset{compat=1.18}
+#+LATEX_HEADER: \usepackage[height=1890]{beamer-reveal}
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col)
+
+* Motivation
+
+** It Works On My Machine
+
+You clone a teammate's repo and run their code. Much to your surprise, it crashes.
+
+- Their Python is 3.11 but yours is 3.9.
+- They installed =libpq-dev= on Ubuntu and unfortunately you're on macOS.
+- Their =.env= file sets a path that doesn't exist on your machine.
+
+After an hour of debugging, it finally works but it doesn't have to be this hard
+
+** What Docker Solves
+
+*** The Problem
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Software depends on more than just its code:
+
+- Runtime version (Python 3.11, Node 20, JDK 17)
+- System libraries (=libssl=, =libpq=, =glibc= version)
+- OS-level config (ports, file paths, env vars)
+- Other services (database, cache, message queue)
+
+*** Docker's Answer
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Package the code *and its entire environment* together.
+
+** What is Docker?
+
+*** Docker
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Docker is a platform that enables developers to build, deploy, run, and manage applications in a containerized fashion using images.
+
+** Where Docker Shows Up
+
+*** Contexts
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Context | What Docker Does |
+|---------|-----------------|
+| Local dev | Every dev gets identical environment |
+| CI pipelines | Tests run in the same env as production |
+| Deployment | Push the same image you tested |
+| Microservices | Each service runs in its own isolated container |
+
+*** The Pattern
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+"Build once, run anywhere."
+
+* Containers vs VMs
+
+** Think-Pair-Share: What's the Difference?
+
+*** The Challenge
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+You want to run an isolated Linux environment on your laptop. You could use a *virtual machine* or a *container*.
+
+*** The Question
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+What do you think is the key difference between running a VM and running a container? What might each one be better at?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+VMs virtualize hardware; each gets its own OS kernel. Containers share the host kernel and isolate only the filesystem and processes.
+
+** Containers vs VMs: Side by Side
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+****                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{tikzpicture}[
+    node distance=0.3cm,
+    box/.style={rectangle, draw, fill=blue!15, text width=5em,
+                text centered, minimum height=1.8em, thick, font=\small}]
+  \node [font=\small\bfseries, text=blue!60!black] (title) {Virtual Machine};
+  \node [box, below=0.2cm of title] (app1) {App A};
+  \node [box, below=of app1] (libs1) {Libs/Bins};
+  \node [box, below=of libs1] (gos1) {Guest OS};
+  \node [box, below=of gos1] (hyp) {Hypervisor};
+  \node [box, below=of hyp, fill=gray!20] (host) {Host OS};
+  \node [box, below=of host, fill=gray!20] (hw) {Hardware};
+\end{tikzpicture}
+#+END_EXPORT
+
+****                                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{tikzpicture}[
+    node distance=0.3cm,
+    box/.style={rectangle, draw, fill=green!15, text width=5em,
+                text centered, minimum height=1.8em, thick, font=\small}]
+  \node [font=\small\bfseries, text=green!60!black] (title) {Container};
+  \node [box, below=0.2cm of title] (app1) {App A};
+  \node [box, below=of app1] (libs1) {Libs/Bins};
+  \node [box, below=of libs1] (rt) {Container Runtime};
+  \node [box, below=of rt, fill=gray!20] (host) {Host OS};
+  \node [box, below=of host, fill=gray!20] (hw) {Hardware};
+\end{tikzpicture}
+#+END_EXPORT
+
+** Containers vs VMs: Tradeoffs
+
+*** Comparison
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Property | VM | Container |
+|----------|----|-----------|
+| Startup time | Minutes | Milliseconds |
+| Size | GBs (full OS) | MBs (just app + libs) |
+| Isolation | Full OS boundary | Process + filesystem |
+| Portability | Heavyweight | Lightweight |
+| Use case | Full OS needed | App packaging |
+
+*** Note on Security
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Containers share the host kernel, so a kernel exploit can break out of container isolation. VMs provide a harder boundary since each has its own kernel.
+
+* Images vs Containers
+
+** Two Key Concepts
+
+*** Image
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A *Docker image* is a read-only blueprint. It contains:
+- A filesystem snapshot (OS files, libraries, your code)
+- Metadata (what command to run, what port to expose)
+- Layers: each build step adds a layer on top of the previous
+
+*** Container
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+A *container* is a running instance of an image. When you start a container, Docker adds a thin writable layer on top of the image. The image itself never changes.
+
+** Docker Concepts
+
+*** Class vs Object
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Concept | Docker |
+|---------|--------|
+| Class definition | Image |
+| Object instance | Container |
+| new MyClass() | docker run myimage |
+
+One image $\rightarrow$ many containers running simultaneously, each isolated from the others.
+
+* Docker Primitives
+
+** Core Objects
+
+*** Primitives
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Primitive | What It Is |
+|-----------|-----------|
+| *Image* | Read-only filesystem snapshot + metadata |
+| *Container* | Running instance of an image |
+| *Volume* | Persistent storage that outlives containers |
+| *Network* | Virtual network connecting containers |
+
+*** Registry
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+A *registry* stores and distributes images. Docker Hub is the public default. Companies run private registries (AWS ECR, GitHub Container Registry). =docker pull nginx= fetches from Docker Hub.
+
+** Lifecycle of a Container
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm, auto,
+    box/.style={rectangle, draw, fill=blue!20, text width=5.5em, text centered,
+                rounded corners, minimum height=2.5em, thick, font=\small},
+    line/.style={draw, -latex', very thick}]
+  \node [box] (pull)   {docker pull};
+  \node [box, right of=pull]  (create) {docker create};
+  \node [box, right of=create] (run)   {docker run};
+  \node [box, right of=run]   (stop)  {docker stop};
+
+  \path [line] (pull)   -- (create);
+  \path [line] (create) -- (run);
+  \path [line] (run)    -- (stop);
+
+  \node[below=0.4cm of pull,  font=\footnotesize, text=gray] {from registry};
+  \node[below=0.4cm of run,   font=\footnotesize, text=gray] {or restart};
+  \node[below=0.4cm of stop,  font=\footnotesize, text=gray] {still exists};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+=docker rm= removes the container. =docker rmi= removes the image.
+
+* Writing a Dockerfile
+
+** Dockerfile Basics
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+A =Dockerfile= is a script of instructions that builds an image layer by layer.
+
+*** Common Instructions
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Instruction | Purpose |
+|-------------|---------|
+| =FROM= | Base image to start from |
+| =RUN= | Execute a shell command during build |
+| =COPY= | Copy files from host into the image |
+| =WORKDIR= | Set working directory for subsequent commands |
+| =ENV= | Set environment variable in the image |
+| =EXPOSE= | Document which port the app listens on |
+| =CMD= | Default command when container starts |
+
+** A Flask App Dockerfile
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** Dockerfile                                               :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.52
+:END:
+
+#+ATTR_LATEX: :options fontsize=\footnotesize
+#+BEGIN_SRC dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir \
+    -r requirements.txt
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+#+END_SRC
+
+**** Why This Order?                                          :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.44
+:END:
+
+- =python:3.11-slim= — small official base
+- =WORKDIR= before any copies
+- Copy =requirements.txt= *first*, then =pip install=
+- Copy source code *last*
+
+** Image Layers
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+Each instruction in a Dockerfile adds a layer which are then cached and shared.
+
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0.35cm,
+    layer/.style={rectangle, draw, text width=14em, text centered,
+                  minimum height=2em, thick, font=\small},
+    base/.style={layer, fill=gray!20},
+    mid/.style={layer, fill=blue!15},
+    top/.style={layer, fill=green!15}]
+  \node [base] (os)   {ubuntu:22.04 (base OS)};
+  \node [mid,  above=of os]   (py)   {RUN apt-get install python3};
+  \node [mid,  above=of py]   (deps) {COPY requirements.txt + RUN pip install};
+  \node [top,  above=of deps] (code) {COPY app/};
+  \node [top,  above=of code] (cmd)  {CMD ["python", "app.py"]};
+\end{tikzpicture}
+\end{center}
+#+END_EXPORT
+
+Change =app.py= $\rightarrow$ only the top two layers rebuild. Dependencies are cached.
+
+** Think-Pair-Share: Dockerfile Order
+
+*** The Challenge
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+A teammate writes this Dockerfile:
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC dockerfile
+FROM node:20-slim
+WORKDIR /app
+COPY . .
+RUN npm install
+CMD ["node", "server.js"]
+#+END_SRC
+
+*** The Question
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+What's the problem with this layer order? How would you fix it?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+=COPY . .= copies all source code before =npm install=. Any code change will invalidate the install cache. How do you think we could fix this?
+
+* Docker CLI
+
+**Commands
+
+*** Managing Images
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | Description |
+|---------|-------------|
+| =docker pull nginx= | Download image from registry |
+| =docker images= | List local images |
+| =docker rmi nginx= | Remove a local image |
+| =docker build -t myapp .= | Build image from Dockerfile |
+
+*** Managing Containers
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+| Command | Description |
+|---------|-------------|
+| =docker run nginx= | Create and start a container |
+| =docker ps= | List running containers |
+| =docker ps -a= | List all containers (including stopped) |
+| =docker stop <id>= | Stop a running container |
+| =docker rm <id>= | Remove a stopped container |
+
+** Running Containers: Flags
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** Flags                                                    :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+| Flag | Meaning |
+|------|---------|
+| =-d= | Detach                     |
+| =-p 8080:80= | Map host p 8080 to container 80         |
+| =-v ./data:/data= | Mount a volume |
+| =-e KEY=val= | Set environment variable |
+| =--name web= | Give the container a name |
+| =--rm= | Auto-remove when it exits |
+
+**** Example                                                  :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.48
+:END:
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC bash
+# Run nginx, port 8080 on host
+# maps to port 80 in container
+docker run -d \
+  -p 8080:80 \
+  --name web \
+  nginx
+
+# Open a shell in a running container
+docker exec -it web bash
+
+# See logs
+docker logs web
+#+END_SRC
+
+* Volumes
+
+** The Problem With Container Storage
+
+*** Containers Are Ephemeral
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+When a container stops and is removed, everything written inside it is gone.
+
+*** Persistence
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+*Volumes* decouple storage from the container lifecycle. Data lives on the host and the containers just mount it.
+
+** Volumes in Practice
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+*** Named Volume for a Database
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC bash
+# Create named volume
+docker volume create pgdata
+
+# Mount it into postgres container
+docker run -d \
+  -e POSTGRES_PASSWORD=secret \
+  -v pgdata:/var/lib/postgresql/data \
+  postgres:16
+
+# Volume persists across container restarts/rm
+#+END_SRC
+
+*** Key Point
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+Docker stores named volumes on the host, outside any container. This means that if you remove the container, the data stays.
+
+* Docker Compose
+
+** Why Compose?
+
+*** The Problem
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Most apps need multiple services running together:
+
+- Flask backend on port 5000
+- PostgreSQL database
+- Redis cache
+- Nginx reverse proxy
+
+Running each with a long =docker run= command and wiring them together by hand is annoying.
+
+*** Docker Compose
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:BEAMER_ACT: <2->
+:END:
+
+Define the whole app in one =docker-compose.yml= file and bring everything up or down with one command.
+
+** A Compose File
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+***                                                          :B_columns:
+:PROPERTIES:
+:BEAMER_ENV: columns
+:END:
+
+**** compose.yml                                              :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.54
+:END:
+
+#+ATTR_LATEX: :options fontsize=\scriptsize
+#+BEGIN_SRC yaml
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: XX
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: appdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+#+END_SRC
+
+**** Annotations                                              :BMCOL:
+:PROPERTIES:
+:BEAMER_COL: 0.42
+:END:
+
+- =build: .= — build from local Dockerfile
+- =image:= — pull from registry
+- =depends_on= — start order (not readiness)
+- =volumes:= — named volume declared once, used anywhere
+- Services talk to each other by *service name* (=db=)
+
+** Compose Commands
+
+*** Everyday Workflow
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+| Command | Description |
+|---------|-------------|
+| =docker compose up= | Start all services (foreground) |
+| =docker compose up -d= | Start all services (detached) |
+| =docker compose down= | Stop and remove containers |
+| =docker compose down -v= | Also remove volumes |
+| =docker compose logs web= | Stream logs from =web= service |
+| =docker compose exec web bash= | Shell into running service |
+| =docker compose build= | Rebuild images |
+| =docker compose ps= | Status of all services |
+
+** Think-Pair-Share: Service Startup Order
+
+*** The Challenge
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+The Flask app starts immediately and crashes because PostgreSQL isn't ready yet, even though @@latex:\texttt{depends\_on: db}@@ is set in the Compose file.
+
+*** The Question
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+Why doesn't @@latex:\texttt{depends\_on}@@ solve this? What approaches would actually fix it?
+
+*** Answer
+:PROPERTIES:
+:BEAMER_ENV: alertblock
+:BEAMER_ACT: <2->
+:END:
+
+@@latex:\texttt{depends\_on}@@ only waits for the container to start, not for the DB to be ready to accept connections. Fix: use @@latex:\texttt{depends\_on: condition: service\_healthy}@@ with a healthcheck, or add retry logic in the app.
+
+** Healthchecks in Compose
+:PROPERTIES:
+:BEAMER_OPT: fragile
+:END:
+
+*** Making depends_on Wait for Readiness
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+#+ATTR_LATEX: :options fontsize=\footnotesize
+#+BEGIN_SRC yaml
+services:
+  db:
+    image: postgres:16
+    healthcheck:
+      test: ["CMD-SHELL",
+             "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+#+END_SRC
+

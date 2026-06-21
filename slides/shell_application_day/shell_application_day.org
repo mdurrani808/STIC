@@ -1,0 +1,158 @@
+#+Title: Application Day: Shell
+#+SUBTITLE: CMSC398W: Practical Tools For Efficient Development
+#+AUTHOR: Mohammad Durrani
+#+DATE: \today
+#+OPTIONS: H:2 toc:nil num:nil
+#+STARTUP: beamer
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [presentation,aspectratio=169]
+#+BEAMER_THEME: Madrid
+#+BEAMER_COLOR_THEME: dolphin
+#+BEAMER_FONT_THEME: structurebold
+#+LATEX_HEADER: \setbeamertemplate{navigation symbols}{}
+#+LATEX_HEADER: \setbeamertemplate{footline}[frame number]
+#+LATEX_HEADER: \usepackage[height=1890]{beamer-reveal}
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col)
+
+* Application Day: Shell
+
+* [TODO List App] TODO List App
+
+** [TODO List App] TODO List App
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Today, we will create a command-line todo list manager that allows users to add, view, complete, and manage their tasks.
+
+- Due on Friday @ 11:59 PM
+- Should be able to complete in class
+- Graded on good-faith attempt
+
+* Setup
+
+** Setup
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+Copy the script from the website into a local =todo.sh=
+
+We will start with the =add= functionality and then add others as we go.
+
+*** Add function
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+=./todo add <task description>= - Add a new task
+
+Specification states:
+- Use a simple text format with checkboxes: =[ ]= for incomplete, =[x]= for complete
+
+Useful hints:
+- =$*= will give you all the parameters passed into the script as a string
+- =echo= and =>>= is useful here to add a message to the =$TODO_FILE=
+
+#+BEGIN_SRC bash
+  $ ./todo.sh add "Buy groceries"
+  Added: Buy groceries
+#+END_SRC
+
+* Show TODOs
+
+** Show TODOs
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+When TODO is run with no parameters, it should show all the TODOs
+
+#+BEGIN_SRC bash
+$ ./todo.sh
+     1  ⬜ Buy groceries
+     2  ⬜ Finish homework
+     3  ⬜ Call dentist
+#+END_SRC
+
+*** Useful tips
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+- We will need another function for this!
+- =*)      [code] ;;= can be used as a wildcard in a case statement
+- =cat -n= will add line numbers to the output
+- Sed substitution can replace =[ ]= and =[x]= with the ⬜ and ✅
+- Be sure to escape the brackets in your substitution commands using the backslash
+
+* Complete TODO
+
+** Complete TODO
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=./todo.sh done <task_number>= - Mark task as complete
+
+#+BEGIN_SRC bash
+$ ./todo.sh done 1
+Completed task #1
+#+END_SRC
+
+*** Useful tips
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+- Sed is useful here again, with the =-i= flag
+- Addressing in sed is useful here!
+- If you are on macOS, you may need to add ~""~ after =-i= and before your sed script
+
+#+BEGIN_SRC bash
+sed -i "" "something here" "$RANDOM_FILE"
+#+END_SRC
+
+* Remove TODO
+
+** Remove TODO
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=./todo.sh rm <task_number>= - Remove a specific task
+
+#+BEGIN_SRC bash
+$ ./todo.sh rm 3
+Removed task #3
+#+END_SRC
+
+*** Useful tips
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+- Sed is once again useful here! But maybe a different command within sed...
+- You can use the provided line number as an address
+
+* Cleanup Completed TODOs
+
+** Cleanup Completed TODOs
+:PROPERTIES:
+:BEAMER_ENV: block
+:END:
+
+=./todo.sh clean= - Remove all completed tasks
+
+#+BEGIN_SRC bash
+$ ./todo.sh clean
+Cleaned up 1 completed tasks
+#+END_SRC
+
+*** Useful Tips
+:PROPERTIES:
+:BEAMER_ENV: exampleblock
+:END:
+
+- Grep is useful here
+- A convenient way to do this may be to move all the incomplete tasks into a temporary file, and replace the original file with that temporary one. Other ways work too!

@@ -1,9 +1,0 @@
-FROM alpine:3.19
-
-RUN apk add --no-cache dnsmasq && \
-    echo 'address=/blog.company.internal/10.0.0.100' > /etc/dnsmasq.conf && \
-    echo 'port=53' >> /etc/dnsmasq.conf && \
-    echo 'interface=eth0' >> /etc/dnsmasq.conf && \
-    echo 'listen-address=10.0.0.53' >> /etc/dnsmasq.conf
-
-CMD ["dnsmasq", "--no-daemon", "--log-queries"]

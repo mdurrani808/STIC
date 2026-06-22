@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Terminal window background -->
+  <rect width="64" height="64" rx="10" fill="#1e1e2e"/>
+  <!-- Title bar -->
+  <rect x="0" y="0" width="64" height="16" rx="10" fill="#313244"/>
+  <rect x="0" y="8" width="64" height="8" fill="#313244"/>
+  <!-- Traffic lights -->
+  <circle cx="12" cy="8" r="3" fill="#f38ba8"/>
+  <circle cx="22" cy="8" r="3" fill="#f9e2af"/>
+  <circle cx="32" cy="8" r="3" fill="#a6e3a1"/>
+  <!-- Prompt chevron -->
+  <path d="M10 34 L20 28 L10 22" stroke="#89b4fa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Cursor block -->
+  <rect x="24" y="22" width="8" height="12" rx="1.5" fill="#cdd6f4"/>
+</svg>

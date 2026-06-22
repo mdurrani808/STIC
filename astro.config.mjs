@@ -9,6 +9,7 @@ export default defineConfig({
     starlight({
       title: 'CMSC398W',
       description: 'Practical Tools for Efficient Development',
+      favicon: '/favicon.svg',
       sidebar: [
         { label: 'Syllabus', link: '/syllabus/' },
         {
@@ -44,7 +45,6 @@ export default defineConfig({
         {
           label: 'Info',
           items: [
-            { label: 'Info', link: '/info/' },
             { label: 'Build Setup', link: '/info/build-setup/' },
           ],
         },
